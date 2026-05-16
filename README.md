@@ -5,10 +5,10 @@ Sistema backend para gestión de inventario y operaciones comerciales de vehícu
 ## Tecnologías
 
 - Java 21 · Spring Boot 4.0.6
-- Spring Security + JWT ⚠️ *(pendiente agregar al pom.xml)*
+- Spring Security + JWT ⚠️ _(pendiente agregar al pom.xml)_
 - Spring Data JPA + MySQL
 - Lombok · MapStruct 1.6.3
-- Swagger/OpenAPI ⚠️ *(pendiente agregar al pom.xml)*
+- Swagger/OpenAPI ⚠️ _(pendiente agregar al pom.xml)_
 
 ## Dependencias pendientes en `pom.xml`
 
@@ -57,6 +57,7 @@ Agregar antes de la semana 3:
 ## Configuración
 
 1. Crear la base de datos:
+
 ```sql
 CREATE DATABASE agencia_db;
 ```
@@ -71,11 +72,11 @@ Swagger disponible en: `http://localhost:8080/swagger-ui.html`
 
 ## Roles
 
-| Rol | Descripción |
-|-----|-------------|
-| `CLIENTE` | Consulta vehículos y gestiona favoritos |
-| `VENDEDOR` | Gestiona vehículos y transacciones |
-| `ADMINISTRACION` | Acceso completo, gestión de usuarios |
+| Rol              | Descripción                             |
+| ---------------- | --------------------------------------- |
+| `CLIENTE`        | Consulta vehículos y gestiona favoritos |
+| `VENDEDOR`       | Gestiona vehículos y transacciones      |
+| `ADMINISTRACION` | Acceso completo, gestión de usuarios    |
 
 ## Convenciones
 
@@ -86,6 +87,25 @@ Swagger disponible en: `http://localhost:8080/swagger-ui.html`
 - **DTOs:** sufijo `RequestDTO` / `ResponseDTO` / `ResumenDTO`
 - **Métodos de servicio:** `obtener` / `listar` / `crear` / `actualizar` / `eliminar` / `cambiarEstado`
 - **Columnas BD:** `snake_case` explícito vía `@Column(name = "...")`
+
+## Git y Jira
+
+Para que Jira pueda asociar los commits y ramas a las tareas automáticamente, es fundamental incluir la **llave del ticket** (ej: `SCRUM-08`) en los nombres de rama y mensajes de commit.
+
+### Ramas (Branches)
+
+Estructura sugerida: `tipo/LLAVE-numero-descripcion`
+
+- **Nuevas funcionalidades:** `feature/SCRUM-08-gestion-catalogo`
+- **Correcciones:** `fix/SCRUM-23-error-mapeo-usuario`
+- **Refactorización:** `refactor/SCRUM-05-limpieza-entidades`
+
+### Commits
+
+Estructura: `LLAVE-numero: descripción breve en minúsculas`
+
+- **Ejemplo:** `AG-10: crear entidad vehiculo y su repositorio`
+- **Ejemplo:** `AG-25: corregir validación de email duplicado`
 
 ## Estructura
 
@@ -100,11 +120,12 @@ exception/      Manejo centralizado de errores
 security/       JWT + Spring Security
 ```
 
-## Forma de trabajo 
+## Forma de trabajo
+
 Repartición tentativa de trabajo para evitar conflictos de código.
 
-| Nombre | Módulo |
-|--------|--------|
-| Persona A | Catálogo (Marca, Modelo, Vehículo, Imágenes) |
+| Nombre    | Módulo                                               |
+| --------- | ---------------------------------------------------- |
+| Persona A | Catálogo (Marca, Modelo, Vehículo, Imágenes)         |
 | Persona B | Operaciones (Transacción, Método de Pago, Historial) |
-| Persona C | Seguridad, Usuarios, Favoritos, Infraestructura |
+| Persona C | Seguridad, Usuarios, Favoritos, Infraestructura      |
