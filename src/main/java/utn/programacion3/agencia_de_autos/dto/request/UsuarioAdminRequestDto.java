@@ -1,13 +1,11 @@
 package utn.programacion3.agencia_de_autos.dto.request;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
+import utn.programacion3.agencia_de_autos.model.enums.Rol;
 
 @Data
-public class UsuarioRequestDTO {
+public class UsuarioAdminRequestDto {
 
     @NotBlank(message = "El nombre es obligatorio")
     @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", message = "El nombre solo puede contener letras")
@@ -24,5 +22,8 @@ public class UsuarioRequestDTO {
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String password;
+
+    @NotNull(message = "El rol es obligatorio para el administrador")
+    private Rol rolUsuario;
 
 }
