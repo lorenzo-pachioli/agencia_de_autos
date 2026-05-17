@@ -27,7 +27,7 @@ public class Transaccion {
     private LocalDate updated_at;
 
     @Column(nullable = false)
-    private BigDecimal comosion_calculada;
+    private BigDecimal comision_calculada;
 
     @Column(nullable = false)
     private BigDecimal precio_final;
