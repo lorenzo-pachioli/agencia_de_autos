@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import utn.programacion3.agencia_de_autos.dto.response.ErrorResponseDto;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +36,17 @@ public class GlobalExceptionHandler {
                 "Los datos enviados no son correctos",
                 request,
                 fieldErrors
+        );
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidPassword(InvalidPasswordException ex, WebRequest request) {
+        return buildErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Error de validación",
+                ex.getMessage(),
+                request,
+                null
         );
     }
 
