@@ -13,5 +13,5 @@ public interface TransaccionMapper {
     @Mapping(target = "vehiculo_id", source = "vehiculo.id")
     @Mapping(target = "cliente_id", source = "cliente.id")
     @Mapping(target = "vendedor_id", source = "vendedor.id")
-    TransaccionResponseDTO toDto(Transaccion transaccion);
+    TransaccionResponseDTO toResponseDTO(Transaccion transaccion);
 }

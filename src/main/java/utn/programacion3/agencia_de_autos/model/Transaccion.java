@@ -27,10 +27,10 @@ public class Transaccion {
     private LocalDate updated_at;
 
     @Column(nullable = false)
-    private BigDecimal comision_calculada;
+    private BigDecimal precio_final;
 
     @Column(nullable = false)
-    private BigDecimal precio_final;
+    private BigDecimal comision_calculada;
 
     @Enumerated
     @Column(nullable = false)
@@ -51,4 +51,9 @@ public class Transaccion {
     @ManyToOne(optional = false)
     @JoinColumn(name = "vendedor_id")
     private Usuario vendedor;
+
+    @PreUpdate      // Asigna la fecha del momento en que se realiza un save en una entidad que ya tiene id (en el POST por ej)
+    public void onUpdate() {
+        this.updated_at = LocalDate.now();
+    }
 }
