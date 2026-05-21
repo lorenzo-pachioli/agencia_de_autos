@@ -11,13 +11,13 @@ import java.time.LocalDate;
 @Getter
 public class TransaccionFilterDTO {
 
-    @Positive(message = "El vehiculo_id debe ser un número positivo")
+    @Positive(message = "El vehiculo_id debe ser un numero positivo")
     private Long vehiculo_id;
 
-    @Positive(message = "El cliente_id debe ser un número positivo")
+    @Positive(message = "El cliente_id debe ser un numero positivo")
     private Long cliente_id;
 
-    @Positive(message = "El vendedor_id debe ser un número positivo")
+    @Positive(message = "El vendedor_id debe ser un numero positivo")
     private Long vendedor_id;
 
     @PastOrPresent(message = "La fecha desde no puede ser futura")
