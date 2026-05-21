@@ -23,9 +23,16 @@ public class TransaccionService {
     private final TransaccionMapper transaccionMapper;
     private final UsuarioService usuarioService;
     private final VehiculoService vehiculoService;
-    private final His
+
 
     private final BigDecimal comision_vendedores = new BigDecimal("0.05");   // 5%
+/*    vehiculoService.buscarPorId
+    vehiculoService.actualizarEstado
+    EstadoVehiculo*/
+
+    //me falta listar transacciones con filtros, actualizar transaccion,
+
+
 
     @Transactional
     public TransaccionResponseDTO crear(TransaccionRequestDTO dto){
@@ -51,21 +58,7 @@ public class TransaccionService {
 
         Transaccion transaccion = buscarEntityPorId(id);
 
-        if (estadoTransaccion == EstadoTransaccion.VENDIDO){
-            transaccion.setComision_calculada(
-                    transaccion.getPrecio_final().multiply(this.comision_vendedores));           // Calcula automaticamente la comision del vendedor cuando se concreta la venta
-            //vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.VENDIDO);  COMPLETAR CUANDO ESTE VEHICULO
-
-        } else if (estadoTransaccion == EstadoTransaccion.CANCELADO) {
-            // ACTUALIZAR ESTADO VEHICULO CUANDO EXISTA EL SERVICIO
-            //vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.DISPONIBLE); COMPLETAR CUANDO ESTE VEHICULO
-
-        }else {
-            //vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.RESERVADO);  COMPLETAR CUANDO ESTE VEHICULO
-        }
-
-        transaccion.setEstadoTransaccion(estadoTransaccion);
-
+        asignacionCambioDeEstado(transaccion, estadoTransaccion);
 
         return transaccionMapper.toResponseDTO(
                 transaccionRepository.save(transaccion)
@@ -83,6 +76,24 @@ public class TransaccionService {
     public Transaccion buscarEntityPorId(Long id) {
         return transaccionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaccion no encontrado con el ID: " + id));
+    }
+
+    private void asignacionCambioDeEstado(Transaccion transaccion, EstadoTransaccion nuevoEstado){
+        // esto tendria que ser un metodo privado aparte
+        if (nuevoEstado == EstadoTransaccion.VENDIDO){
+            transaccion.setComision_calculada(
+                    transaccion.getPrecio_final().multiply(this.comision_vendedores));           // Calcula automaticamente la comision del vendedor cuando se concreta la venta
+            //vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.VENDIDO);  COMPLETAR CUANDO ESTE VEHICULO
+
+        } else if (nuevoEstado == EstadoTransaccion.CANCELADO) {
+            // ACTUALIZAR ESTADO VEHICULO CUANDO EXISTA EL SERVICIO
+            //vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.DISPONIBLE); COMPLETAR CUANDO ESTE VEHICULO
+
+        }else {
+            //vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.RESERVADO);  COMPLETAR CUANDO ESTE VEHICULO
+        }
+
+        transaccion.setEstadoTransaccion(nuevoEstado);
     }
 
 }
