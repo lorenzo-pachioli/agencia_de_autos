@@ -52,8 +52,17 @@ public class Transaccion {
     @JoinColumn(name = "vendedor_id")
     private Usuario vendedor;
 
+    @PrePersist
+    public void onCreate(){
+        if (this.observaciones == null){
+            this.observaciones = "Sin observaciones";
+        }
+    }
+
     @PreUpdate      // Asigna la fecha del momento en que se realiza un save en una entidad que ya tiene id (en el POST por ej)
     public void onUpdate() {
-        this.updated_at = LocalDate.now();
+        if (updated_at == null){
+            this.updated_at = LocalDate.now();
+        }
     }
 }

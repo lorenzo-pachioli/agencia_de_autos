@@ -12,8 +12,6 @@ import java.math.BigDecimal;
 @Getter
 public class TransaccionRequestDTO {
 
-    @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El campo observaciones puede estar vacio pero es requerido")
-    private String observaciones;
 
     @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "La comision calculada no puede estar vacio")
     @DecimalMin(value = "0.01", message = "La comision calculada debe ser mayor a 0")
@@ -29,12 +27,12 @@ public class TransaccionRequestDTO {
     @NotBlank(groups = {Groups.Actualizar.class}, message = "El estadoTransaccion no puede estar vacio")
     private EstadoTransaccion estadoTransaccion;
 
-    @NotBlank(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El vehiculo_id no puede estar vacio")
+    @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El vehiculo_id no puede estar vacio")
     private Long vehiculo_id;
 
-    @NotBlank(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El cliente_id no puede estar vacio")
+    @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El cliente_id no puede estar vacio")
     private Long cliente_id;
 
-    @NotBlank(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El vendedor_id no puede estar vacio")
+    @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El vendedor_id no puede estar vacio")
     private Long vendedor_id;
 }
