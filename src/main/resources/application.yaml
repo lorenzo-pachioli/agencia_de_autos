@@ -24,3 +24,11 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
+
+# CONFIGURACIÓN DE SWAGGER / OPENAPI PARA SPRING BOOT 4
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  use-management-port: false
