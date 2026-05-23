@@ -29,6 +29,8 @@ public class ModeloService {
         Modelo modelo = modeloMapper.toEntity(request);
 
         modelo.setMarca(marca);
+        modelo.setAnio(request.getAnio());
+        modelo.setVersion(request.getVersion());
 
         Modelo modeloGuardado = modeloRepository.save(modelo);
 

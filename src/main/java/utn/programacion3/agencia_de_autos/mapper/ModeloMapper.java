@@ -10,20 +10,9 @@ import utn.programacion3.agencia_de_autos.model.Marca;
 @Mapper(componentModel = "spring")
 public interface ModeloMapper {
 
-    @Mapping(target = "marca", source = "marca.nombre")
-    ModeloResponseDTO toResponse(Modelo modelo);
+        @Mapping(target = "marca", source = "marca.nombre")
+        ModeloResponseDTO toResponse(Modelo modelo);
 
-    @Mapping(target = "marca", source = "marcaId")
-    Modelo toEntity(ModeloRequestDTO dto);
-
-    // Convierte Long -> Marca (para el mapping automático)
-    default Marca map(Long marcaId) {
-        if (marcaId == null) {
-            return null;
-        }
-
-        Marca marca = new Marca();
-        marca.setId(marcaId);
-        return marca;
+        @Mapping(target = "marca", ignore = true)
+        Modelo toEntity(ModeloRequestDTO dto);
     }
-}

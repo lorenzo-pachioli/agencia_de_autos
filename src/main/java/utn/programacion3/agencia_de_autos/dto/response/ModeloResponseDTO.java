@@ -12,4 +12,6 @@ public class ModeloResponseDTO {
     private Long id;
     private String nombre;
     private String marca;
+    private Integer anio;
+    private String version;
 }

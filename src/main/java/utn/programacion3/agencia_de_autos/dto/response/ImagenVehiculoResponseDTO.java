@@ -11,4 +11,5 @@ public class ImagenVehiculoResponseDTO {
 
     private Long id;
     private String url;
+    private String patenteVehiculo;
 }
