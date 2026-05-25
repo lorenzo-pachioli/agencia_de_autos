@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionResponseDTO;
+import utn.programacion3.agencia_de_autos.exception.VehiculoNoDisponible;
 import utn.programacion3.agencia_de_autos.mapper.TransaccionMapper;
 import utn.programacion3.agencia_de_autos.model.Transaccion;
 import utn.programacion3.agencia_de_autos.model.Usuario;
@@ -45,16 +46,16 @@ public class TransaccionService {
 
         Usuario cliente = usuarioService.buscarPorId(dto.getCliente_id());
         Usuario vendedor = usuarioService.buscarPorId(dto.getVendedor_id());
-        Vehiculo vehiculo = vehiculoService.buscarPorId(dto.getVehiculo_id());
+        Vehiculo vehiculo = vehiculoService.obtenerVehiculoPorId(dto.getVehiculo_id());
 
-        //if (vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE) throw new {excepcio} COMPLETAR CUANDO ESTE VEHICULO
+        if (vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE) throw new VehiculoNoDisponible("El vehiculo requerido no está disponoble");
 
         Transaccion transaccion = transaccionMapper.toEntity(dto);
         transaccion.setCliente(cliente);
         transaccion.setVehiculo(vehiculo);
         transaccion.setVendedor(vendedor);
 
-        // vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.RESERVADO);  COMPLETAR CUANDO ESTE VEHICULO
+        vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.RESERVADO);
 
         return transaccionMapper.toResponseDTO(transaccionRepository.save(transaccion));
     }
@@ -85,18 +86,19 @@ public class TransaccionService {
     }
 
     private void asignacionCambioDeEstado(Transaccion transaccion, EstadoTransaccion nuevoEstado){
-        // esto tendria que ser un metodo privado aparte
+
         if (nuevoEstado == EstadoTransaccion.VENDIDO){
+            vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.VENDIDO);
+
+            // Calcula automaticamente la comision del vendedor cuando se concreta la venta
             transaccion.setComision_calculada(
-                    transaccion.getPrecio_final().multiply(this.comision_vendedores));           // Calcula automaticamente la comision del vendedor cuando se concreta la venta
-            //vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.VENDIDO);  COMPLETAR CUANDO ESTE VEHICULO
+                    transaccion.getPrecio_final().multiply(this.comision_vendedores));
 
         } else if (nuevoEstado == EstadoTransaccion.CANCELADO) {
-            // ACTUALIZAR ESTADO VEHICULO CUANDO EXISTA EL SERVICIO
-            //vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.DISPONIBLE); COMPLETAR CUANDO ESTE VEHICULO
+            vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.DISPONIBLE);
 
         }else {
-            //vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.RESERVADO);  COMPLETAR CUANDO ESTE VEHICULO
+            vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.RESERVADO);
         }
 
         transaccion.setEstadoTransaccion(nuevoEstado);
