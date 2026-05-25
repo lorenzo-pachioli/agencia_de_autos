@@ -48,6 +48,17 @@ public class ImagenVehiculoController {
         return ResponseEntity.ok(imagenVehiculoService.obtenerPorVehiculo(vehiculoId));
     }
 
+    // Actualizar imagen
+    @PutMapping("/{id}")
+    public ResponseEntity<ImagenVehiculoResponseDTO> actualizarImagen(
+            @PathVariable Long id,
+            @Valid @RequestBody ImagenVehiculoRequestDTO request){
+
+        return ResponseEntity.ok(
+                imagenVehiculoService.actualizarImagen(id, request)
+        );
+    }
+
     // Eliminar imagen
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarImagen(

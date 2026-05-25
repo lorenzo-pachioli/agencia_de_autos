@@ -79,6 +79,9 @@ public class VehiculoService {
         vehiculo.setPatente(request.getPatente());
         vehiculo.setAnio(request.getAnio());
         vehiculo.setPrecio(request.getPrecio());
+        vehiculo.setKilometraje(request.getKilometraje());
+        vehiculo.setColor(request.getColor());
+        vehiculo.setEstado(request.getEstado());
         vehiculo.setModelo(modelo);
 
         Vehiculo vehiculoActualizado = vehiculoRepository.save(vehiculo);

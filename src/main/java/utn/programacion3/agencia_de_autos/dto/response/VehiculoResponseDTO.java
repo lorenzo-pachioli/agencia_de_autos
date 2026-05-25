@@ -1,20 +1,41 @@
 package utn.programacion3.agencia_de_autos.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@Builder
-public class VehiculoResponseDTO {
+ @Getter
+ @Setter
+ @Builder
+ @JsonPropertyOrder({
+         "id",
+         "patente",
+         "modeloNombre",
+         "anio",
+         "precio",
+         "kilometraje",
+         "color",
+         "estado"
+ })
+ public class VehiculoResponseDTO {
 
-    private Long id;
-     private String patente;
-     private String color;
-     private BigDecimal precio;
-     private String modeloNombre;
-     private Integer anio;
-}
+
+  private Long id;
+
+  private String patente;
+
+  private String modeloNombre;
+
+  private Integer anio;
+
+  private BigDecimal precio;
+
+  private Integer kilometraje;
+
+  private String color;
+
+  private String estado;
+ }

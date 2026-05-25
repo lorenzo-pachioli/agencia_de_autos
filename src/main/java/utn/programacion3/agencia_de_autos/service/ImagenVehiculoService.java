@@ -62,6 +62,23 @@ public class ImagenVehiculoService {
                 .toList();
     }
 
+    // Actualizar imagen
+    public ImagenVehiculoResponseDTO actualizarImagen(Long id, ImagenVehiculoRequestDTO request){
+
+        ImagenVehiculo imagen = imagenVehiculoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Imagen no encontrada"));
+
+        Vehiculo vehiculo = vehiculoRepository.findById(request.getVehiculoId())
+                .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+
+        imagen.setUrl(request.getUrl());
+        imagen.setVehiculo(vehiculo);
+
+        ImagenVehiculo imagenActualizada = imagenVehiculoRepository.save(imagen);
+
+        return imagenVehiculoMapper.toResponse(imagenActualizada);
+    }
+
     // Eliminar imagen
     public void eliminarImagen(Long id){
 
