@@ -3,6 +3,7 @@ package utn.programacion3.agencia_de_autos.service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionResponseDTO;
 import utn.programacion3.agencia_de_autos.mapper.TransaccionMapper;
@@ -12,8 +13,10 @@ import utn.programacion3.agencia_de_autos.model.Vehiculo;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
 import utn.programacion3.agencia_de_autos.repository.TransaccionRepository;
+import utn.programacion3.agencia_de_autos.repository.TransaccionSpecification;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,12 +29,15 @@ public class TransaccionService {
 
 
     private final BigDecimal comision_vendedores = new BigDecimal("0.05");   // 5%
-/*    vehiculoService.buscarPorId
-    vehiculoService.actualizarEstado
-    EstadoVehiculo*/
 
     //me falta listar transacciones con filtros, actualizar transaccion,
 
+    public List<TransaccionResponseDTO> listarConFiltros(TransaccionFilterDTO filtros) {
+        return transaccionRepository.findAll(TransaccionSpecification.conFiltros(filtros))
+                .stream()
+                .map(transaccionMapper::toResponseDTO)
+                .toList();
+    }
 
 
     @Transactional
