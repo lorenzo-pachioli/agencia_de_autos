@@ -33,6 +33,11 @@ public class TransaccionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(transaccionService.crear(dto));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<TransaccionResponseDTO> actualizarTransaccion(@PathVariable Long id, @Validated(Groups.Actualizar.class) @RequestBody TransaccionRequestDTO dto){
+        return ResponseEntity.ok(transaccionService.actualizar(id, dto));
+    }
+
     @PatchMapping("/{id}/estado")
     public ResponseEntity<TransaccionResponseDTO> cambiarEstadoTransaccion(@PathVariable Long id, @Valid @RequestParam EstadoTransaccion estado){
         return ResponseEntity.ok(transaccionService.cambiarEstado(id, estado));
