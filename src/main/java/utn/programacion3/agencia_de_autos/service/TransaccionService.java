@@ -61,6 +61,26 @@ public class TransaccionService {
     }
 
     @Transactional
+    public TransaccionResponseDTO actualizar(Long id, TransaccionRequestDTO dto){
+
+        Transaccion transaccion = buscarEntityPorId(id);
+        Usuario cliente = usuarioService.buscarPorId(dto.getCliente_id());
+        Usuario vendedor = usuarioService.buscarPorId(dto.getVendedor_id());
+        Vehiculo vehiculo = vehiculoService.obtenerVehiculoPorId(dto.getVehiculo_id());
+
+        transaccion.setEstadoTransaccion(dto.getEstadoTransaccion());
+        transaccion.setObservaciones(dto.getObservaciones());
+        transaccion.setPrecio_final(dto.getPrecio_final());
+        transaccion.setMetodoPago(dto.getMetodoPago());
+        transaccion.setEstadoTransaccion(dto.getEstadoTransaccion());
+        transaccion.setCliente(cliente);
+        transaccion.setVehiculo(vehiculo);
+        transaccion.setVendedor(vendedor);
+
+        return transaccionMapper.toResponseDTO(transaccionRepository.save(transaccion));
+    }
+
+    @Transactional
     public TransaccionResponseDTO cambiarEstado(Long id, EstadoTransaccion estadoTransaccion){
 
         Transaccion transaccion = buscarEntityPorId(id);

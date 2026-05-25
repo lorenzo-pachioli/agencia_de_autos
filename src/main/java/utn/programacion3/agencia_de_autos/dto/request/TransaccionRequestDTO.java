@@ -12,10 +12,8 @@ import java.math.BigDecimal;
 @Getter
 public class TransaccionRequestDTO {
 
-
-    @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "La comision calculada no puede estar vacio")
-    @DecimalMin(value = "0.01", message = "La comision calculada debe ser mayor a 0")
-    private BigDecimal comision_calculada;
+    @NotBlank(groups = {Groups.Actualizar.class}, message = "Las observaciones no puede estar vacias")
+    private String observaciones;
 
     @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El precio final no puede estar vacio")
     @DecimalMin(value = "0.01", message = "El precio final debe ser mayor a 0")
