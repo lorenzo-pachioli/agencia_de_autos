@@ -3,7 +3,9 @@ package utn.programacion3.agencia_de_autos.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import utn.programacion3.agencia_de_autos.dto.request.CambiarEstadoVehiculoDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
 import utn.programacion3.agencia_de_autos.service.VehiculoService;
@@ -56,6 +58,17 @@ public class VehiculoController {
             @Valid @RequestBody VehiculoRequestDTO request) {
 
         return vehiculoService.actualizarVehiculo(id, request);
+    }
+
+    //Cambiar estado
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<VehiculoResponseDTO> cambiarEstado(
+            @PathVariable Long id,
+            @Valid @RequestBody CambiarEstadoVehiculoDTO request){
+
+        return ResponseEntity.ok(
+                vehiculoService.cambiarEstado(id, request)
+        );
     }
 
     // Eliminar vehículo

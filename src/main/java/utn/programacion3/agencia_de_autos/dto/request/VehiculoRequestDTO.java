@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
+import utn.programacion3.agencia_de_autos.model.enums.TipoCombustible;
+import utn.programacion3.agencia_de_autos.model.enums.TipoTransmision;
 
 import java.math.BigDecimal;
 
@@ -29,6 +32,13 @@ public class VehiculoRequestDTO {
     @NotBlank
     private String color;
 
-    @NotBlank
-    private String estado;
+    @NotNull
+    private EstadoVehiculo estado;
+
+    @NotNull
+    private TipoTransmision tipoTransmision;
+
+    @NotNull
+    private TipoCombustible tipoCombustible;
+
 }

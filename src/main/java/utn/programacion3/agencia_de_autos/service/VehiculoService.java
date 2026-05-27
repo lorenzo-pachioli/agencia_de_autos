@@ -2,6 +2,7 @@ package utn.programacion3.agencia_de_autos.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import utn.programacion3.agencia_de_autos.dto.request.CambiarEstadoVehiculoDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
 import utn.programacion3.agencia_de_autos.mapper.VehiculoMapper;
@@ -100,6 +101,19 @@ public class VehiculoService {
         Vehiculo vehiculoActualizado = vehiculoRepository.save(vehiculo);
 
         return vehiculoMapper.toResponse(vehiculoActualizado);
+    }
+
+    //Cambiar estaod de vehiculo
+    public VehiculoResponseDTO cambiarEstado(Long id, CambiarEstadoVehiculoDTO request){
+
+        Vehiculo vehiculo = vehiculoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+
+        vehiculo.setEstado(request.getEstado());
+
+        Vehiculo vehiculoGuardado = vehiculoRepository.save(vehiculo);
+
+        return vehiculoMapper.toResponse(vehiculoGuardado);
     }
 
     // Eliminar vehiculo

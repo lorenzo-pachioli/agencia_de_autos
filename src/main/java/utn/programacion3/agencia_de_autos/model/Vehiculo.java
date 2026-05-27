@@ -4,6 +4,11 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
+import utn.programacion3.agencia_de_autos.model.enums.TipoCombustible;
+import utn.programacion3.agencia_de_autos.model.enums.TipoTransmision;
 
 @Entity
 @Table(name = "vehiculos")
@@ -35,8 +40,17 @@ public class Vehiculo {
     private String color;
 
     // Estado del vehículo (disponible, vendido, reservado, etc.)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String estado;
+    private EstadoVehiculo estado;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TipoCombustible tipoCombustible;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TipoTransmision tipoTransmision;
 
     // Relación: muchos vehículos pertenecen a un modelo
     @ManyToOne

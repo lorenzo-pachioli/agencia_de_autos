@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
+import utn.programacion3.agencia_de_autos.model.enums.TipoCombustible;
+import utn.programacion3.agencia_de_autos.model.enums.TipoTransmision;
 
 import java.math.BigDecimal;
 
@@ -37,5 +40,10 @@ import java.math.BigDecimal;
 
   private String color;
 
-  private String estado;
+  private EstadoVehiculo estado;
+
+  private TipoCombustible tipoCombustible;
+
+  private TipoTransmision tipoTransmision;
+
  }
