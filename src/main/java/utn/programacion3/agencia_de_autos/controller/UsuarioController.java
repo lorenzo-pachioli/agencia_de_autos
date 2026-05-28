@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
@@ -71,5 +73,21 @@ public class UsuarioController {
     @PatchMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> cambiarEstado(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.darDeBaja(id));
+    }
+
+    @PostMapping("/vendedores")
+    //@PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Registrar un nuevo Vendedor",
+            description = "Permite al Administrador dar de alta a un empleado con rol de Vendedor. El sistema le asigna el rol automáticamente."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Vendedor creado exitosamente en la agencia"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o email ya existente"),
+            @ApiResponse(responseCode = "403", description = "No tienes permisos (Se requiere ser ADMIN)")
+    })
+    public ResponseEntity<UsuarioResponseDTO> crearVendedor(@Valid @RequestBody UsuarioRequestDTO registroDto) {
+        UsuarioResponseDTO nuevoVendedor = usuarioService.registrarVendedor(registroDto);
+        return new ResponseEntity<>(nuevoVendedor, HttpStatus.CREATED);
     }
 }

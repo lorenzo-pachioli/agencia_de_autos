@@ -9,6 +9,7 @@ import utn.programacion3.agencia_de_autos.exception.InvalidPasswordException;
 import utn.programacion3.agencia_de_autos.exception.ResourceNotFoundException;
 import utn.programacion3.agencia_de_autos.mapper.UsuarioMapper;
 import utn.programacion3.agencia_de_autos.model.Usuario;
+import utn.programacion3.agencia_de_autos.model.enums.Rol;
 import utn.programacion3.agencia_de_autos.repository.UsuarioRepository;
 import utn.programacion3.agencia_de_autos.service.UsuarioService;
 
@@ -102,6 +103,27 @@ public class UsuarioServiceImpl implements UsuarioService{
         usuarioRepository.save(usuario);
 
         return usuarioMapper.toResponseDTO(usuario);
+    }
+
+    @Override
+    @Transactional
+    public UsuarioResponseDTO registrarVendedor(UsuarioRequestDTO dto) {
+
+        if (usuarioRepository.findByEmail(dto.getEmail().trim()).isPresent()) {
+            throw new EmailAlreadyExistsException("El email ya se encuentra registrado en el sistema.");
+        }
+
+        Usuario nuevoVendedor = usuarioMapper.toEntity(dto);
+
+        // Encriptar la contraseña por seguridad antes de guardarla
+        // nuevoVendedor.setPassword(passwordEncoder.encode(dto.getPassword()));
+
+        nuevoVendedor.setRolUsuario(Rol.VENDEDOR);
+        nuevoVendedor.setActivo(true);
+
+        Usuario vendedorGuardado = usuarioRepository.save(nuevoVendedor);
+
+        return usuarioMapper.toResponseDTO(vendedorGuardado);
     }
 
 }
