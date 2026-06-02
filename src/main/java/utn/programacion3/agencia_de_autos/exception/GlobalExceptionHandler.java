@@ -25,6 +25,18 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.NOT_FOUND, "No encontrado", ex.getMessage(), request, null);
     }
 
+    // ATREPADOR DE EXCEPCIONES DE LOGICA DE NEGOCIO
+    @ExceptionHandler(NegocioException.class)
+    public ResponseEntity<ErrorResponseDto> handleNegocioException(NegocioException ex, WebRequest request) {
+        return buildErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Error de negocio",
+                ex.getMessage(),
+                request,
+                null
+        );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> handleValidation(MethodArgumentNotValidException ex, WebRequest request) {
         Map<String, String> fieldErrors = new HashMap<>();
@@ -50,8 +62,21 @@ public class GlobalExceptionHandler {
         );
     }
 
+    // MANEJADOR GENERAL (Cualquier error inesperado en el servidor)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDto> handleGlobalException(Exception ex, WebRequest request) {
+
+        return buildErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR, // Código 500
+                "Error interno del servidor",
+                "Ocurrió un error inesperado en el sistema. Por favor, intente más tarde.",
+                request,
+                null
+        );
+    }
+
     private ResponseEntity<ErrorResponseDto> buildErrorResponse(HttpStatus status,
-            String errorTitle, String message, WebRequest request, Map<String, String> validationErrors)
+                                                                String errorTitle, String message, WebRequest request, Map<String, String> validationErrors)
     {
         ErrorResponseDto errorDto = new ErrorResponseDto(
                 status.value(),

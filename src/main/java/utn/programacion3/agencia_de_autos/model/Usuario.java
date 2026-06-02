@@ -6,6 +6,7 @@ import lombok.Generated;
 import utn.programacion3.agencia_de_autos.model.enums.Rol;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -31,13 +32,8 @@ public class Usuario {
 
     private LocalDate alta;
 
-    @ManyToMany
-    @JoinTable(
-            name = "favorito",
-            joinColumns = @JoinColumn(name = "cliente_id"),
-            inverseJoinColumns = @JoinColumn(name = "vehiculo_id")
-    )
-    private List<Vehiculo> favoritos;
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Favorito> favoritos = new ArrayList<>();
 
     // Nos ahorramos setear a mano en el service la fecha cuando se crea un usuario
     @PrePersist
