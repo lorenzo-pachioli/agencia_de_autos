@@ -1,7 +1,9 @@
 package utn.programacion3.agencia_de_autos.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import utn.programacion3.agencia_de_autos.dto.request.UsuarioAdminRequestDto;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
 import utn.programacion3.agencia_de_autos.exception.EmailAlreadyExistsException;
@@ -22,11 +24,13 @@ public class UsuarioServiceImpl implements UsuarioService{
 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
+    private final PasswordEncoder passwordEncoder;
 
     // Inyección por constructor (Buenas prácticas de Spring)
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper) {
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -38,8 +42,9 @@ public class UsuarioServiceImpl implements UsuarioService{
         }
 
         Usuario usuario = usuarioMapper.toEntity(requestDTO);
-
+        usuario.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
         usuario.setActivo(true);
+        usuario.setRolUsuario(Rol.USUARIO);
 
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
 
@@ -107,7 +112,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 
     @Override
     @Transactional
-    public UsuarioResponseDTO registrarVendedor(UsuarioRequestDTO dto) {
+    public UsuarioResponseDTO registrarVendedor(UsuarioAdminRequestDto dto) {
 
         if (usuarioRepository.findByEmail(dto.getEmail().trim()).isPresent()) {
             throw new EmailAlreadyExistsException("El email ya se encuentra registrado en el sistema.");
@@ -118,7 +123,6 @@ public class UsuarioServiceImpl implements UsuarioService{
         // Encriptar la contraseña por seguridad antes de guardarla
         // nuevoVendedor.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-        nuevoVendedor.setRolUsuario(Rol.VENDEDOR);
         nuevoVendedor.setActivo(true);
 
         Usuario vendedorGuardado = usuarioRepository.save(nuevoVendedor);

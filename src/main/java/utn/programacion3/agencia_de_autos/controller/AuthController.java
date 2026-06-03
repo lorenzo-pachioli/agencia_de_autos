@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import utn.programacion3.agencia_de_autos.dto.request.LoginRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.response.LoginResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
+import utn.programacion3.agencia_de_autos.service.AuthService;
 import utn.programacion3.agencia_de_autos.service.UsuarioService;
 
 import java.util.HashMap;
@@ -28,9 +30,11 @@ import java.util.Map;
 public class AuthController {
 
     private final UsuarioService usuarioService;
+    private final AuthService authService;
 
-    public AuthController(UsuarioService usuarioService) {
+    public AuthController(UsuarioService usuarioService, AuthService authService) {
         this.usuarioService = usuarioService;
+        this.authService = authService;
     }
 
     @Operation(
@@ -47,22 +51,15 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @Operation(
-            summary = "Iniciar sesión en el sistema",
-            description = "Permite el ingreso al sistema mediante email y contraseña. Retorna un token de acceso simulado para el Sprint 1."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Autenticación exitosa, token generado"),
-            @ApiResponse(responseCode = "401", description = "Credenciales incorrectas o usuario inactivo")
-    })
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequestDTO loginRequest) {
-        String email = loginRequest.getEmail();
+    @Operation(summary = "Iniciar sesion", description = "Autentica al usuario con sus credenciales y devuelve un token JWT valido.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Autenticacion exitosa, token generado"),
+            @ApiResponse(responseCode = "401", description = "Credenciales incorrectas o usuario no encontrado")
+    })
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
+        LoginResponseDTO response = authService.iniciarSesion(loginRequest);
 
-        // Simulación temporal del Token para la agencia
-        Map<String, String> tokenResponse = new HashMap<>();
-        tokenResponse.put("token", "jwt-simulado-token-agencia-" + email);
-
-        return ResponseEntity.ok(tokenResponse);
+        return ResponseEntity.ok(response);
     }
 }

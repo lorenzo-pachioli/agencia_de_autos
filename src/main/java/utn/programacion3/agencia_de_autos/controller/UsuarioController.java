@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import utn.programacion3.agencia_de_autos.dto.request.UsuarioAdminRequestDto;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
 import utn.programacion3.agencia_de_autos.service.UsuarioService;
@@ -29,11 +30,7 @@ public class UsuarioController {
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
-
-    // ==========================================
-    // ENDPOINTS DE GESTIÓN / ADMINISTRACIÓN
-    // ==========================================
-
+    
     @Operation(
             summary = "Listar todos los usuarios",
             description = "Retorna una lista completa de todos los usuarios registrados en el sistema (Clientes, Vendedores y Administradores)."
@@ -86,8 +83,22 @@ public class UsuarioController {
             @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o email ya existente"),
             @ApiResponse(responseCode = "403", description = "No tienes permisos (Se requiere ser ADMIN)")
     })
-    public ResponseEntity<UsuarioResponseDTO> crearVendedor(@Valid @RequestBody UsuarioRequestDTO registroDto) {
+    public ResponseEntity<UsuarioResponseDTO> crearVendedor(@Valid @RequestBody UsuarioAdminRequestDto registroDto) {
         UsuarioResponseDTO nuevoVendedor = usuarioService.registrarVendedor(registroDto);
         return new ResponseEntity<>(nuevoVendedor, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Buscar usuario por ID", description = "Permite al Administrador obtener los detalles completos de un usuario mediante su ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario encontrado con éxito"),
+            @ApiResponse(responseCode = "404", description = "No existe un usuario con el ID proporcionado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado (Se requiere rol ADMIN)")
+    })
+    public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Long id) {
+        UsuarioResponseDTO usuario = usuarioService.buscarPorId(id);
+
+        return ResponseEntity.ok(usuario);
+
     }
 }

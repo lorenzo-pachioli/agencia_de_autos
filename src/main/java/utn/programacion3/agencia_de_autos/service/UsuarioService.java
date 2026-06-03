@@ -2,6 +2,7 @@ package utn.programacion3.agencia_de_autos.service;
 
 
 import jakarta.validation.Valid;
+import utn.programacion3.agencia_de_autos.dto.request.UsuarioAdminRequestDto;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
 
@@ -21,5 +22,5 @@ public interface UsuarioService {
 
     UsuarioResponseDTO darDeBaja(Long id);
 
-    UsuarioResponseDTO registrarVendedor(UsuarioRequestDTO registroDto);
+    UsuarioResponseDTO registrarVendedor(UsuarioAdminRequestDto registroDto);
 }
