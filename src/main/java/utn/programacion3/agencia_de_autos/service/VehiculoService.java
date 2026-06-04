@@ -8,6 +8,8 @@ import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
 import utn.programacion3.agencia_de_autos.mapper.VehiculoMapper;
 import utn.programacion3.agencia_de_autos.model.Modelo;
 import utn.programacion3.agencia_de_autos.model.Vehiculo;
+import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
+import utn.programacion3.agencia_de_autos.model.enums.TipoCombustible;
 import utn.programacion3.agencia_de_autos.repository.ModeloRepository;
 import utn.programacion3.agencia_de_autos.repository.VehiculoRepository;
 
@@ -59,6 +61,7 @@ public class VehiculoService {
         return vehiculoMapper.toResponse(vehiculo);
     }
 
+
     // Buscar por patente
     public VehiculoResponseDTO obtenerVehiculoPorPatente(String patente){
 
@@ -66,6 +69,58 @@ public class VehiculoService {
                 .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
 
         return vehiculoMapper.toResponse(vehiculo);
+    }
+
+    //Buscar por marca
+    public List<VehiculoResponseDTO> obtenerPorMarca(Long marcaId){
+
+        return vehiculoRepository.buscarPorMarca(marcaId)
+                .stream()
+                .map(vehiculoMapper::toResponse)
+                .toList();
+    }
+
+    // Buscar por modelo
+    public List<VehiculoResponseDTO> obtenerPorModelo(Long modeloId){
+
+        return vehiculoRepository.buscarPorModelo(modeloId)
+                .stream()
+                .map(vehiculoMapper::toResponse)
+                .toList();
+    }
+
+    //Buscar por tipo de combustible
+    public List<VehiculoResponseDTO> obtenerPorCombustible(
+            TipoCombustible combustible){
+
+        return vehiculoRepository.buscarPorCombustible(combustible)
+                .stream()
+                .map(vehiculoMapper::toResponse)
+                .toList();
+    }
+
+    // Buscar por rango de precio
+    public List<VehiculoResponseDTO> obtenerPorRangoPrecio(
+            BigDecimal precioMin,
+            BigDecimal precioMax){
+
+        return vehiculoRepository.buscarPorRangoPrecio(
+                        precioMin,
+                        precioMax
+                )
+                .stream()
+                .map(vehiculoMapper::toResponse)
+                .toList();
+    }
+
+    //Buscar por estado del vehículo
+    public List<VehiculoResponseDTO> obtenerPorEstado(
+            EstadoVehiculo estado){
+
+        return vehiculoRepository.buscarPorEstado(estado)
+                .stream()
+                .map(vehiculoMapper::toResponse)
+                .toList();
     }
 
     // Actualizar vehiculo
@@ -103,7 +158,7 @@ public class VehiculoService {
         return vehiculoMapper.toResponse(vehiculoActualizado);
     }
 
-    //Cambiar estaod de vehiculo
+    //Cambiar estado de vehiculo
     public VehiculoResponseDTO cambiarEstado(Long id, CambiarEstadoVehiculoDTO request){
 
         Vehiculo vehiculo = vehiculoRepository.findById(id)

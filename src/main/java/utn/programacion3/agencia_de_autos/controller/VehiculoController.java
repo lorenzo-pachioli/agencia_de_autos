@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import utn.programacion3.agencia_de_autos.dto.request.CambiarEstadoVehiculoDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
+import utn.programacion3.agencia_de_autos.model.enums.TipoCombustible;
 import utn.programacion3.agencia_de_autos.service.VehiculoService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -49,6 +51,50 @@ public class VehiculoController {
             @PathVariable String patente) {
 
         return vehiculoService.obtenerVehiculoPorPatente(patente);
+    }
+
+    //Obtener vehiculo por marca
+    @GetMapping("/marca/{marcaId}")
+    public ResponseEntity<List<VehiculoResponseDTO>>
+    obtenerPorMarca(@PathVariable Long marcaId){
+
+        return ResponseEntity.ok(
+                vehiculoService.obtenerPorMarca(marcaId)
+        );
+    }
+
+    //Obtener vehículo por modelo
+    @GetMapping("/modelo/{modeloId}")
+    public ResponseEntity<List<VehiculoResponseDTO>> buscarPorModelo(
+            @PathVariable Long modeloId){
+
+        return ResponseEntity.ok(
+                vehiculoService.obtenerPorModelo(modeloId)
+        );
+    }
+
+    // Obtener vehículo por precio
+
+    @GetMapping("/precio")
+    public ResponseEntity<List<VehiculoResponseDTO>>
+    buscarPorRangoPrecio(
+            @RequestParam BigDecimal min,
+            @RequestParam BigDecimal max){
+
+        return ResponseEntity.ok(
+                vehiculoService.obtenerPorRangoPrecio(min, max)
+        );
+    }
+
+    //Obtener vehículo por combustible
+    @GetMapping("/combustible/{combustible}")
+    public ResponseEntity<List<VehiculoResponseDTO>>
+    buscarPorCombustible(
+            @PathVariable TipoCombustible combustible){
+
+        return ResponseEntity.ok(
+                vehiculoService.obtenerPorCombustible(combustible)
+        );
     }
 
     // Actualizar vehículo
