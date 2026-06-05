@@ -171,6 +171,25 @@ public class VehiculoService {
         return vehiculoMapper.toResponse(vehiculoGuardado);
     }
 
+    //Busqueda con filtros combinados
+    public List<VehiculoResponseDTO> buscarConFiltros(
+            Long marcaId,
+            Long modeloId,
+            TipoCombustible combustible,
+            BigDecimal minPrecio,
+            BigDecimal maxPrecio){
+
+        return vehiculoRepository.buscarConFiltros(
+                        marcaId,
+                        modeloId,
+                        combustible,
+                        minPrecio,
+                        maxPrecio)
+                .stream()
+                .map(vehiculoMapper::toResponse)
+                .toList();
+    }
+
     // Eliminar vehiculo
     public void eliminarVehiculo(Long id){
 

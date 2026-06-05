@@ -57,4 +57,21 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Long> {
     List<Vehiculo> buscarPorEstado(
             @Param("estado") EstadoVehiculo estado
     );
+
+    @Query("""
+    SELECT v
+    FROM Vehiculo v
+    WHERE (:marcaId IS NULL OR v.modelo.marca.id = :marcaId)
+    AND (:modeloId IS NULL OR v.modelo.id = :modeloId)
+    AND (:combustible IS NULL OR v.tipoCombustible = :combustible)
+    AND (:minPrecio IS NULL OR v.precio >= :minPrecio)
+    AND (:maxPrecio IS NULL OR v.precio <= :maxPrecio)
+""")
+    List<Vehiculo> buscarConFiltros(
+            @Param("marcaId") Long marcaId,
+            @Param("modeloId") Long modeloId,
+            @Param("combustible") TipoCombustible combustible,
+            @Param("minPrecio") BigDecimal minPrecio,
+            @Param("maxPrecio") BigDecimal maxPrecio
+    );
 }

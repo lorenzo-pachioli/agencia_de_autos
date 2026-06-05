@@ -117,6 +117,25 @@ public class VehiculoController {
         );
     }
 
+    @GetMapping("/busqueda")
+    public ResponseEntity<List<VehiculoResponseDTO>> buscarConFiltros(
+
+            @RequestParam(required = false) Long marcaId,
+            @RequestParam(required = false) Long modeloId,
+            @RequestParam(required = false) TipoCombustible combustible,
+            @RequestParam(required = false) BigDecimal minPrecio,
+            @RequestParam(required = false) BigDecimal maxPrecio){
+
+        return ResponseEntity.ok(
+                vehiculoService.buscarConFiltros(
+                        marcaId,
+                        modeloId,
+                        combustible,
+                        minPrecio,
+                        maxPrecio
+                )
+        );
+    }
     // Eliminar vehículo
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
