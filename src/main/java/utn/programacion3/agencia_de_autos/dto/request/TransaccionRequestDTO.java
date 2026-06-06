@@ -19,10 +19,10 @@ public class TransaccionRequestDTO {
     @DecimalMin(value = "0.01", message = "El precio final debe ser mayor a 0")
     private BigDecimal precio_final;
 
-    @NotBlank(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El nombre no puede estar vacio")
+    @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El metodoPago no puede estar vacio")
     private MetodoPago metodoPago;
 
-    @NotBlank(groups = {Groups.Actualizar.class}, message = "El estadoTransaccion no puede estar vacio")
+    @NotNull(groups = {Groups.Actualizar.class}, message = "El estadoTransaccion no puede estar vacio")
     private EstadoTransaccion estadoTransaccion;
 
     @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El vehiculo_id no puede estar vacio")

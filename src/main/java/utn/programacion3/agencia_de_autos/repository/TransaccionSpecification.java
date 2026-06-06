@@ -27,10 +27,10 @@ public class TransaccionSpecification {
                 predicates.add(cb.equal(root.get("estadoTransaccion"), filtros.getEstadoTransaccion()));
             }
             if (filtros.getFechaDesde() != null) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get("createdAt"), filtros.getFechaDesde().atStartOfDay()));
+                predicates.add(cb.greaterThanOrEqualTo(root.get("created_at"), filtros.getFechaDesde().atStartOfDay()));
             }
             if (filtros.getFechaHasta() != null) {
-                predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), filtros.getFechaHasta().atTime(23, 59, 59)));
+                predicates.add(cb.lessThanOrEqualTo(root.get("created_at"), filtros.getFechaHasta().atTime(23, 59, 59)));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

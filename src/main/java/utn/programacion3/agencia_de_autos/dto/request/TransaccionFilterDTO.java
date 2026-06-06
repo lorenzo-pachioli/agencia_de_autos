@@ -4,11 +4,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
+import lombok.Setter;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion;
 
 import java.time.LocalDate;
 
 @Getter
+@Setter
 public class TransaccionFilterDTO {
 
     @Positive(message = "El vehiculo_id debe ser un numero positivo")
