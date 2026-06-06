@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionResponseDTO;
+import utn.programacion3.agencia_de_autos.exception.TransaccionYaCancelada;
 import utn.programacion3.agencia_de_autos.exception.VehiculoNoDisponible;
 import utn.programacion3.agencia_de_autos.mapper.TransaccionMapper;
 import utn.programacion3.agencia_de_autos.model.Transaccion;
@@ -121,6 +122,22 @@ public class TransaccionService {
         }
 
         transaccion.setEstadoTransaccion(nuevoEstado);
+    }
+
+    @Transactional
+    public TransaccionResponseDTO cancelarTransaccion(Long id) {
+
+        Transaccion transaccion = buscarEntityPorId(id);
+        // Falta validar que solo lo pueda realizar un vendedor o Admin
+        if (transaccion.getEstadoTransaccion() == EstadoTransaccion.CANCELADO){
+            throw new TransaccionYaCancelada(transaccion.getId().toString());
+        }
+
+        asignacionCambioDeEstado(transaccion, EstadoTransaccion.CANCELADO);
+
+        return  transaccionMapper.toResponseDTO(
+                transaccionRepository.save(transaccion)
+        );
     }
 
 }

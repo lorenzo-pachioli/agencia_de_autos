@@ -43,6 +43,12 @@ public class TransaccionController {
         return ResponseEntity.ok(transaccionService.actualizar(id, dto));
     }
 
+    @PatchMapping("/{id}/cancelar")
+    public ResponseEntity<TransaccionResponseDTO> cancelarTransaccionPorid(@PathVariable Long id) {
+        return ResponseEntity.ok(transaccionService.cancelarTransaccion(id));
+    }
+
+
     @PatchMapping("/{id}/estado")
     public ResponseEntity<TransaccionResponseDTO> cambiarEstadoTransaccion(@PathVariable Long id, @Valid @RequestParam EstadoTransaccion estado){
         return ResponseEntity.ok(transaccionService.cambiarEstado(id, estado));
