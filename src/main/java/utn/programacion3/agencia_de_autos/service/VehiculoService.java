@@ -5,6 +5,10 @@ import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.CambiarEstadoVehiculoDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
+import utn.programacion3.agencia_de_autos.exception.ModeloNoEncontradoException;
+import utn.programacion3.agencia_de_autos.exception.PatenteDuplicadaException;
+import utn.programacion3.agencia_de_autos.exception.VehiculoNoDisponibleException;
+import utn.programacion3.agencia_de_autos.exception.VehiculoNoEncontradoException;
 import utn.programacion3.agencia_de_autos.mapper.VehiculoMapper;
 import utn.programacion3.agencia_de_autos.model.Modelo;
 import utn.programacion3.agencia_de_autos.model.Vehiculo;
@@ -28,11 +32,11 @@ public class VehiculoService {
     public VehiculoResponseDTO crearVehiculo(VehiculoRequestDTO request){
 
         if (vehiculoRepository.existsByPatente(request.getPatente())){
-            throw new RuntimeException("La patente ya existe");
+            throw new PatenteDuplicadaException();
         }
 
         Modelo modelo = modeloRepository.findById(request.getModeloId())
-                .orElseThrow(() -> new RuntimeException("Modelo no encontrado"));
+                .orElseThrow(ModeloNoEncontradoException::new);
 
         Vehiculo vehiculo = vehiculoMapper.toEntity(request);
 
@@ -56,7 +60,7 @@ public class VehiculoService {
     public VehiculoResponseDTO obtenerVehiculoPorId(Long id){
 
         Vehiculo vehiculo = vehiculoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+                .orElseThrow(VehiculoNoEncontradoException::new);
 
         return vehiculoMapper.toResponse(vehiculo);
     }
@@ -65,7 +69,7 @@ public class VehiculoService {
     public Vehiculo obtenerVehiculoEntityPorId(Long id){
 
         return vehiculoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+                .orElseThrow(VehiculoNoEncontradoException::new);
     }
 
 
@@ -73,7 +77,7 @@ public class VehiculoService {
     public VehiculoResponseDTO obtenerVehiculoPorPatente(String patente){
 
         Vehiculo vehiculo = vehiculoRepository.findByPatente(patente)
-                .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+                .orElseThrow(VehiculoNoEncontradoException::new);
 
         return vehiculoMapper.toResponse(vehiculo);
     }
@@ -134,10 +138,10 @@ public class VehiculoService {
     public VehiculoResponseDTO actualizarVehiculo(Long id, VehiculoRequestDTO request){
 
         Vehiculo vehiculo = vehiculoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+                .orElseThrow(VehiculoNoEncontradoException::new);
 
         Modelo modelo = modeloRepository.findById(request.getModeloId())
-                .orElseThrow(() -> new RuntimeException("Modelo no encontrado"));
+                .orElseThrow(ModeloNoEncontradoException::new);
 
         vehiculo.setPatente(request.getPatente());
         vehiculo.setAnio(request.getAnio());
@@ -156,7 +160,7 @@ public class VehiculoService {
     public VehiculoResponseDTO modificarPrecio(Long id, BigDecimal nuevoPrecio){
 
         Vehiculo vehiculo = vehiculoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+                .orElseThrow(VehiculoNoEncontradoException::new);
 
         vehiculo.setPrecio(nuevoPrecio);
 
@@ -169,7 +173,7 @@ public class VehiculoService {
     public VehiculoResponseDTO cambiarEstado(Long id, CambiarEstadoVehiculoDTO request){
 
         Vehiculo vehiculo = vehiculoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+                .orElseThrow(VehiculoNoEncontradoException::new);
 
         vehiculo.setEstado(request.getEstado());
 
@@ -182,7 +186,7 @@ public class VehiculoService {
     public Vehiculo cambiarEstadoEntity(Long id, EstadoVehiculo estado){
 
         Vehiculo vehiculo = vehiculoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+                .orElseThrow(VehiculoNoEncontradoException::new);
 
         vehiculo.setEstado(estado);
 
@@ -212,7 +216,7 @@ public class VehiculoService {
     public void eliminarVehiculo(Long id){
 
         Vehiculo vehiculo = vehiculoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+                .orElseThrow(VehiculoNoEncontradoException::new);
 
         vehiculoRepository.delete(vehiculo);
     }

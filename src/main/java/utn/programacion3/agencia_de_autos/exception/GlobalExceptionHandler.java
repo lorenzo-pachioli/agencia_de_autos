@@ -20,17 +20,46 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.CONFLICT, "Conflicto de datos", ex.getMessage(), request, null);
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
+    // ATREPADOR DE EXCEPCIONES DE NOT FOUND
+    @ExceptionHandler({
+            ResourceNotFoundException.class,
+            ModeloNoEncontradoException.class,
+            VehiculoNoEncontradoException.class
+    })
     public ResponseEntity<ErrorResponseDto> handleNotFound(ResourceNotFoundException ex, WebRequest request) {
-        return buildErrorResponse(HttpStatus.NOT_FOUND, "No encontrado", ex.getMessage(), request, null);
+        return buildErrorResponse(
+                HttpStatus.NOT_FOUND,
+                "No encontrado",
+                ex.getMessage(),
+                request,
+                null
+        );
     }
 
     // ATREPADOR DE EXCEPCIONES DE LOGICA DE NEGOCIO
-    @ExceptionHandler(NegocioException.class)
+    @ExceptionHandler({
+            NegocioException.class
+    })
     public ResponseEntity<ErrorResponseDto> handleNegocioException(NegocioException ex, WebRequest request) {
         return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 "Error de negocio",
+                ex.getMessage(),
+                request,
+                null
+        );
+    }
+
+    // ATREPADOR DE BAD REQUEST
+    @ExceptionHandler({
+            PatenteDuplicadaException.class,
+            TransaccionNoModificableException.class,
+            VehiculoNoDisponibleException.class
+    })
+    public ResponseEntity<ErrorResponseDto> handleBadRequestException(NegocioException ex, WebRequest request) {
+        return buildErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Error de " + request.getContextPath(),
                 ex.getMessage(),
                 request,
                 null

@@ -7,8 +7,8 @@ import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionResponseDTO;
 import utn.programacion3.agencia_de_autos.exception.ResourceNotFoundException;
-import utn.programacion3.agencia_de_autos.exception.TransaccionYaCancelada;
-import utn.programacion3.agencia_de_autos.exception.VehiculoNoDisponible;
+import utn.programacion3.agencia_de_autos.exception.TransaccionNoModificableException;
+import utn.programacion3.agencia_de_autos.exception.VehiculoNoDisponibleException;
 import utn.programacion3.agencia_de_autos.mapper.TransaccionMapper;
 import utn.programacion3.agencia_de_autos.model.Transaccion;
 import utn.programacion3.agencia_de_autos.model.Usuario;
@@ -50,7 +50,7 @@ public class TransaccionService {
         Usuario vendedor = usuarioService.buscarEntityPorId(dto.getVendedor_id());
         Vehiculo vehiculo = vehiculoService.obtenerVehiculoEntityPorId(dto.getVehiculo_id());
 
-        if (vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE) throw new VehiculoNoDisponible("El vehiculo requerido no está disponoble");
+        if (vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE) throw new VehiculoNoDisponibleException("El vehiculo requerido no está disponoble");
 
         Transaccion transaccion = transaccionMapper.toEntity(dto);
         transaccion.setCliente(cliente);
@@ -133,7 +133,7 @@ public class TransaccionService {
         Transaccion transaccion = buscarEntityPorId(id);
         // Falta validar que solo lo pueda realizar un vendedor o Admin
         if (transaccion.getEstadoTransaccion() == EstadoTransaccion.CANCELADO){
-            throw new TransaccionYaCancelada(transaccion.getId().toString());
+            throw new TransaccionNoModificableException(transaccion.getId().toString());
         }
 
         asignacionCambioDeEstado(transaccion, EstadoTransaccion.CANCELADO);
@@ -150,7 +150,7 @@ public class TransaccionService {
         // Falta validar que solo lo pueda realizar un vendedor o Admin
 
         if (transaccion.getEstadoTransaccion() == EstadoTransaccion.CANCELADO){
-            throw new TransaccionYaCancelada(transaccion.getId().toString());
+            throw new TransaccionNoModificableException(transaccion.getId().toString());
         }
 
         asignacionCambioDeEstado(transaccion, estado);
