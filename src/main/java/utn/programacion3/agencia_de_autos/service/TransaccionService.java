@@ -68,14 +68,13 @@ public class TransaccionService {
         Usuario vendedor = usuarioService.buscarPorId(dto.getVendedor_id());
         Vehiculo vehiculo = vehiculoService.obtenerVehiculoPorId(dto.getVehiculo_id());
 
-        transaccion.setEstadoTransaccion(dto.getEstadoTransaccion());
-        transaccion.setObservaciones(dto.getObservaciones());
-        transaccion.setPrecio_final(dto.getPrecio_final());
-        transaccion.setMetodoPago(dto.getMetodoPago());
-        transaccion.setEstadoTransaccion(dto.getEstadoTransaccion());
-        transaccion.setCliente(cliente);
-        transaccion.setVehiculo(vehiculo);
-        transaccion.setVendedor(vendedor);
+        transaccionMapper.updateEntityFromDto(
+                dto,
+                cliente,
+                vendedor,
+                vehiculo,
+                transaccion
+        );
 
         return transaccionMapper.toResponseDTO(transaccionRepository.save(transaccion));
     }
