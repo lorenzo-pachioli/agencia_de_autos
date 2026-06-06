@@ -13,6 +13,7 @@ import utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion;
 import utn.programacion3.agencia_de_autos.service.TransaccionService;
 import utn.programacion3.agencia_de_autos.validation.Groups;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -46,6 +47,13 @@ public class TransaccionController {
     @PatchMapping("/{id}/cancelar")
     public ResponseEntity<TransaccionResponseDTO> cancelarTransaccionPorid(@PathVariable Long id) {
         return ResponseEntity.ok(transaccionService.cancelarTransaccion(id));
+    }
+
+    @PatchMapping("/{id}/vender")
+    public ResponseEntity<TransaccionResponseDTO> venderTransaccionPorid(
+            @PathVariable Long id,
+            @RequestParam BigDecimal precioFinal) {
+        return ResponseEntity.ok(transaccionService.venderTransaccion(id, precioFinal));
     }
 
 

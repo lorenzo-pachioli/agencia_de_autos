@@ -140,4 +140,22 @@ public class TransaccionService {
         );
     }
 
+    @Transactional
+    public TransaccionResponseDTO venderTransaccion(Long id, BigDecimal precioFinal) {
+
+        Transaccion transaccion = buscarEntityPorId(id);
+        // Falta validar que solo lo pueda realizar un vendedor o Admin
+
+        if (transaccion.getEstadoTransaccion() == EstadoTransaccion.CANCELADO){
+            throw new TransaccionYaCancelada(transaccion.getId().toString());
+        }
+
+        asignacionCambioDeEstado(transaccion, EstadoTransaccion.VENDIDO);
+        transaccion.setPrecio_final(precioFinal);
+
+        return  transaccionMapper.toResponseDTO(
+                transaccionRepository.save(transaccion)
+        );
+    }
+
 }
