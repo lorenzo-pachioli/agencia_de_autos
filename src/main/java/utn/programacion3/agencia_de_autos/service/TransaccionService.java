@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionResponseDTO;
+import utn.programacion3.agencia_de_autos.exception.ResourceNotFoundException;
 import utn.programacion3.agencia_de_autos.exception.TransaccionYaCancelada;
 import utn.programacion3.agencia_de_autos.exception.VehiculoNoDisponible;
 import utn.programacion3.agencia_de_autos.mapper.TransaccionMapper;
@@ -45,9 +46,9 @@ public class TransaccionService {
     @Transactional
     public TransaccionResponseDTO crear(TransaccionRequestDTO dto){
 
-        Usuario cliente = usuarioService.buscarPorId(dto.getCliente_id());
-        Usuario vendedor = usuarioService.buscarPorId(dto.getVendedor_id());
-        Vehiculo vehiculo = vehiculoService.obtenerVehiculoPorId(dto.getVehiculo_id());
+        Usuario cliente = usuarioService.buscarEntityPorId(dto.getCliente_id());
+        Usuario vendedor = usuarioService.buscarEntityPorId(dto.getVendedor_id());
+        Vehiculo vehiculo = vehiculoService.obtenerVehiculoEntityPorId(dto.getVehiculo_id());
 
         if (vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE) throw new VehiculoNoDisponible("El vehiculo requerido no está disponoble");
 
@@ -56,7 +57,7 @@ public class TransaccionService {
         transaccion.setVehiculo(vehiculo);
         transaccion.setVendedor(vendedor);
 
-        vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.RESERVADO);
+        vehiculoService.cambiarEstadoEntity(dto.getVehiculo_id(), EstadoVehiculo.RESERVADO);
 
         return transaccionMapper.toResponseDTO(transaccionRepository.save(transaccion));
     }
@@ -65,9 +66,9 @@ public class TransaccionService {
     public TransaccionResponseDTO actualizar(Long id, TransaccionRequestDTO dto){
 
         Transaccion transaccion = buscarEntityPorId(id);
-        Usuario cliente = usuarioService.buscarPorId(dto.getCliente_id());
-        Usuario vendedor = usuarioService.buscarPorId(dto.getVendedor_id());
-        Vehiculo vehiculo = vehiculoService.obtenerVehiculoPorId(dto.getVehiculo_id());
+        Usuario cliente = usuarioService.buscarEntityPorId(dto.getCliente_id());
+        Usuario vendedor = usuarioService.buscarEntityPorId(dto.getVendedor_id());
+        Vehiculo vehiculo = vehiculoService.obtenerVehiculoEntityPorId(dto.getVehiculo_id());
 
         transaccionMapper.updateEntityFromDto(
                 dto,
@@ -107,18 +108,20 @@ public class TransaccionService {
 
     private void asignacionCambioDeEstado(Transaccion transaccion, EstadoTransaccion nuevoEstado){
 
+        Long vehiculo_id = transaccion.getVehiculo().getId();
+
         if (nuevoEstado == EstadoTransaccion.VENDIDO){
-            vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.VENDIDO);
+            vehiculoService.cambiarEstadoEntity(vehiculo_id, EstadoVehiculo.VENDIDO);
 
             // Calcula automaticamente la comision del vendedor cuando se concreta la venta
             transaccion.setComision_calculada(
                     transaccion.getPrecio_final().multiply(this.comision_vendedores));
 
         } else if (nuevoEstado == EstadoTransaccion.CANCELADO) {
-            vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.DISPONIBLE);
+            vehiculoService.cambiarEstadoEntity(vehiculo_id, EstadoVehiculo.DISPONIBLE);
 
         }else {
-            vehiculoService.actualizarEstado(dto.getVehiculo_id(), EstadoVehiculo.RESERVADO);
+            vehiculoService.cambiarEstadoEntity(vehiculo_id, EstadoVehiculo.RESERVADO);
         }
 
         transaccion.setEstadoTransaccion(nuevoEstado);
