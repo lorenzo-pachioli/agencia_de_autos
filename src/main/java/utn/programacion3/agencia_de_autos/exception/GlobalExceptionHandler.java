@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import utn.programacion3.agencia_de_autos.dto.response.ErrorResponseDto;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import java.util.Arrays;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -26,7 +29,7 @@ public class GlobalExceptionHandler {
             ModeloNoEncontradoException.class,
             VehiculoNoEncontradoException.class
     })
-    public ResponseEntity<ErrorResponseDto> handleNotFound(ResourceNotFoundException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponseDto> handleNotFound(RuntimeException ex, WebRequest request) {
         return buildErrorResponse(
                 HttpStatus.NOT_FOUND,
                 "No encontrado",
@@ -56,7 +59,7 @@ public class GlobalExceptionHandler {
             TransaccionNoModificableException.class,
             VehiculoNoDisponibleException.class
     })
-    public ResponseEntity<ErrorResponseDto> handleBadRequestException(NegocioException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponseDto> handleBadRequestException(RuntimeException ex, WebRequest request) {
         return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 "Error de " + request.getContextPath(),
@@ -94,11 +97,27 @@ public class GlobalExceptionHandler {
     // MANEJADOR GENERAL (Cualquier error inesperado en el servidor)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleGlobalException(Exception ex, WebRequest request) {
-
+        System.out.println(ex);
         return buildErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR, // Código 500
                 "Error interno del servidor",
                 "Ocurrió un error inesperado en el sistema. Por favor, intente más tarde.",
+                request,
+                null
+        );
+    }
+
+    // ATRAPA LOS ERRORES GENERADOS POR EL DESERIALIZADOR (POR EJEMPLO UN enum MAL ESCRITO EN EL BODY)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponseDto> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, org.springframework.web.context.request.WebRequest request) {
+
+        String mensajeError = "Error en el formato de la petición JSON.";
+
+
+        return buildErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "BAD REQUEST: " + mensajeError,
+                ex.getLocalizedMessage(),
                 request,
                 null
         );
