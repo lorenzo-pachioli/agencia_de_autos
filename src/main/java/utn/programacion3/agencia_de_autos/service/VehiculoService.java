@@ -61,6 +61,13 @@ public class VehiculoService {
         return vehiculoMapper.toResponse(vehiculo);
     }
 
+    // Obtener vehiculo por id
+    public Vehiculo obtenerVehiculoEntityPorId(Long id){
+
+        return vehiculoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+    }
+
 
     // Buscar por patente
     public VehiculoResponseDTO obtenerVehiculoPorPatente(String patente){
@@ -169,6 +176,17 @@ public class VehiculoService {
         Vehiculo vehiculoGuardado = vehiculoRepository.save(vehiculo);
 
         return vehiculoMapper.toResponse(vehiculoGuardado);
+    }
+
+    //Metodo interno para cambiar estado de vehiculo
+    public Vehiculo cambiarEstadoEntity(Long id, EstadoVehiculo estado){
+
+        Vehiculo vehiculo = vehiculoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+
+        vehiculo.setEstado(estado);
+
+        return vehiculoRepository.save(vehiculo);
     }
 
     //Busqueda con filtros combinados
