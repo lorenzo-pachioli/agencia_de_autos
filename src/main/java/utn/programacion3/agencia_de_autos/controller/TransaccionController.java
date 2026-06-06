@@ -23,6 +23,11 @@ public class TransaccionController {
     private final TransaccionService transaccionService;
 
     @GetMapping
+    public ResponseEntity<TransaccionResponseDTO> transaccionPorid(@PathVariable Long id) {
+        return ResponseEntity.ok(transaccionService.buscarPorId(id));
+    }
+
+    @GetMapping
     public ResponseEntity<List<TransaccionResponseDTO>> listar(
             @Valid @ModelAttribute TransaccionFilterDTO filtros) {
         return ResponseEntity.ok(transaccionService.listarConFiltros(filtros));
