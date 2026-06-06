@@ -61,8 +61,6 @@ public class Transaccion {
 
     @PreUpdate      // Asigna la fecha del momento en que se realiza un save en una entidad que ya tiene id (en el POST por ej)
     public void onUpdate() {
-        if (updated_at == null){
-            this.updated_at = LocalDate.now();
-        }
+        this.updated_at = LocalDate.now();
     }
 }
