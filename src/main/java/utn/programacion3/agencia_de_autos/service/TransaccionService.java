@@ -72,11 +72,11 @@ public class TransaccionService {
 
         transaccionMapper.updateEntityFromDto(
                 dto,
-                cliente,
-                vendedor,
-                vehiculo,
                 transaccion
         );
+        transaccion.setCliente(cliente);
+        transaccion.setVendedor(vendedor);
+        transaccion.setVehiculo(vehiculo);
 
         return transaccionMapper.toResponseDTO(transaccionRepository.save(transaccion));
     }
