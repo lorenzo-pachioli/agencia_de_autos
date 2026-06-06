@@ -1,5 +1,6 @@
 package utn.programacion3.agencia_de_autos.mapper;
 
+import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
@@ -8,6 +9,7 @@ import utn.programacion3.agencia_de_autos.model.Transaccion;
 import utn.programacion3.agencia_de_autos.model.Usuario;
 import utn.programacion3.agencia_de_autos.model.Vehiculo;
 
+@Mapper(componentModel = "spring")
 public interface TransaccionMapper {
 
     @Mapping(target = "id", ignore = true)

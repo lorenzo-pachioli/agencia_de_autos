@@ -33,7 +33,7 @@ public class FavoritoService {
         Vehiculo vehiculo = vehiculoRepository.findById(vehiculoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehículo no encontrado"));
 
-        if (vehiculo.getEstadoVehiculo() == EstadoVehiculo.VENDIDO) {
+        if (vehiculo.getEstado() == EstadoVehiculo.VENDIDO) {
             throw new NegocioException("No se puede agregar a favoritos un vehículo que ya fue VENDIDO.");
         }
 
