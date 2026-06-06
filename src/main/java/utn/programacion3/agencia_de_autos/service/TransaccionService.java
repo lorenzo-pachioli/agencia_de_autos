@@ -141,7 +141,7 @@ public class TransaccionService {
     }
 
     @Transactional
-    public TransaccionResponseDTO venderTransaccion(Long id, BigDecimal precioFinal) {
+    public TransaccionResponseDTO venderOSeniarTransaccion(Long id, BigDecimal precioFinal, EstadoTransaccion estado) {
 
         Transaccion transaccion = buscarEntityPorId(id);
         // Falta validar que solo lo pueda realizar un vendedor o Admin
@@ -150,7 +150,7 @@ public class TransaccionService {
             throw new TransaccionYaCancelada(transaccion.getId().toString());
         }
 
-        asignacionCambioDeEstado(transaccion, EstadoTransaccion.VENDIDO);
+        asignacionCambioDeEstado(transaccion, estado);
         transaccion.setPrecio_final(precioFinal);
 
         return  transaccionMapper.toResponseDTO(

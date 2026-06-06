@@ -53,7 +53,14 @@ public class TransaccionController {
     public ResponseEntity<TransaccionResponseDTO> venderTransaccionPorid(
             @PathVariable Long id,
             @RequestParam BigDecimal precioFinal) {
-        return ResponseEntity.ok(transaccionService.venderTransaccion(id, precioFinal));
+        return ResponseEntity.ok(transaccionService.venderOSeniarTransaccion(id, precioFinal, EstadoTransaccion.VENDIDO));
+    }
+
+    @PatchMapping("/{id}/seniar")
+    public ResponseEntity<TransaccionResponseDTO> seniarTransaccionPorid(
+            @PathVariable Long id,
+            @RequestParam BigDecimal precioSenia) {
+        return ResponseEntity.ok(transaccionService.venderOSeniarTransaccion(id, precioSenia, EstadoTransaccion.SENIADO));
     }
 
 
