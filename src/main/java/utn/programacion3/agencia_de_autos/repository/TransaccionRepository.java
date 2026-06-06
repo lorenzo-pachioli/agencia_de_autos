@@ -1,4 +1,13 @@
 package utn.programacion3.agencia_de_autos.repository;
 
-public interface TransaccionRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
+import utn.programacion3.agencia_de_autos.model.Transaccion;
+
+@Repository
+public interface TransaccionRepository extends
+        JpaRepository<Transaccion,Long>,
+        JpaSpecificationExecutor<Transaccion> {
+
 }
