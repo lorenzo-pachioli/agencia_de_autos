@@ -9,10 +9,8 @@ import utn.programacion3.agencia_de_autos.dto.request.CambiarEstadoVehiculoDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
-import utn.programacion3.agencia_de_autos.model.enums.TipoCombustible;
-import utn.programacion3.agencia_de_autos.service.VehiculoService;
+import utn.programacion3.agencia_de_autos.service.VehiculoServiceImpl;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -20,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VehiculoController {
 
-    private final VehiculoService vehiculoService;
+    private final VehiculoServiceImpl vehiculoService;
 
     // Crear vehículo
     @PostMapping
