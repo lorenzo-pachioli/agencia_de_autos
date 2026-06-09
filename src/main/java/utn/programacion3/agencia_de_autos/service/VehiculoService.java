@@ -3,6 +3,7 @@ package utn.programacion3.agencia_de_autos.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.CambiarEstadoVehiculoDTO;
+import utn.programacion3.agencia_de_autos.dto.request.VehiculoFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
 import utn.programacion3.agencia_de_autos.exception.ModeloNoEncontradoException;
@@ -16,6 +17,7 @@ import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
 import utn.programacion3.agencia_de_autos.model.enums.TipoCombustible;
 import utn.programacion3.agencia_de_autos.repository.ModeloRepository;
 import utn.programacion3.agencia_de_autos.repository.VehiculoRepository;
+import utn.programacion3.agencia_de_autos.repository.VehiculoSpecification;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -47,7 +49,14 @@ public class VehiculoService {
         return vehiculoMapper.toResponse(vehiculoGuardado);
     }
 
-    // Listar vehiculos
+    // Buscar vehiculo por Id
+    public Vehiculo obtenerVehiculoEntityPorId(Long id) {
+
+        return vehiculoRepository.findById(id)
+                .orElseThrow(VehiculoNoEncontradoException::new);
+    }
+
+    // Listar vehículos
     public List<VehiculoResponseDTO> obtenerVehiculos(){
 
         return vehiculoRepository.findAll()
@@ -56,83 +65,6 @@ public class VehiculoService {
                 .toList();
     }
 
-    // Obtener vehiculo por id
-    public VehiculoResponseDTO obtenerVehiculoPorId(Long id){
-
-        Vehiculo vehiculo = vehiculoRepository.findById(id)
-                .orElseThrow(VehiculoNoEncontradoException::new);
-
-        return vehiculoMapper.toResponse(vehiculo);
-    }
-
-    // Obtener vehiculo por id
-    public Vehiculo obtenerVehiculoEntityPorId(Long id){
-
-        return vehiculoRepository.findById(id)
-                .orElseThrow(VehiculoNoEncontradoException::new);
-    }
-
-
-    // Buscar por patente
-    public VehiculoResponseDTO obtenerVehiculoPorPatente(String patente){
-
-        Vehiculo vehiculo = vehiculoRepository.findByPatente(patente)
-                .orElseThrow(VehiculoNoEncontradoException::new);
-
-        return vehiculoMapper.toResponse(vehiculo);
-    }
-
-    //Buscar por marca
-    public List<VehiculoResponseDTO> obtenerPorMarca(Long marcaId){
-
-        return vehiculoRepository.buscarPorMarca(marcaId)
-                .stream()
-                .map(vehiculoMapper::toResponse)
-                .toList();
-    }
-
-    // Buscar por modelo
-    public List<VehiculoResponseDTO> obtenerPorModelo(Long modeloId){
-
-        return vehiculoRepository.buscarPorModelo(modeloId)
-                .stream()
-                .map(vehiculoMapper::toResponse)
-                .toList();
-    }
-
-    //Buscar por tipo de combustible
-    public List<VehiculoResponseDTO> obtenerPorCombustible(
-            TipoCombustible combustible){
-
-        return vehiculoRepository.buscarPorCombustible(combustible)
-                .stream()
-                .map(vehiculoMapper::toResponse)
-                .toList();
-    }
-
-    // Buscar por rango de precio
-    public List<VehiculoResponseDTO> obtenerPorRangoPrecio(
-            BigDecimal precioMin,
-            BigDecimal precioMax){
-
-        return vehiculoRepository.buscarPorRangoPrecio(
-                        precioMin,
-                        precioMax
-                )
-                .stream()
-                .map(vehiculoMapper::toResponse)
-                .toList();
-    }
-
-    //Buscar por estado del vehículo
-    public List<VehiculoResponseDTO> obtenerPorEstado(
-            EstadoVehiculo estado){
-
-        return vehiculoRepository.buscarPorEstado(estado)
-                .stream()
-                .map(vehiculoMapper::toResponse)
-                .toList();
-    }
 
     // Actualizar vehiculo
     public VehiculoResponseDTO actualizarVehiculo(Long id, VehiculoRequestDTO request){
@@ -195,18 +127,11 @@ public class VehiculoService {
 
     //Busqueda con filtros combinados
     public List<VehiculoResponseDTO> buscarConFiltros(
-            Long marcaId,
-            Long modeloId,
-            TipoCombustible combustible,
-            BigDecimal minPrecio,
-            BigDecimal maxPrecio){
+            VehiculoFilterDTO filtros){
 
-        return vehiculoRepository.buscarConFiltros(
-                        marcaId,
-                        modeloId,
-                        combustible,
-                        minPrecio,
-                        maxPrecio)
+        return vehiculoRepository.findAll(
+                        VehiculoSpecification.conFiltros(filtros)
+                )
                 .stream()
                 .map(vehiculoMapper::toResponse)
                 .toList();
