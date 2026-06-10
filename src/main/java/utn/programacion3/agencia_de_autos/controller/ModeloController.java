@@ -1,5 +1,9 @@
 package utn.programacion3.agencia_de_autos.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,33 +17,51 @@ import java.util.List;
 @RestController
 @RequestMapping("/modelos")
 @RequiredArgsConstructor
+@Tag(name = "Modelos", description = "Operaciones relacionadas con la gestión de modelos")
 public class ModeloController {
 
     private final ModeloService modeloService;
 
-    // Crear un nuevo modelo
+    @Operation(summary = "Crear un modelo")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Modelo creado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos")
+    })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ModeloResponseDTO crearModelo(@Valid @RequestBody ModeloRequestDTO request) {
+    public ModeloResponseDTO crearModelo(
+            @Valid @RequestBody ModeloRequestDTO request) {
 
         return modeloService.crearModelo(request);
     }
 
-    // Obtener todos los modelos
+    @Operation(summary = "Obtener todos los modelos")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
+    })
     @GetMapping
     public List<ModeloResponseDTO> listarModelos() {
 
         return modeloService.listarModelos();
     }
 
-    // Obtener modelo por ID
+    @Operation(summary = "Obtener un modelo por ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Modelo encontrado"),
+            @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
+    })
     @GetMapping("/{id}")
-    public ModeloResponseDTO obtenerModeloPorId(@PathVariable Long id) {
+    public ModeloResponseDTO obtenerModeloPorId(
+            @PathVariable Long id) {
 
         return modeloService.obtenerModeloPorId(id);
     }
 
-    // Actualizar modelo
+    @Operation(summary = "Actualizar un modelo")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Modelo actualizado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
+    })
     @PutMapping("/{id}")
     public ModeloResponseDTO actualizarModelo(
             @PathVariable Long id,
@@ -48,10 +70,15 @@ public class ModeloController {
         return modeloService.actualizarModelo(id, request);
     }
 
-    // Eliminar modelo
+    @Operation(summary = "Eliminar un modelo")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Modelo eliminado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
+    })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void eliminarModelo(@PathVariable Long id) {
+    public void eliminarModelo(
+            @PathVariable Long id) {
 
         modeloService.eliminarModelo(id);
     }
