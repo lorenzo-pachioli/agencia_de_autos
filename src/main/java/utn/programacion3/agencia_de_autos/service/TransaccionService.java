@@ -29,6 +29,7 @@ public class TransaccionService {
     private final TransaccionMapper transaccionMapper;
     private final UsuarioService usuarioService;
     private final VehiculoService vehiculoService;
+    private final AuditoriaTransaccionService auditoriaTransaccionService;
 
 
     private final BigDecimal comision_vendedores = new BigDecimal("0.05");   // 5%
@@ -58,6 +59,7 @@ public class TransaccionService {
         transaccion.setVendedor(vendedor);
 
         vehiculoService.cambiarEstadoEntity(dto.getVehiculo_id(), EstadoVehiculo.RESERVADO);
+        auditoriaTransaccionService.registrarCreacion(transaccion);
 
         return transaccionMapper.toResponseDTO(transaccionRepository.save(transaccion));
     }
@@ -66,6 +68,8 @@ public class TransaccionService {
     public TransaccionResponseDTO actualizar(Long id, TransaccionRequestDTO dto){
 
         Transaccion transaccion = buscarEntityPorId(id);
+        Transaccion snapshotAnterior = transaccion;
+
         Usuario cliente = usuarioService.buscarEntityPorId(dto.getCliente_id());
         Usuario vendedor = usuarioService.buscarEntityPorId(dto.getVendedor_id());
         Vehiculo vehiculo = vehiculoService.obtenerVehiculoEntityPorId(dto.getVehiculo_id());
@@ -78,6 +82,8 @@ public class TransaccionService {
         transaccion.setVendedor(vendedor);
         transaccion.setVehiculo(vehiculo);
 
+        auditoriaTransaccionService.registrarCambio( snapshotAnterior, transaccion );
+
         return transaccionMapper.toResponseDTO(transaccionRepository.save(transaccion));
     }
 
@@ -85,8 +91,12 @@ public class TransaccionService {
     public TransaccionResponseDTO cambiarEstado(Long id, EstadoTransaccion estadoTransaccion){
 
         Transaccion transaccion = buscarEntityPorId(id);
+        Transaccion snapshotAnterior = transaccion;
 
         asignacionCambioDeEstado(transaccion, estadoTransaccion);
+
+
+        auditoriaTransaccionService.registrarCambio( snapshotAnterior, transaccion );
 
         return transaccionMapper.toResponseDTO(
                 transaccionRepository.save(transaccion)
