@@ -3,14 +3,17 @@ package utn.programacion3.agencia_de_autos.dto.request;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Pageable;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
+@Builder
 public class TransaccionFilterDTO {
 
     @Positive(message = "El vehiculo_id debe ser un numero positivo")
@@ -29,4 +32,6 @@ public class TransaccionFilterDTO {
     private LocalDate fechaHasta;
 
     private EstadoTransaccion estadoTransaccion;
+
+    private Pageable pageable;
 }

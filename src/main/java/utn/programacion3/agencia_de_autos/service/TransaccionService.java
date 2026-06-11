@@ -1,10 +1,12 @@
 package utn.programacion3.agencia_de_autos.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.response.TransaccionComisionResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionResponseDTO;
 import utn.programacion3.agencia_de_autos.exception.ResourceNotFoundException;
 import utn.programacion3.agencia_de_autos.exception.TransaccionNoModificableException;
@@ -120,6 +122,10 @@ public class TransaccionService {
 
         Long vehiculo_id = transaccion.getVehiculo().getId();
 
+        if (transaccion.getEstadoTransaccion() == EstadoTransaccion.VENDIDO){
+            throw new TransaccionNoModificableException("No se puede cambiar el estado de una Transaccion en VENDIDO");
+        }
+
         if (nuevoEstado == EstadoTransaccion.VENDIDO){
             vehiculoService.cambiarEstadoEntity(vehiculo_id, EstadoVehiculo.VENDIDO);
 
@@ -171,4 +177,15 @@ public class TransaccionService {
         );
     }
 
+    public TransaccionComisionResponseDTO comisionPorVendedor(TransaccionFilterDTO filtros){
+
+        BigDecimal totalComisiones = transaccionRepository.findAll(TransaccionSpecification.conFiltros(filtros)).stream()
+                .map(Transaccion::getComision_calculada)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return TransaccionComisionResponseDTO.builder()
+                .vendedor_id(filtros.getVendedor_id())
+                .comision_total(totalComisiones)
+                .build();
+    }
 }
