@@ -1,16 +1,31 @@
 package utn.programacion3.agencia_de_autos.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import utn.programacion3.agencia_de_autos.dto.request.AuditoriaTransaccionFilterDTO;
+import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
+import utn.programacion3.agencia_de_autos.dto.response.AuditoriaTransaccionResponseDTO;
+import utn.programacion3.agencia_de_autos.dto.response.TransaccionResponseDTO;
+import utn.programacion3.agencia_de_autos.mapper.AuditoriaTransaccionMapper;
 import utn.programacion3.agencia_de_autos.model.AuditoriaTransaccion;
 import utn.programacion3.agencia_de_autos.model.Transaccion;
 import utn.programacion3.agencia_de_autos.repository.AuditoriaTransaccionRepository;
+import utn.programacion3.agencia_de_autos.repository.AuditoriaTransaccionSpecification;
 
 @Service
 @RequiredArgsConstructor
 public class AuditoriaTransaccionService {
 
-    private final AuditoriaTransaccionRepository auditoriaTransaccionRepository;
+    private final AuditoriaTransaccionRepository repository;
+    private final AuditoriaTransaccionMapper mapper;
+
+    public Page<AuditoriaTransaccionResponseDTO> listar(AuditoriaTransaccionFilterDTO filtros) {
+
+        return repository.findAll(
+                        AuditoriaTransaccionSpecification.conFiltros(filtros), filtros.getPageable())
+                .map(mapper::toResponseDTO);
+    }
 
     public void registrarCambio(Transaccion anterior, Transaccion nueva) {
 
@@ -25,7 +40,7 @@ public class AuditoriaTransaccionService {
                 .estadoNuevo(nueva.getEstadoTransaccion())
                 .build();
 
-        auditoriaTransaccionRepository.save(auditoria);
+        repository.save(auditoria);
     }
 
     public void registrarCreacion(Transaccion nueva) {
@@ -41,7 +56,7 @@ public class AuditoriaTransaccionService {
                 .estadoNuevo(nueva.getEstadoTransaccion())
                 .build();
 
-        auditoriaTransaccionRepository.save(auditoria);
+        repository.save(auditoria);
     }
 
 }
