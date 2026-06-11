@@ -3,6 +3,7 @@ package utn.programacion3.agencia_de_autos.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import utn.programacion3.agencia_de_autos.dto.request.AuditoriaTransaccionCambiosFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.AuditoriaTransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.response.AuditoriaTransaccionResponseDTO;
@@ -24,6 +25,20 @@ public class AuditoriaTransaccionService {
 
         return repository.findAll(
                         AuditoriaTransaccionSpecification.conFiltros(filtros), filtros.getPageable())
+                .map(mapper::toResponseDTO);
+    }
+
+    public Page<AuditoriaTransaccionResponseDTO> listarCambiosEstado(AuditoriaTransaccionCambiosFilterDTO filtros) {
+
+        return repository.findAll(
+                        AuditoriaTransaccionSpecification.cambioEstado(filtros), filtros.getPageable())
+                .map(mapper::toResponseDTO);
+    }
+
+    public Page<AuditoriaTransaccionResponseDTO> listarCambiosPrecio(AuditoriaTransaccionCambiosFilterDTO filtros) {
+
+        return repository.findAll(
+                        AuditoriaTransaccionSpecification.cambioPrecio(filtros), filtros.getPageable())
                 .map(mapper::toResponseDTO);
     }
 

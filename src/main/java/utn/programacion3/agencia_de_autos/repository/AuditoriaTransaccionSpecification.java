@@ -2,13 +2,10 @@ package utn.programacion3.agencia_de_autos.repository;
 
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+import utn.programacion3.agencia_de_autos.dto.request.AuditoriaTransaccionCambiosFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.AuditoriaTransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.model.AuditoriaTransaccion;
-import utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion;
-import utn.programacion3.agencia_de_autos.model.enums.MetodoPago;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +45,46 @@ public class AuditoriaTransaccionSpecification {
             }
             if (filtros.getEstadoNuevo() != null) {
                 predicates.add(cb.equal(root.get("estadoNuevo"), filtros.getEstadoNuevo()));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    public static Specification<AuditoriaTransaccion> cambioEstado(AuditoriaTransaccionCambiosFilterDTO filtros) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(cb.notEqual(root.get("estadoAnterior"), root.get("estadoNuevo")));
+
+            if (filtros.getTransaccionId() != null) {
+                predicates.add(cb.equal(root.get("transaccionId"), filtros.getTransaccionId()));
+            }
+            if (filtros.getFechaDesde() != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("fecha"), filtros.getFechaDesde()));
+            }
+            if (filtros.getFechaHasta() != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("fecha"), filtros.getFechaHasta()));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    public static Specification<AuditoriaTransaccion> cambioPrecio(AuditoriaTransaccionCambiosFilterDTO filtros) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(cb.notEqual(root.get("precioFinalAnterior"), root.get("precioFinalNuevo")));
+
+            if (filtros.getTransaccionId() != null) {
+                predicates.add(cb.equal(root.get("transaccionId"), filtros.getTransaccionId()));
+            }
+            if (filtros.getFechaDesde() != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("fecha"), filtros.getFechaDesde()));
+            }
+            if (filtros.getFechaHasta() != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("fecha"), filtros.getFechaHasta()));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

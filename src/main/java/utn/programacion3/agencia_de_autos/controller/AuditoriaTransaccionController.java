@@ -5,9 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import utn.programacion3.agencia_de_autos.dto.request.AuditoriaTransaccionCambiosFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.AuditoriaTransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.response.AuditoriaTransaccionResponseDTO;
 import utn.programacion3.agencia_de_autos.service.AuditoriaTransaccionService;
+
+import java.time.LocalDate;
 
 
 @RestController
@@ -43,5 +46,19 @@ public class AuditoriaTransaccionController {
                 .build();
 
         return ResponseEntity.ok(auditoriaTransaccionService.listar(vendedorId));
+    }
+
+    @GetMapping("/cambio-estado")
+    public ResponseEntity<Page<AuditoriaTransaccionResponseDTO>> listarCambiosEstado(
+            @Valid @ModelAttribute AuditoriaTransaccionCambiosFilterDTO filtros) {
+
+        return ResponseEntity.ok(auditoriaTransaccionService.listarCambiosEstado(filtros));
+    }
+
+    @GetMapping("/cambio-precio")
+    public ResponseEntity<Page<AuditoriaTransaccionResponseDTO>> listarCambiosPrecio(
+            @Valid @ModelAttribute AuditoriaTransaccionCambiosFilterDTO filtros) {
+
+        return ResponseEntity.ok(auditoriaTransaccionService.listarCambiosPrecio(filtros));
     }
 }
