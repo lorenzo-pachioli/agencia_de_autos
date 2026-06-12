@@ -16,7 +16,7 @@ import java.math.BigDecimal;
         "id",
         "modeloNombre",
         "anio",
-        "precio",
+        "precioVenta",
         "kilometraje",
         "color",
         "tipoCombustible",

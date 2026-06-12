@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
         "patente",
         "modeloNombre",
         "anio",
-        "precio",
+        "precioVenta",
         "kilometraje",
         "color",
         "descripcion",
