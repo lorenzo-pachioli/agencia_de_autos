@@ -1,6 +1,7 @@
 package utn.programacion3.agencia_de_autos.model;
 import jakarta.persistence.*;
 import lombok.*;
+import utn.programacion3.agencia_de_autos.model.enums.TipoModelo;
 
 import java.util.List;
 
@@ -24,12 +25,17 @@ public class Modelo {
     @Column(nullable = false)
     private Integer anio;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String version;
+    private TipoModelo tipoModelo;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean activo = true;
 
     // Relación: muchos modelos pertenecen a una marca
     @ManyToOne
-    @JoinColumn(name = "id_marca")
+    @JoinColumn(name = "id_marca", nullable = false)
     private Marca marca;
 
     // Relación: un modelo puede tener muchos vehículos

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.CambiarEstadoVehiculoDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.response.VehiculoPublicResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
 import utn.programacion3.agencia_de_autos.exception.ModeloNoEncontradoException;
 import utn.programacion3.agencia_de_autos.exception.PatenteDuplicadaException;
@@ -56,6 +57,23 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
+    public List<VehiculoPublicResponseDTO> obtenerVehiculosPublicos() {
+
+        return vehiculoRepository.findAll()
+                .stream()
+                .map(vehiculoMapper::toPublicResponse)
+                .toList();
+    }
+
+    @Override
+    public List<VehiculoResponseDTO> obtenerVehiculosInternos() {
+
+        return vehiculoRepository.findAll()
+                .stream()
+                .map(vehiculoMapper::toResponse)
+                .toList();
+    }
+    @Override
     public List<VehiculoResponseDTO> obtenerVehiculos() {
 
         return vehiculoRepository.findAll()
@@ -75,11 +93,14 @@ public class VehiculoServiceImpl implements VehiculoService {
 
         vehiculo.setPatente(request.getPatente());
         vehiculo.setAnio(request.getAnio());
-        vehiculo.setPrecio(request.getPrecio());
+        vehiculo.setPrecioVenta(request.getPrecio());
         vehiculo.setKilometraje(request.getKilometraje());
         vehiculo.setColor(request.getColor());
         vehiculo.setEstado(request.getEstado());
         vehiculo.setModelo(modelo);
+        vehiculo.setDescripcion(request.getDescripcion());
+        vehiculo.setTipoCombustible(request.getTipoCombustible());
+        vehiculo.setTipoTransmision(request.getTipoTransmision());
 
         Vehiculo vehiculoActualizado = vehiculoRepository.save(vehiculo);
 
@@ -92,7 +113,7 @@ public class VehiculoServiceImpl implements VehiculoService {
         Vehiculo vehiculo = vehiculoRepository.findById(id)
                 .orElseThrow(VehiculoNoEncontradoException::new);
 
-        vehiculo.setPrecio(nuevoPrecio);
+        vehiculo.setPrecioVenta(nuevoPrecio);
 
         Vehiculo vehiculoActualizado = vehiculoRepository.save(vehiculo);
 
@@ -142,4 +163,6 @@ public class VehiculoServiceImpl implements VehiculoService {
 
         vehiculoRepository.delete(vehiculo);
     }
+
+
 }

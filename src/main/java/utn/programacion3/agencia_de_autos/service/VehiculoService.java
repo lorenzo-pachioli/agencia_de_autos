@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.CambiarEstadoVehiculoDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.response.VehiculoPublicResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
 import utn.programacion3.agencia_de_autos.model.Vehiculo;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
@@ -32,5 +33,9 @@ public interface VehiculoService {
     List<VehiculoResponseDTO> buscarConFiltros(VehiculoFilterDTO filtros);
 
     void eliminarVehiculo(Long id);
+
+    List<VehiculoPublicResponseDTO> obtenerVehiculosPublicos();
+
+    List<VehiculoResponseDTO> obtenerVehiculosInternos();
 
 }

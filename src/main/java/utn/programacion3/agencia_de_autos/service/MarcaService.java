@@ -25,6 +25,9 @@ public class MarcaService {
         }
 
         Marca marca = marcaMapper.toEntity(request);
+        if(request.getActivo() == null){
+            marca.setActivo(true);
+        }
 
         Marca marcaGuardada = marcaRepository.save(marca);
 
@@ -56,6 +59,9 @@ public class MarcaService {
                 .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
 
         marca.setNombre(request.getNombre());
+        if(request.getActivo() != null){
+            marca.setActivo(request.getActivo());
+        }
 
         Marca marcaActualizada = marcaRepository.save(marca);
 

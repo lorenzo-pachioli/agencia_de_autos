@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
 import utn.programacion3.agencia_de_autos.model.enums.TipoCombustible;
+import utn.programacion3.agencia_de_autos.model.enums.TipoTransmision;
 
 import java.math.BigDecimal;
 
@@ -21,11 +22,21 @@ public class VehiculoFilterDTO {
 
     private TipoCombustible combustible;
 
+    private TipoTransmision tipoTransmision;
+
     private EstadoVehiculo estado;
 
-    @PositiveOrZero(message = "El precio mínimo no puede ser negativo")
+    private String color;
+
+    @PositiveOrZero
     private BigDecimal minPrecio;
 
-    @PositiveOrZero(message = "El precio máximo no puede ser negativo")
+    @PositiveOrZero
     private BigDecimal maxPrecio;
+
+    @PositiveOrZero
+    private Integer minAnio;
+
+    @PositiveOrZero
+    private Integer maxAnio;
 }

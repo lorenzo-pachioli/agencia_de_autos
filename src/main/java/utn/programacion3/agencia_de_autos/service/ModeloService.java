@@ -30,7 +30,9 @@ public class ModeloService {
 
         modelo.setMarca(marca);
         modelo.setAnio(request.getAnio());
-        modelo.setVersion(request.getVersion());
+        modelo.setTipoModelo(request.getTipoModelo());
+        if (request.getActivo() != null)
+        { modelo.setActivo(request.getActivo()); }
 
         Modelo modeloGuardado = modeloRepository.save(modelo);
 

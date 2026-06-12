@@ -32,6 +32,8 @@ public class VehiculoRequestDTO {
     @NotBlank
     private String color;
 
+    private String descripcion;
+
     @NotNull
     private EstadoVehiculo estado;
 
@@ -40,5 +42,9 @@ public class VehiculoRequestDTO {
 
     @NotNull
     private TipoCombustible tipoCombustible;
+
+
+
+
 
 }

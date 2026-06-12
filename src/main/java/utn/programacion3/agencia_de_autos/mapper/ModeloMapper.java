@@ -10,9 +10,11 @@ import utn.programacion3.agencia_de_autos.model.Marca;
 @Mapper(componentModel = "spring")
 public interface ModeloMapper {
 
-        @Mapping(target = "marca", source = "marca.nombre")
-        ModeloResponseDTO toResponse(Modelo modelo);
+    @Mapping(target = "marca", source = "marca.nombre")
+    ModeloResponseDTO toResponse(Modelo modelo);
 
-        @Mapping(target = "marca", ignore = true)
-        Modelo toEntity(ModeloRequestDTO dto);
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "marca", ignore = true)
+    @Mapping(target = "vehiculos", ignore = true)
+    Modelo toEntity(ModeloRequestDTO dto);
+}
