@@ -22,6 +22,10 @@ public class Marca {
     @Column(nullable = false, unique = true)
     private String nombre;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean activo = true;
+
     // Relación: una marca puede tener muchos modelos
     @OneToMany(mappedBy = "marca")
     private List<Modelo> modelos;

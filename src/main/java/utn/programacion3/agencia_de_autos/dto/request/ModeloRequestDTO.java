@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import utn.programacion3.agencia_de_autos.model.enums.TipoModelo;
 
 
 @Getter
@@ -16,8 +17,10 @@ public class ModeloRequestDTO {
     @NotNull(message = "El año es obligatorio")
     private Integer anio;
 
-    @NotBlank(message = "La versión es obligatoria")
-    private String version;
+    @NotNull(message = "El tipo de modelo es obligatorio")
+    private TipoModelo tipoModelo;
+
+    private Boolean activo;
 
     @NotNull(message = "La marca es obligatoria")
     private Long marcaId;

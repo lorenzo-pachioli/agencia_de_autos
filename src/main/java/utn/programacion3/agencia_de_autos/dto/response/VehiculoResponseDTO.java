@@ -9,41 +9,51 @@ import utn.programacion3.agencia_de_autos.model.enums.TipoCombustible;
 import utn.programacion3.agencia_de_autos.model.enums.TipoTransmision;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
- @Getter
- @Setter
- @Builder
- @JsonPropertyOrder({
-         "id",
-         "patente",
-         "modeloNombre",
-         "anio",
-         "precio",
-         "kilometraje",
-         "color",
-         "estado"
- })
- public class VehiculoResponseDTO {
+@Getter
+@Setter
+@Builder
+@JsonPropertyOrder({
+        "id",
+        "patente",
+        "modeloNombre",
+        "anio",
+        "precioVenta",
+        "kilometraje",
+        "color",
+        "descripcion",
+        "estado",
+        "tipoCombustible",
+        "tipoTransmision",
+        "createdAt",
+        "updatedAt"
+})
+public class VehiculoResponseDTO {
 
+ private Long id;
 
-  private Long id;
+ private String patente;
 
-  private String patente;
+ private String modeloNombre;
 
-  private String modeloNombre;
+ private Integer anio;
 
-  private Integer anio;
+ private BigDecimal precioVenta;
 
-  private BigDecimal precio;
+ private Integer kilometraje;
 
-  private Integer kilometraje;
+ private String color;
 
-  private String color;
+ private String descripcion;
 
-  private EstadoVehiculo estado;
+ private EstadoVehiculo estado;
 
-  private TipoCombustible tipoCombustible;
+ private TipoCombustible tipoCombustible;
 
-  private TipoTransmision tipoTransmision;
+ private TipoTransmision tipoTransmision;
 
- }
+ private LocalDateTime createdAt;
+
+ private LocalDateTime updatedAt;
+}

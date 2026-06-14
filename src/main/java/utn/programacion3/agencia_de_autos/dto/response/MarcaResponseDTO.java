@@ -10,4 +10,5 @@ public class MarcaResponseDTO {
 
     private Long id;
     private String nombre;
+    private Boolean activo;
 }
