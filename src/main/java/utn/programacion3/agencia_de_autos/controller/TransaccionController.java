@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.response.TransaccionBalanceResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionComisionResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionResponseDTO;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion;
@@ -39,12 +40,12 @@ public class TransaccionController {
     }
 
     @PostMapping
-    public ResponseEntity<TransaccionResponseDTO> crearTransaccion(@Validated(Groups.Crear.class) @RequestBody TransaccionRequestDTO dto){
+    public ResponseEntity<TransaccionResponseDTO> crearTransaccion(@Validated(Groups.Crear.class) @RequestBody TransaccionRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(transaccionService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TransaccionResponseDTO> actualizarTransaccion(@PathVariable Long id, @Validated(Groups.Actualizar.class) @RequestBody TransaccionRequestDTO dto){
+    public ResponseEntity<TransaccionResponseDTO> actualizarTransaccion(@PathVariable Long id, @Validated(Groups.Actualizar.class) @RequestBody TransaccionRequestDTO dto) {
         return ResponseEntity.ok(transaccionService.actualizar(id, dto));
     }
 
@@ -68,7 +69,7 @@ public class TransaccionController {
     }
 
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<TransaccionResponseDTO> cambiarEstadoTransaccion(@PathVariable Long id, @Valid @RequestParam EstadoTransaccion estado){
+    public ResponseEntity<TransaccionResponseDTO> cambiarEstadoTransaccion(@PathVariable Long id, @Valid @RequestParam EstadoTransaccion estado) {
         return ResponseEntity.ok(transaccionService.cambiarEstado(id, estado));
     }
 
@@ -77,7 +78,7 @@ public class TransaccionController {
             @PathVariable Long id,
             @RequestParam LocalDate fechaDesde,
             @RequestParam LocalDate fechaHasta
-            ) {
+    ) {
         TransaccionFilterDTO filtros = TransaccionFilterDTO.builder()
                 .fechaDesde(fechaDesde)
                 .fechaHasta(fechaHasta)
@@ -85,6 +86,14 @@ public class TransaccionController {
                 .estadoTransaccion(EstadoTransaccion.VENDIDO)
                 .build();
         return ResponseEntity.ok(transaccionService.comisionPorVendedor(filtros));
+    }
+
+    @GetMapping("/rendimiento")
+    public ResponseEntity<TransaccionBalanceResponseDTO> ingresosPorfecha(
+            @RequestParam LocalDate fechaDesde,
+            @RequestParam LocalDate fechaHasta
+    ) {
+        return ResponseEntity.ok(transaccionService.obtenerBalance(fechaDesde, fechaHasta));
     }
 
 }

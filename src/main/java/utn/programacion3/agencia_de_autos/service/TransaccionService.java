@@ -6,12 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.response.TransaccionBalanceResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionComisionResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionResponseDTO;
 import utn.programacion3.agencia_de_autos.exception.ResourceNotFoundException;
 import utn.programacion3.agencia_de_autos.exception.TransaccionNoModificableException;
 import utn.programacion3.agencia_de_autos.exception.VehiculoNoDisponibleException;
 import utn.programacion3.agencia_de_autos.mapper.TransaccionMapper;
+import utn.programacion3.agencia_de_autos.model.BalanceProyeccion;
 import utn.programacion3.agencia_de_autos.model.Transaccion;
 import utn.programacion3.agencia_de_autos.model.Usuario;
 import utn.programacion3.agencia_de_autos.model.Vehiculo;
@@ -21,6 +23,7 @@ import utn.programacion3.agencia_de_autos.repository.TransaccionRepository;
 import utn.programacion3.agencia_de_autos.repository.TransaccionSpecification;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -36,7 +39,6 @@ public class TransaccionService {
 
     private final BigDecimal comision_vendedores = new BigDecimal("0.05");   // 5%
 
-    //me falta listar transacciones con filtros, actualizar transaccion,
 
     public List<TransaccionResponseDTO> listarConFiltros(TransaccionFilterDTO filtros) {
         return transaccionRepository.findAll(TransaccionSpecification.conFiltros(filtros))
@@ -47,13 +49,14 @@ public class TransaccionService {
 
 
     @Transactional
-    public TransaccionResponseDTO crear(TransaccionRequestDTO dto){
+    public TransaccionResponseDTO crear(TransaccionRequestDTO dto) {
 
         Usuario cliente = usuarioService.buscarEntityPorId(dto.getCliente_id());
         Usuario vendedor = usuarioService.buscarEntityPorId(dto.getVendedor_id());
         Vehiculo vehiculo = vehiculoService.obtenerVehiculoEntityPorId(dto.getVehiculo_id());
 
-        if (vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE) throw new VehiculoNoDisponibleException("El vehiculo requerido no está disponoble");
+        if (vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE)
+            throw new VehiculoNoDisponibleException("El vehiculo requerido no está disponoble");
 
         Transaccion transaccion = transaccionMapper.toEntity(dto);
         transaccion.setCliente(cliente);
@@ -67,7 +70,7 @@ public class TransaccionService {
     }
 
     @Transactional
-    public TransaccionResponseDTO actualizar(Long id, TransaccionRequestDTO dto){
+    public TransaccionResponseDTO actualizar(Long id, TransaccionRequestDTO dto) {
 
         Transaccion transaccion = buscarEntityPorId(id);
         Transaccion snapshotAnterior = transaccion;
@@ -84,13 +87,13 @@ public class TransaccionService {
         transaccion.setVendedor(vendedor);
         transaccion.setVehiculo(vehiculo);
 
-        auditoriaTransaccionService.registrarCambio( snapshotAnterior, transaccion );
+        auditoriaTransaccionService.registrarCambio(snapshotAnterior, transaccion);
 
         return transaccionMapper.toResponseDTO(transaccionRepository.save(transaccion));
     }
 
     @Transactional
-    public TransaccionResponseDTO cambiarEstado(Long id, EstadoTransaccion estadoTransaccion){
+    public TransaccionResponseDTO cambiarEstado(Long id, EstadoTransaccion estadoTransaccion) {
 
         Transaccion transaccion = buscarEntityPorId(id);
         Transaccion snapshotAnterior = transaccion;
@@ -98,7 +101,7 @@ public class TransaccionService {
         asignacionCambioDeEstado(transaccion, estadoTransaccion);
 
 
-        auditoriaTransaccionService.registrarCambio( snapshotAnterior, transaccion );
+        auditoriaTransaccionService.registrarCambio(snapshotAnterior, transaccion);
 
         return transaccionMapper.toResponseDTO(
                 transaccionRepository.save(transaccion)
@@ -118,15 +121,15 @@ public class TransaccionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Transaccion no encontrado con el ID: " + id));
     }
 
-    private void asignacionCambioDeEstado(Transaccion transaccion, EstadoTransaccion nuevoEstado){
+    private void asignacionCambioDeEstado(Transaccion transaccion, EstadoTransaccion nuevoEstado) {
 
         Long vehiculo_id = transaccion.getVehiculo().getId();
 
-        if (transaccion.getEstadoTransaccion() == EstadoTransaccion.VENDIDO){
+        if (transaccion.getEstadoTransaccion() == EstadoTransaccion.VENDIDO) {
             throw new TransaccionNoModificableException("No se puede cambiar el estado de una Transaccion en VENDIDO");
         }
 
-        if (nuevoEstado == EstadoTransaccion.VENDIDO){
+        if (nuevoEstado == EstadoTransaccion.VENDIDO) {
             vehiculoService.cambiarEstadoEntity(vehiculo_id, EstadoVehiculo.VENDIDO);
 
             // Calcula automaticamente la comision del vendedor cuando se concreta la venta
@@ -136,7 +139,7 @@ public class TransaccionService {
         } else if (nuevoEstado == EstadoTransaccion.CANCELADO) {
             vehiculoService.cambiarEstadoEntity(vehiculo_id, EstadoVehiculo.DISPONIBLE);
 
-        }else {
+        } else {
             vehiculoService.cambiarEstadoEntity(vehiculo_id, EstadoVehiculo.RESERVADO);
         }
 
@@ -148,13 +151,13 @@ public class TransaccionService {
 
         Transaccion transaccion = buscarEntityPorId(id);
         // Falta validar que solo lo pueda realizar un vendedor o Admin
-        if (transaccion.getEstadoTransaccion() == EstadoTransaccion.CANCELADO){
+        if (transaccion.getEstadoTransaccion() == EstadoTransaccion.CANCELADO) {
             throw new TransaccionNoModificableException(transaccion.getId().toString());
         }
 
         asignacionCambioDeEstado(transaccion, EstadoTransaccion.CANCELADO);
 
-        return  transaccionMapper.toResponseDTO(
+        return transaccionMapper.toResponseDTO(
                 transaccionRepository.save(transaccion)
         );
     }
@@ -165,19 +168,19 @@ public class TransaccionService {
         Transaccion transaccion = buscarEntityPorId(id);
         // Falta validar que solo lo pueda realizar un vendedor o Admin
 
-        if (transaccion.getEstadoTransaccion() == EstadoTransaccion.CANCELADO){
+        if (transaccion.getEstadoTransaccion() == EstadoTransaccion.CANCELADO) {
             throw new TransaccionNoModificableException(transaccion.getId().toString());
         }
 
         asignacionCambioDeEstado(transaccion, estado);
         transaccion.setPrecio_final(precioFinal);
 
-        return  transaccionMapper.toResponseDTO(
+        return transaccionMapper.toResponseDTO(
                 transaccionRepository.save(transaccion)
         );
     }
 
-    public TransaccionComisionResponseDTO comisionPorVendedor(TransaccionFilterDTO filtros){
+    public TransaccionComisionResponseDTO comisionPorVendedor(TransaccionFilterDTO filtros) {
 
         BigDecimal totalComisiones = transaccionRepository.findAll(TransaccionSpecification.conFiltros(filtros)).stream()
                 .map(Transaccion::getComision_calculada)
@@ -186,6 +189,43 @@ public class TransaccionService {
         return TransaccionComisionResponseDTO.builder()
                 .vendedor_id(filtros.getVendedor_id())
                 .comision_total(totalComisiones)
+                .build();
+    }
+
+
+    @Transactional(readOnly = true)
+    public TransaccionBalanceResponseDTO obtenerBalance(LocalDate desde, LocalDate hasta) {
+
+
+        BalanceProyeccion resultado = transaccionRepository.calcularBalanceEntreFechas(desde, hasta)
+                .orElse(null);
+
+
+        if (resultado == null){
+            return TransaccionBalanceResponseDTO.builder()
+                    .precios_final_total(BigDecimal.ZERO)
+                    .comisiones_total(BigDecimal.ZERO)
+                    .costos_vehiculos_vendidos(BigDecimal.ZERO)
+                    .ingreso_final(BigDecimal.ZERO)
+                    .fecha_desde(desde)
+                    .fecha_hasta(hasta)
+                    .build();
+        }
+
+        BigDecimal precioTotal = resultado.getPrecioFinalTotal() != null ? resultado.getPrecioFinalTotal() : BigDecimal.ZERO;
+        BigDecimal comisionesTotal = resultado.getComisionesTotal() != null ? resultado.getComisionesTotal() : BigDecimal.ZERO;
+        BigDecimal costosVehiculos = resultado.getCostosVehiculos() != null ? resultado.getCostosVehiculos() : BigDecimal.ZERO;
+
+
+        BigDecimal ingresoFinal = precioTotal.subtract(costosVehiculos).subtract(comisionesTotal);
+
+        return TransaccionBalanceResponseDTO.builder()
+                .precios_final_total(precioTotal)
+                .comisiones_total(comisionesTotal)
+                .costos_vehiculos_vendidos(costosVehiculos)
+                .ingreso_final(ingresoFinal)
+                .fecha_desde(desde)
+                .fecha_hasta(hasta)
                 .build();
     }
 }
