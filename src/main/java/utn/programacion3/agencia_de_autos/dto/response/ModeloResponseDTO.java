@@ -3,6 +3,7 @@ package utn.programacion3.agencia_de_autos.dto.response;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import utn.programacion3.agencia_de_autos.model.enums.TipoModelo;
 
 @Getter
 @Setter
@@ -10,8 +11,14 @@ import lombok.Setter;
 public class ModeloResponseDTO {
 
     private Long id;
+
     private String nombre;
+
     private String marca;
+
     private Integer anio;
-    private String version;
+
+    private TipoModelo tipoModelo;
+
+    private Boolean activo;
 }

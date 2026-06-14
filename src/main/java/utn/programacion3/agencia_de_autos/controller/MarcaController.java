@@ -1,5 +1,9 @@
 package utn.programacion3.agencia_de_autos.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,33 +17,51 @@ import java.util.List;
 @RestController
 @RequestMapping("/marcas")
 @RequiredArgsConstructor
+@Tag(name = "Marcas", description = "Operaciones relacionadas con la gestión de marcas")
 public class MarcaController {
 
     private final MarcaService marcaService;
 
-    // Crear una nueva marca
+    @Operation(summary = "Crear una marca")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Marca creada correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos")
+    })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MarcaResponseDTO crearMarca(@Valid @RequestBody MarcaRequestDTO request) {
+    public MarcaResponseDTO crearMarca(
+            @Valid @RequestBody MarcaRequestDTO request) {
 
         return marcaService.crearMarca(request);
     }
 
-    // Obtener todas las marcas
+    @Operation(summary = "Obtener todas las marcas")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
+    })
     @GetMapping
     public List<MarcaResponseDTO> listarMarcas() {
 
         return marcaService.listarMarcas();
     }
 
-    // Obtener marca por ID
+    @Operation(summary = "Obtener una marca por ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Marca encontrada"),
+            @ApiResponse(responseCode = "404", description = "Marca no encontrada")
+    })
     @GetMapping("/{id}")
-    public MarcaResponseDTO obtenerMarcaPorId(@PathVariable Long id) {
+    public MarcaResponseDTO obtenerMarcaPorId(
+            @PathVariable Long id) {
 
         return marcaService.obtenerMarcaPorId(id);
     }
 
-    // Actualizar una marca
+    @Operation(summary = "Actualizar una marca")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Marca actualizada correctamente"),
+            @ApiResponse(responseCode = "404", description = "Marca no encontrada")
+    })
     @PutMapping("/{id}")
     public MarcaResponseDTO actualizarMarca(
             @PathVariable Long id,
@@ -48,10 +70,15 @@ public class MarcaController {
         return marcaService.actualizarMarca(id, request);
     }
 
-    // Eliminar una marca
+    @Operation(summary = "Eliminar una marca")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Marca eliminada correctamente"),
+            @ApiResponse(responseCode = "404", description = "Marca no encontrada")
+    })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void eliminarMarca(@PathVariable Long id) {
+    public void eliminarMarca(
+            @PathVariable Long id) {
 
         marcaService.eliminarMarca(id);
     }

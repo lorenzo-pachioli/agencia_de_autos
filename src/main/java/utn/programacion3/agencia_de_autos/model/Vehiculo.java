@@ -3,9 +3,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
 import utn.programacion3.agencia_de_autos.model.enums.TipoCombustible;
 import utn.programacion3.agencia_de_autos.model.enums.TipoTransmision;
@@ -31,7 +34,10 @@ public class Vehiculo {
     private Integer anio;
 
     @Column(nullable = false)
-    private BigDecimal precio;
+    private BigDecimal precioAdquisicion;
+
+    @Column(nullable = false)
+    private BigDecimal precioVenta;
 
     @Column(nullable = false)
     private Integer kilometraje;
@@ -39,7 +45,9 @@ public class Vehiculo {
     @Column(nullable = false)
     private String color;
 
-    // Estado del vehículo (disponible, vendido, reservado, etc.)
+    @Column(columnDefinition = "TEXT")
+    private String descripcion;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoVehiculo estado;
@@ -52,12 +60,17 @@ public class Vehiculo {
     @Column(nullable = false)
     private TipoTransmision tipoTransmision;
 
-    // Relación: muchos vehículos pertenecen a un modelo
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
     @ManyToOne
     @JoinColumn(name = "id_modelo", nullable = false)
     private Modelo modelo;
 
-    // Relación: un vehículo puede tener muchas imágenes
     @OneToMany(mappedBy = "vehiculo")
     private List<ImagenVehiculo> imagenes;
 }

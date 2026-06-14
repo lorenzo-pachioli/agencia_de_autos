@@ -33,7 +33,7 @@ public class TransaccionService {
     private final TransaccionRepository transaccionRepository;
     private final TransaccionMapper transaccionMapper;
     private final UsuarioService usuarioService;
-    private final VehiculoService vehiculoService;
+    private final VehiculoServiceImpl vehiculoService;
     private final AuditoriaTransaccionService auditoriaTransaccionService;
 
 
