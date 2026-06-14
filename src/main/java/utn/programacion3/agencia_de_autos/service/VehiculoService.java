@@ -1,10 +1,7 @@
 package utn.programacion3.agencia_de_autos.service;
 
 import org.springframework.stereotype.Service;
-import utn.programacion3.agencia_de_autos.dto.request.CambiarEstadoVehiculoDTO;
-import utn.programacion3.agencia_de_autos.dto.request.ReporteGananciaVehiculoDTO;
-import utn.programacion3.agencia_de_autos.dto.request.VehiculoFilterDTO;
-import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.request.*;
 import utn.programacion3.agencia_de_autos.dto.response.ReporteGananciasResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoPublicResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
@@ -22,10 +19,7 @@ public interface VehiculoService {
 
     Vehiculo obtenerVehiculoEntityPorId(Long id);
 
-
     VehiculoResponseDTO actualizarVehiculo(Long id, VehiculoRequestDTO request);
-
-    VehiculoResponseDTO modificarPrecio(Long id, BigDecimal nuevoPrecio);
 
     VehiculoResponseDTO cambiarEstado(Long id, CambiarEstadoVehiculoDTO request);
 
@@ -40,5 +34,7 @@ public interface VehiculoService {
     List<VehiculoResponseDTO> obtenerVehiculosInternos();
 
     ReporteGananciasResponseDTO obtenerReporteGanancias();
+
+    ReporteStockVehiculoDTO obtenerReporteStock();
 
 }

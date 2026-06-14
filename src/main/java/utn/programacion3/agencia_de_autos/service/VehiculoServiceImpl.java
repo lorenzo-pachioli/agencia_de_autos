@@ -2,10 +2,7 @@ package utn.programacion3.agencia_de_autos.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import utn.programacion3.agencia_de_autos.dto.request.CambiarEstadoVehiculoDTO;
-import utn.programacion3.agencia_de_autos.dto.request.ReporteGananciaVehiculoDTO;
-import utn.programacion3.agencia_de_autos.dto.request.VehiculoFilterDTO;
-import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.request.*;
 import utn.programacion3.agencia_de_autos.dto.response.ReporteGananciasResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoPublicResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
@@ -102,19 +99,6 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
-    public VehiculoResponseDTO modificarPrecio(Long id, BigDecimal nuevoPrecio) {
-
-        Vehiculo vehiculo = vehiculoRepository.findById(id)
-                .orElseThrow(VehiculoNoEncontradoException::new);
-
-        vehiculo.setPrecioVenta(nuevoPrecio);
-
-        Vehiculo vehiculoActualizado = vehiculoRepository.save(vehiculo);
-
-        return vehiculoMapper.toResponse(vehiculoActualizado);
-    }
-
-    @Override
     public VehiculoResponseDTO cambiarEstado(Long id, CambiarEstadoVehiculoDTO request) {
 
         Vehiculo vehiculo = vehiculoRepository.findById(id)
@@ -179,6 +163,25 @@ public class VehiculoServiceImpl implements VehiculoService {
                 .build();
     }
 
+    @Override
+    public ReporteStockVehiculoDTO obtenerReporteStock() {
+
+        long disponibles = vehiculoRepository.countByEstado(EstadoVehiculo.DISPONIBLE);
+
+        long reservados = vehiculoRepository.countByEstado(EstadoVehiculo.RESERVADO);
+
+        long vendidos = vehiculoRepository.countByEstado(EstadoVehiculo.VENDIDO);
+
+        long baja = vehiculoRepository.countByEstado(EstadoVehiculo.BAJA);
+
+        return ReporteStockVehiculoDTO.builder()
+                .disponibles(disponibles)
+                .reservados(reservados)
+                .vendidos(vendidos)
+                .baja(baja)
+                .total(disponibles + reservados + vendidos + baja)
+                .build();
+    }
 
     @Override
     public void eliminarVehiculo(Long id) {

@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utn.programacion3.agencia_de_autos.dto.request.CambiarEstadoVehiculoDTO;
-import utn.programacion3.agencia_de_autos.dto.request.ReporteGananciaVehiculoDTO;
+import utn.programacion3.agencia_de_autos.dto.request.ReporteStockVehiculoDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.ReporteGananciasResponseDTO;
@@ -94,6 +94,20 @@ public class VehiculoController {
 
         return ResponseEntity.ok(
                 vehiculoService.obtenerReporteGanancias()
+        );
+    }
+
+    @Operation(summary = "Obtener reporte de stock por estado")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Reporte obtenido correctamente"),
+            @ApiResponse(responseCode = "403", description = "No autorizado")
+    })
+    @GetMapping("/reportes/stock")
+    @PreAuthorize("hasAnyRole('VENDEDOR','ADMINISTRADOR')")
+    public ResponseEntity<ReporteStockVehiculoDTO> obtenerReporteStock() {
+
+        return ResponseEntity.ok(
+                vehiculoService.obtenerReporteStock()
         );
     }
 

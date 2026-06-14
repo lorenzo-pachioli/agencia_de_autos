@@ -20,4 +20,6 @@ public interface VehiculoRepository extends
     boolean existsByPatente(String patente);
 
     Optional<Vehiculo> findByPatente(String patente);
+
+    long countByEstado(EstadoVehiculo estado);
 }

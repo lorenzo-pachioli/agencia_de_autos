@@ -4,5 +4,5 @@ public enum EstadoVehiculo {
     DISPONIBLE,
     RESERVADO,
     VENDIDO,
-    //BAJA
+    BAJA
 }
