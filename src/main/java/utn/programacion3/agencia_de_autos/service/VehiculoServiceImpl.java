@@ -1,6 +1,9 @@
 package utn.programacion3.agencia_de_autos.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.*;
 import utn.programacion3.agencia_de_autos.dto.response.ReporteGananciasResponseDTO;
@@ -182,6 +185,23 @@ public class VehiculoServiceImpl implements VehiculoService {
                 .total(disponibles + reservados + vendidos + baja)
                 .build();
     }
+
+    @Override
+    public List<VehiculoResponseDTO> obtenerUltimosVehiculos(Integer cantidad) {
+
+        Pageable pageable = PageRequest.of(
+                0,
+                cantidad,
+                Sort.by("createdAt").descending()
+        );
+
+        return vehiculoRepository.findAll(pageable)
+                .stream()
+                .map(vehiculoMapper::toResponse)
+                .toList();
+    }
+
+
 
     @Override
     public void eliminarVehiculo(Long id) {

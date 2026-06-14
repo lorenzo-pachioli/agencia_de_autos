@@ -57,7 +57,7 @@ public class VehiculoSpecification {
             if (filtros.getMinPrecio() != null) {
                 predicates.add(
                         cb.greaterThanOrEqualTo(
-                                root.get("precio"),
+                                root.get("precioVenta"),
                                 filtros.getMinPrecio()
                         )
                 );
@@ -66,7 +66,7 @@ public class VehiculoSpecification {
             if (filtros.getMaxPrecio() != null) {
                 predicates.add(
                         cb.lessThanOrEqualTo(
-                                root.get("precio"),
+                                root.get("precioVenta"),
                                 filtros.getMaxPrecio()
                         )
                 );

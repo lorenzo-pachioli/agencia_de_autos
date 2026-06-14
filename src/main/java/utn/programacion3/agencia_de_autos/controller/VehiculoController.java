@@ -111,6 +111,15 @@ public class VehiculoController {
         );
     }
 
+    @GetMapping("/reportes/ultimos")
+    public ResponseEntity<List<VehiculoResponseDTO>> obtenerUltimosVehiculos(
+            @RequestParam(defaultValue = "10") Integer cantidad) {
+
+        return ResponseEntity.ok(
+                vehiculoService.obtenerUltimosVehiculos(cantidad)
+        );
+    }
+
     @Operation(summary = "Eliminar un vehículo")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Vehículo eliminado correctamente"),

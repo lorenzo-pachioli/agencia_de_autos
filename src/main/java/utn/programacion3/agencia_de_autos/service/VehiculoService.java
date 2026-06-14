@@ -37,4 +37,6 @@ public interface VehiculoService {
 
     ReporteStockVehiculoDTO obtenerReporteStock();
 
+    List<VehiculoResponseDTO> obtenerUltimosVehiculos(Integer cantidad);
+
 }

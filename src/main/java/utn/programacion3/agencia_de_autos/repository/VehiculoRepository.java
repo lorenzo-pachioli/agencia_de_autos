@@ -22,4 +22,5 @@ public interface VehiculoRepository extends
     Optional<Vehiculo> findByPatente(String patente);
 
     long countByEstado(EstadoVehiculo estado);
+
 }
