@@ -2,18 +2,23 @@ package utn.programacion3.agencia_de_autos.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.response.TransaccionBalanceResponseDTO;
+import utn.programacion3.agencia_de_autos.dto.response.TransaccionComisionResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionResponseDTO;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion;
 import utn.programacion3.agencia_de_autos.service.TransaccionService;
 import utn.programacion3.agencia_de_autos.validation.Groups;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -35,12 +40,12 @@ public class TransaccionController {
     }
 
     @PostMapping
-    public ResponseEntity<TransaccionResponseDTO> crearTransaccion(@Validated(Groups.Crear.class) @RequestBody TransaccionRequestDTO dto){
+    public ResponseEntity<TransaccionResponseDTO> crearTransaccion(@Validated(Groups.Crear.class) @RequestBody TransaccionRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(transaccionService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TransaccionResponseDTO> actualizarTransaccion(@PathVariable Long id, @Validated(Groups.Actualizar.class) @RequestBody TransaccionRequestDTO dto){
+    public ResponseEntity<TransaccionResponseDTO> actualizarTransaccion(@PathVariable Long id, @Validated(Groups.Actualizar.class) @RequestBody TransaccionRequestDTO dto) {
         return ResponseEntity.ok(transaccionService.actualizar(id, dto));
     }
 
@@ -63,9 +68,32 @@ public class TransaccionController {
         return ResponseEntity.ok(transaccionService.venderOSeniarTransaccion(id, precioSenia, EstadoTransaccion.SENIADO));
     }
 
-
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<TransaccionResponseDTO> cambiarEstadoTransaccion(@PathVariable Long id, @Valid @RequestParam EstadoTransaccion estado){
+    public ResponseEntity<TransaccionResponseDTO> cambiarEstadoTransaccion(@PathVariable Long id, @Valid @RequestParam EstadoTransaccion estado) {
         return ResponseEntity.ok(transaccionService.cambiarEstado(id, estado));
     }
+
+    @GetMapping("/comision-vendedor/{id}")
+    public ResponseEntity<TransaccionComisionResponseDTO> comisionPorVendedor(
+            @PathVariable Long id,
+            @RequestParam LocalDate fechaDesde,
+            @RequestParam LocalDate fechaHasta
+    ) {
+        TransaccionFilterDTO filtros = TransaccionFilterDTO.builder()
+                .fechaDesde(fechaDesde)
+                .fechaHasta(fechaHasta)
+                .vendedor_id(id)
+                .estadoTransaccion(EstadoTransaccion.VENDIDO)
+                .build();
+        return ResponseEntity.ok(transaccionService.comisionPorVendedor(filtros));
+    }
+
+    @GetMapping("/rendimiento")
+    public ResponseEntity<TransaccionBalanceResponseDTO> ingresosPorfecha(
+            @RequestParam LocalDate fechaDesde,
+            @RequestParam LocalDate fechaHasta
+    ) {
+        return ResponseEntity.ok(transaccionService.obtenerBalance(fechaDesde, fechaHasta));
+    }
+
 }
