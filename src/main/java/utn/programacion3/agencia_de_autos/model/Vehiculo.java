@@ -34,6 +34,9 @@ public class Vehiculo {
     private Integer anio;
 
     @Column(nullable = false)
+    private BigDecimal precioAdquisicion;
+
+    @Column(nullable = false)
     private BigDecimal precioVenta;
 
     @Column(nullable = false)

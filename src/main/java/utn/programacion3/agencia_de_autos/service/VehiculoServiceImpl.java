@@ -3,8 +3,10 @@ package utn.programacion3.agencia_de_autos.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.CambiarEstadoVehiculoDTO;
+import utn.programacion3.agencia_de_autos.dto.request.ReporteGananciaVehiculoDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.response.ReporteGananciasResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoPublicResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
 import utn.programacion3.agencia_de_autos.exception.ModeloNoEncontradoException;
@@ -73,14 +75,6 @@ public class VehiculoServiceImpl implements VehiculoService {
                 .map(vehiculoMapper::toResponse)
                 .toList();
     }
-    @Override
-    public List<VehiculoResponseDTO> obtenerVehiculos() {
-
-        return vehiculoRepository.findAll()
-                .stream()
-                .map(vehiculoMapper::toResponse)
-                .toList();
-    }
 
     @Override
     public VehiculoResponseDTO actualizarVehiculo(Long id, VehiculoRequestDTO request) {
@@ -93,7 +87,7 @@ public class VehiculoServiceImpl implements VehiculoService {
 
         vehiculo.setPatente(request.getPatente());
         vehiculo.setAnio(request.getAnio());
-        vehiculo.setPrecioVenta(request.getPrecio());
+        vehiculo.setPrecioVenta(request.getPrecioVenta());
         vehiculo.setKilometraje(request.getKilometraje());
         vehiculo.setColor(request.getColor());
         vehiculo.setEstado(request.getEstado());
@@ -154,6 +148,37 @@ public class VehiculoServiceImpl implements VehiculoService {
                 .map(vehiculoMapper::toResponse)
                 .toList();
     }
+
+    @Override
+    public ReporteGananciasResponseDTO obtenerReporteGanancias() {
+
+        List<Vehiculo> vehiculos = vehiculoRepository.findAll()
+                .stream()
+                .filter(v -> v.getEstado() == EstadoVehiculo.VENDIDO)
+                .toList();
+
+        List<ReporteGananciaVehiculoDTO> detalle = vehiculos.stream()
+                .map(vehiculoMapper::toReporteGanancia)
+                .toList();
+
+        BigDecimal totalInvertido = vehiculos.stream()
+                .map(Vehiculo::getPrecioAdquisicion)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalVenta = vehiculos.stream()
+                .map(Vehiculo::getPrecioVenta)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal gananciaTotal = totalVenta.subtract(totalInvertido);
+
+        return ReporteGananciasResponseDTO.builder()
+                .totalInvertido(totalInvertido)
+                .totalVenta(totalVenta)
+                .gananciaTotal(gananciaTotal)
+                .vehiculos(detalle)
+                .build();
+    }
+
 
     @Override
     public void eliminarVehiculo(Long id) {

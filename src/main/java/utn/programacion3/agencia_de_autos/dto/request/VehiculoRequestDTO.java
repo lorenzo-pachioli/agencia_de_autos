@@ -20,8 +20,11 @@ public class VehiculoRequestDTO {
     @NotNull(message = "El año es obligatorio")
     private Integer anio;
 
-    @NotNull(message = "El precio es obligatorio")
-    private BigDecimal precio;
+    @NotNull(message = "El precio de adquisición es obligatorio")
+    private BigDecimal precioAdquisicion;
+
+    @NotNull(message = "El precio de venta es obligatorio")
+    private BigDecimal precioVenta;
 
     @NotNull(message = "El modelo es obligatorio")
     private Long modeloId;
