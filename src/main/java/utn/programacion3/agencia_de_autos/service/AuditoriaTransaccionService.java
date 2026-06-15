@@ -2,6 +2,7 @@ package utn.programacion3.agencia_de_autos.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.AuditoriaTransaccionCambiosFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.AuditoriaTransaccionFilterDTO;
@@ -14,6 +15,8 @@ import utn.programacion3.agencia_de_autos.model.Transaccion;
 import utn.programacion3.agencia_de_autos.repository.AuditoriaTransaccionRepository;
 import utn.programacion3.agencia_de_autos.repository.AuditoriaTransaccionSpecification;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AuditoriaTransaccionService {
@@ -21,24 +24,24 @@ public class AuditoriaTransaccionService {
     private final AuditoriaTransaccionRepository repository;
     private final AuditoriaTransaccionMapper mapper;
 
-    public Page<AuditoriaTransaccionResponseDTO> listar(AuditoriaTransaccionFilterDTO filtros) {
+    public Page<AuditoriaTransaccionResponseDTO> listar(AuditoriaTransaccionFilterDTO filtros, Pageable pageable) {
 
         return repository.findAll(
-                        AuditoriaTransaccionSpecification.conFiltros(filtros), filtros.getPageable())
+                        AuditoriaTransaccionSpecification.conFiltros(filtros), pageable)
                 .map(mapper::toResponseDTO);
     }
 
-    public Page<AuditoriaTransaccionResponseDTO> listarCambiosEstado(AuditoriaTransaccionCambiosFilterDTO filtros) {
+    public Page<AuditoriaTransaccionResponseDTO> listarCambiosEstado(AuditoriaTransaccionCambiosFilterDTO filtros, Pageable pageable) {
 
         return repository.findAll(
-                        AuditoriaTransaccionSpecification.cambioEstado(filtros), filtros.getPageable())
+                        AuditoriaTransaccionSpecification.cambioEstado(filtros), pageable)
                 .map(mapper::toResponseDTO);
     }
 
-    public Page<AuditoriaTransaccionResponseDTO> listarCambiosPrecio(AuditoriaTransaccionCambiosFilterDTO filtros) {
+    public Page<AuditoriaTransaccionResponseDTO> listarCambiosPrecio(AuditoriaTransaccionCambiosFilterDTO filtros, Pageable pageable) {
 
         return repository.findAll(
-                        AuditoriaTransaccionSpecification.cambioPrecio(filtros), filtros.getPageable())
+                        AuditoriaTransaccionSpecification.cambioPrecio(filtros), pageable)
                 .map(mapper::toResponseDTO);
     }
 

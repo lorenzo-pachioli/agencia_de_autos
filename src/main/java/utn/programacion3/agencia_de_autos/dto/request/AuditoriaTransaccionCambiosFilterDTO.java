@@ -19,6 +19,4 @@ public class AuditoriaTransaccionCambiosFilterDTO {
     private LocalDate fechaDesde;
     private LocalDate fechaHasta;
 
-
-    private Pageable pageable;
 }

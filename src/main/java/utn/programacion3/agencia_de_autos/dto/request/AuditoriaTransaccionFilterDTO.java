@@ -37,6 +37,4 @@ public class AuditoriaTransaccionFilterDTO {
 
     private EstadoTransaccion estadoAnterior;
     private EstadoTransaccion estadoNuevo;
-
-    private Pageable pageable;
 }

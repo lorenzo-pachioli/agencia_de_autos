@@ -33,5 +33,4 @@ public class TransaccionFilterDTO {
 
     private EstadoTransaccion estadoTransaccion;
 
-    private Pageable pageable;
 }

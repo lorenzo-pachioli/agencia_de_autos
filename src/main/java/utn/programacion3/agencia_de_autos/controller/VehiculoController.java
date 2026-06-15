@@ -6,6 +6,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,11 +50,13 @@ public class VehiculoController {
             @ApiResponse(responseCode = "200", description = "Búsqueda realizada correctamente")
     })
     @GetMapping("/busqueda")
-    public ResponseEntity<List<VehiculoResponseDTO>> buscarConFiltros(
-            VehiculoFilterDTO filtros) {
+    public ResponseEntity<Page<VehiculoResponseDTO>> buscarConFiltros(
+            VehiculoFilterDTO filtros,
+            @PageableDefault(size = 10, sort = "id") Pageable pageable
+    ) {
 
         return ResponseEntity.ok(
-                vehiculoService.buscarConFiltros(filtros)
+                vehiculoService.buscarConFiltros(filtros, pageable)
         );
     }
 

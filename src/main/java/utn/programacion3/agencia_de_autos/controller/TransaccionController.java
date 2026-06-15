@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,9 +30,11 @@ public class TransaccionController {
     private final TransaccionService transaccionService;
 
     @GetMapping
-    public ResponseEntity<List<TransaccionResponseDTO>> listar(
-            @Valid @ModelAttribute TransaccionFilterDTO filtros) {
-        return ResponseEntity.ok(transaccionService.listarConFiltros(filtros));
+    public ResponseEntity<Page<TransaccionResponseDTO>> listar(
+            @Valid @ModelAttribute TransaccionFilterDTO filtros,
+            @PageableDefault(size = 10, sort = "id") Pageable pageable
+    ) {
+        return ResponseEntity.ok(transaccionService.listarConFiltros(filtros, pageable));
     }
 
     @GetMapping("/{id}")
@@ -51,26 +54,26 @@ public class TransaccionController {
 
     @PatchMapping("/{id}/cancelar")
     public ResponseEntity<TransaccionResponseDTO> cancelarTransaccionPorid(@PathVariable Long id) {
-        return ResponseEntity.ok(transaccionService.cancelarTransaccion(id));
+        return ResponseEntity.ok(transaccionService.cambiarEstado(id, EstadoTransaccion.CANCELADO, null));
     }
 
     @PatchMapping("/{id}/vender")
     public ResponseEntity<TransaccionResponseDTO> venderTransaccionPorid(
             @PathVariable Long id,
             @RequestParam BigDecimal precioFinal) {
-        return ResponseEntity.ok(transaccionService.venderOSeniarTransaccion(id, precioFinal, EstadoTransaccion.VENDIDO));
+        return ResponseEntity.ok(transaccionService.cambiarEstado(id, EstadoTransaccion.VENDIDO, precioFinal));
     }
 
     @PatchMapping("/{id}/seniar")
     public ResponseEntity<TransaccionResponseDTO> seniarTransaccionPorid(
             @PathVariable Long id,
             @RequestParam BigDecimal precioSenia) {
-        return ResponseEntity.ok(transaccionService.venderOSeniarTransaccion(id, precioSenia, EstadoTransaccion.SENIADO));
+        return ResponseEntity.ok(transaccionService.cambiarEstado(id, EstadoTransaccion.SENIADO, precioSenia));
     }
 
     @PatchMapping("/{id}/estado")
     public ResponseEntity<TransaccionResponseDTO> cambiarEstadoTransaccion(@PathVariable Long id, @Valid @RequestParam EstadoTransaccion estado) {
-        return ResponseEntity.ok(transaccionService.cambiarEstado(id, estado));
+        return ResponseEntity.ok(transaccionService.cambiarEstado(id, estado, null));
     }
 
     @GetMapping("/comision-vendedor/{id}")

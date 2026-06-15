@@ -1,5 +1,7 @@
 package utn.programacion3.agencia_de_autos.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.*;
 import utn.programacion3.agencia_de_autos.dto.response.ReporteGananciasResponseDTO;
@@ -25,7 +27,7 @@ public interface VehiculoService {
 
     Vehiculo cambiarEstadoEntity(Long id, EstadoVehiculo estado);
 
-    List<VehiculoResponseDTO> buscarConFiltros(VehiculoFilterDTO filtros);
+    Page<VehiculoResponseDTO> buscarConFiltros(VehiculoFilterDTO filtros, Pageable pageable);
 
     void eliminarVehiculo(Long id);
 

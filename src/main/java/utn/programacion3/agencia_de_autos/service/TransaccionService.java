@@ -1,6 +1,7 @@
 package utn.programacion3.agencia_de_autos.service;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,14 +38,16 @@ public class TransaccionService {
     private final AuditoriaTransaccionService auditoriaTransaccionService;
 
 
-    private final BigDecimal comision_vendedores = new BigDecimal("0.05");   // 5%
+    public static final BigDecimal comision_vendedores = new BigDecimal("0.05");   // 5%
+
+    public static BigDecimal calcularComision(BigDecimal precio_final){
+        return precio_final.multiply(TransaccionService.comision_vendedores);
+    }
 
 
-    public List<TransaccionResponseDTO> listarConFiltros(TransaccionFilterDTO filtros) {
-        return transaccionRepository.findAll(TransaccionSpecification.conFiltros(filtros))
-                .stream()
-                .map(transaccionMapper::toResponseDTO)
-                .toList();
+    public Page<TransaccionResponseDTO> listarConFiltros(TransaccionFilterDTO filtros, Pageable pageable) {
+        return transaccionRepository.findAll(TransaccionSpecification.conFiltros(filtros), pageable)
+                .map(transaccionMapper::toResponseDTO);
     }
 
 
@@ -64,16 +67,17 @@ public class TransaccionService {
         transaccion.setVendedor(vendedor);
 
         vehiculoService.cambiarEstadoEntity(dto.getVehiculo_id(), EstadoVehiculo.RESERVADO);
-        auditoriaTransaccionService.registrarCreacion(transaccion);
+        Transaccion transaccionGuardada = transaccionRepository.save(transaccion);
+        auditoriaTransaccionService.registrarCreacion(transaccionGuardada);
 
-        return transaccionMapper.toResponseDTO(transaccionRepository.save(transaccion));
+        return transaccionMapper.toResponseDTO(transaccionGuardada);
     }
 
     @Transactional
     public TransaccionResponseDTO actualizar(Long id, TransaccionRequestDTO dto) {
 
         Transaccion transaccion = buscarEntityPorId(id);
-        Transaccion snapshotAnterior = transaccion;
+        Transaccion snapshotAnterior = crearSnapshot(transaccion);
 
         Usuario cliente = usuarioService.buscarEntityPorId(dto.getCliente_id());
         Usuario vendedor = usuarioService.buscarEntityPorId(dto.getVendedor_id());
@@ -92,21 +96,6 @@ public class TransaccionService {
         return transaccionMapper.toResponseDTO(transaccionRepository.save(transaccion));
     }
 
-    @Transactional
-    public TransaccionResponseDTO cambiarEstado(Long id, EstadoTransaccion estadoTransaccion) {
-
-        Transaccion transaccion = buscarEntityPorId(id);
-        Transaccion snapshotAnterior = transaccion;
-
-        asignacionCambioDeEstado(transaccion, estadoTransaccion);
-
-
-        auditoriaTransaccionService.registrarCambio(snapshotAnterior, transaccion);
-
-        return transaccionMapper.toResponseDTO(
-                transaccionRepository.save(transaccion)
-        );
-    }
 
     @Transactional(readOnly = true)
     public TransaccionResponseDTO buscarPorId(Long id) {
@@ -121,6 +110,30 @@ public class TransaccionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Transaccion no encontrado con el ID: " + id));
     }
 
+    @Transactional
+    public TransaccionResponseDTO cambiarEstado(Long id, EstadoTransaccion estadoTransaccion, BigDecimal precioFinal) {
+
+        Transaccion transaccion = buscarEntityPorId(id);
+        Transaccion snapshotAnterior = crearSnapshot(transaccion);
+
+        // Falta validar que solo lo pueda realizar un vendedor o Admin
+        if (transaccion.getEstadoTransaccion() == EstadoTransaccion.CANCELADO) {
+            throw new TransaccionNoModificableException(transaccion.getId().toString());
+        }
+
+        asignacionCambioDeEstado(transaccion, estadoTransaccion);
+        if (precioFinal != null ){
+            // IMPORTANTE: LE QUE SE RECIBE SE SUMA O SE REEMPLAZA?
+            transaccion.setPrecio_final(precioFinal);
+        }
+
+        auditoriaTransaccionService.registrarCambio(snapshotAnterior, transaccion);
+
+        return transaccionMapper.toResponseDTO(
+                transaccionRepository.save(transaccion)
+        );
+    }
+
     private void asignacionCambioDeEstado(Transaccion transaccion, EstadoTransaccion nuevoEstado) {
 
         Long vehiculo_id = transaccion.getVehiculo().getId();
@@ -133,8 +146,7 @@ public class TransaccionService {
             vehiculoService.cambiarEstadoEntity(vehiculo_id, EstadoVehiculo.VENDIDO);
 
             // Calcula automaticamente la comision del vendedor cuando se concreta la venta
-            transaccion.setComision_calculada(
-                    transaccion.getPrecio_final().multiply(this.comision_vendedores));
+            transaccion.setComision_calculada(calcularComision(transaccion.getPrecio_final()));
 
         } else if (nuevoEstado == EstadoTransaccion.CANCELADO) {
             vehiculoService.cambiarEstadoEntity(vehiculo_id, EstadoVehiculo.DISPONIBLE);
@@ -144,40 +156,6 @@ public class TransaccionService {
         }
 
         transaccion.setEstadoTransaccion(nuevoEstado);
-    }
-
-    @Transactional
-    public TransaccionResponseDTO cancelarTransaccion(Long id) {
-
-        Transaccion transaccion = buscarEntityPorId(id);
-        // Falta validar que solo lo pueda realizar un vendedor o Admin
-        if (transaccion.getEstadoTransaccion() == EstadoTransaccion.CANCELADO) {
-            throw new TransaccionNoModificableException(transaccion.getId().toString());
-        }
-
-        asignacionCambioDeEstado(transaccion, EstadoTransaccion.CANCELADO);
-
-        return transaccionMapper.toResponseDTO(
-                transaccionRepository.save(transaccion)
-        );
-    }
-
-    @Transactional
-    public TransaccionResponseDTO venderOSeniarTransaccion(Long id, BigDecimal precioFinal, EstadoTransaccion estado) {
-
-        Transaccion transaccion = buscarEntityPorId(id);
-        // Falta validar que solo lo pueda realizar un vendedor o Admin
-
-        if (transaccion.getEstadoTransaccion() == EstadoTransaccion.CANCELADO) {
-            throw new TransaccionNoModificableException(transaccion.getId().toString());
-        }
-
-        asignacionCambioDeEstado(transaccion, estado);
-        transaccion.setPrecio_final(precioFinal);
-
-        return transaccionMapper.toResponseDTO(
-                transaccionRepository.save(transaccion)
-        );
     }
 
     public TransaccionComisionResponseDTO comisionPorVendedor(TransaccionFilterDTO filtros) {
@@ -226,6 +204,17 @@ public class TransaccionService {
                 .ingreso_final(ingresoFinal)
                 .fecha_desde(desde)
                 .fecha_hasta(hasta)
+                .build();
+    }
+
+    private Transaccion crearSnapshot(Transaccion transaccion){
+        return Transaccion.builder()
+                .id(transaccion.getId())
+                .estadoTransaccion(transaccion.getEstadoTransaccion())
+                .precio_final(transaccion.getPrecio_final())
+                .vendedor(transaccion.getVendedor())
+                .cliente(transaccion.getCliente())
+                .vehiculo(transaccion.getVehiculo())
                 .build();
     }
 }

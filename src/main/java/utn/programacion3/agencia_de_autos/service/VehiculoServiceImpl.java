@@ -1,6 +1,7 @@
 package utn.programacion3.agencia_de_autos.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -126,14 +127,13 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
-    public List<VehiculoResponseDTO> buscarConFiltros(VehiculoFilterDTO filtros) {
+    public Page<VehiculoResponseDTO> buscarConFiltros(VehiculoFilterDTO filtros, Pageable pageable) {
 
         return vehiculoRepository.findAll(
-                        VehiculoSpecification.conFiltros(filtros)
+                        VehiculoSpecification.conFiltros(filtros),
+                        pageable
                 )
-                .stream()
-                .map(vehiculoMapper::toResponse)
-                .toList();
+                .map(vehiculoMapper::toResponse);
     }
 
     @Override

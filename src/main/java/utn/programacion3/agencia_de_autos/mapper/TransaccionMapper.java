@@ -6,6 +6,7 @@ import org.mapstruct.MappingTarget;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionResponseDTO;
 import utn.programacion3.agencia_de_autos.model.Transaccion;
+import utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion;
 
 @Mapper(componentModel = "spring")
 public interface TransaccionMapper {
@@ -17,6 +18,7 @@ public interface TransaccionMapper {
     @Mapping(target = "vehiculo", ignore = true)
     @Mapping(target = "cliente", ignore = true)
     @Mapping(target = "vendedor", ignore = true)
+    @Mapping(target = "estadoTransaccion", constant = "RESERVA")
     Transaccion toEntity(TransaccionRequestDTO dto);
 
     @Mapping(target = "vehiculo_id", source = "vehiculo.id")

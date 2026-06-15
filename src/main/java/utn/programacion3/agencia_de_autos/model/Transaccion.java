@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion;
 import utn.programacion3.agencia_de_autos.model.enums.MetodoPago;
+import utn.programacion3.agencia_de_autos.service.TransaccionService;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -29,8 +31,8 @@ public class Transaccion {
     @Column(nullable = false)
     private BigDecimal precio_final;
 
-    @Column(nullable = false)
-    private BigDecimal comision_calculada;
+    @Builder.Default
+    private BigDecimal comision_calculada = BigDecimal.ZERO;
 
     @Enumerated
     @Column(nullable = false)
@@ -56,6 +58,13 @@ public class Transaccion {
     public void onCreate(){
         if (this.observaciones == null){
             this.observaciones = "Sin observaciones";
+        }
+        if(this.estadoTransaccion == EstadoTransaccion.VENDIDO){
+            BigDecimal comision_vendedores = new BigDecimal("0.05");
+            this.comision_calculada = TransaccionService.calcularComision(this.precio_final);
+        }
+        if (this.estadoTransaccion == null){
+            this.estadoTransaccion = EstadoTransaccion.RESERVA;
         }
     }
 
