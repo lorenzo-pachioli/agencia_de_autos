@@ -1,4 +1,44 @@
 package utn.programacion3.agencia_de_autos.service;
 
-public class VehiculoService {
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import utn.programacion3.agencia_de_autos.dto.request.*;
+import utn.programacion3.agencia_de_autos.dto.response.ReporteGananciasResponseDTO;
+import utn.programacion3.agencia_de_autos.dto.response.VehiculoPublicResponseDTO;
+import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
+import utn.programacion3.agencia_de_autos.model.Vehiculo;
+import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Service
+
+public interface VehiculoService {
+
+    VehiculoResponseDTO crearVehiculo(VehiculoRequestDTO request);
+
+    Vehiculo obtenerVehiculoEntityPorId(Long id);
+
+    VehiculoResponseDTO actualizarVehiculo(Long id, VehiculoRequestDTO request);
+
+    VehiculoResponseDTO cambiarEstado(Long id, CambiarEstadoVehiculoDTO request);
+
+    Vehiculo cambiarEstadoEntity(Long id, EstadoVehiculo estado);
+
+    Page<VehiculoResponseDTO> buscarConFiltros(VehiculoFilterDTO filtros, Pageable pageable);
+
+    void eliminarVehiculo(Long id);
+
+    List<VehiculoPublicResponseDTO> obtenerVehiculosPublicos();
+
+    List<VehiculoResponseDTO> obtenerVehiculosInternos();
+
+    ReporteGananciasResponseDTO obtenerReporteGanancias();
+
+    ReporteStockVehiculoDTO obtenerReporteStock();
+
+    List<VehiculoResponseDTO> obtenerUltimosVehiculos(Integer cantidad);
+
 }
