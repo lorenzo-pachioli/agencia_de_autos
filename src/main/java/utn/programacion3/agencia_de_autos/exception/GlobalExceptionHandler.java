@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import utn.programacion3.agencia_de_autos.dto.response.ErrorResponseDto;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import java.util.Arrays;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -92,6 +91,18 @@ public class GlobalExceptionHandler {
                 request,
                 null
         );
+    }
+
+    // ATRAPADOR DE ACCESOS DENEGADOS
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDeniedException(AccessDeniedException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.FORBIDDEN.value());
+        response.put("error", "Forbidden");
+        response.put("message", "Permisos insuficientes para acceder a este recurso.");
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     // MANEJADOR GENERAL (Cualquier error inesperado en el servidor)
