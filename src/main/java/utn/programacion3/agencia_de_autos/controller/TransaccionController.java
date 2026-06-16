@@ -3,6 +3,7 @@ package utn.programacion3.agencia_de_autos.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/transacciones")
 @RequiredArgsConstructor
+@Tag(
+        name = "Transacciones",
+        description = "Endpoints para la creacion y actualizacion de transacciones y calculo de rendimientos"
+)
 public class TransaccionController {
 
     private final TransaccionService transaccionService;

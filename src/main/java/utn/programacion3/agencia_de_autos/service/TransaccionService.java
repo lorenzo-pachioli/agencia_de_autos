@@ -1,5 +1,6 @@
 package utn.programacion3.agencia_de_autos.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -164,8 +165,13 @@ public class TransaccionService {
                 .map(Transaccion::getComision_calculada)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        Usuario vendedor = usuarioService.buscarEntityPorId(filtros.getVendedor_id());
+
         return TransaccionComisionResponseDTO.builder()
-                .vendedor_id(filtros.getVendedor_id())
+                .id(vendedor.getId())
+                .vendedor_id(vendedor.getId())
+                .nombre_completo(vendedor.getNombre() + " " + vendedor.getApellido()) // O el campo que uses
+                .email(vendedor.getEmail())
                 .comision_total(totalComisiones)
                 .build();
     }
