@@ -73,7 +73,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/vendedores")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @Operation(
             summary = "Registrar un nuevo Vendedor",
             description = "Permite al Administrador dar de alta a un empleado con rol de Vendedor. El sistema le asigna el rol automáticamente."

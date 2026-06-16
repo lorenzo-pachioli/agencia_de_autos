@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +17,11 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    // Clave secreta hardcodeada temporalmente para pruebas (Debe tener al menos 256 bits)
-    private static final String SECRET_KEY = "MiClaveSuperSecretaQueNadiePuedeAdivinarParaLaAgenciaDeAutosUTN2026";
+    @Value("${jwt.secret-key}")
+    private String SECRET_KEY;
 
-    // Tiempo de validez del token: 24 horas pasadas a milisegundos
-    private static final long JWT_EXPIRATION = 86400000;
+    @Value("${jwt.expiration}")
+    private long JWT_EXPIRATION;
 
     // Genera la clave para nuestro token
     private Key getSigningKey() {

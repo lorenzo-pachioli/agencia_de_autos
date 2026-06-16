@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utn.programacion3.agencia_de_autos.dto.request.ImagenVehiculoRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.ImagenVehiculoResponseDTO;
@@ -30,6 +31,7 @@ public class ImagenVehiculoController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VENDEDOR')")
     public ImagenVehiculoResponseDTO crearImagen(
             @Valid @RequestBody ImagenVehiculoRequestDTO request) {
 
@@ -76,6 +78,7 @@ public class ImagenVehiculoController {
             @ApiResponse(responseCode = "404", description = "Imagen no encontrada")
     })
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VENDEDOR')")
     public ImagenVehiculoResponseDTO actualizarImagen(
             @PathVariable Long id,
             @Valid @RequestBody ImagenVehiculoRequestDTO request) {
@@ -89,6 +92,7 @@ public class ImagenVehiculoController {
             @ApiResponse(responseCode = "404", description = "Imagen no encontrada")
     })
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VENDEDOR')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminarImagen(
             @PathVariable Long id) {

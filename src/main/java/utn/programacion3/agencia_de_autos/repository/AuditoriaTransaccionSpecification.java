@@ -61,10 +61,10 @@ public class AuditoriaTransaccionSpecification {
                 predicates.add(cb.equal(root.get("transaccionId"), filtros.getTransaccionId()));
             }
             if (filtros.getFechaDesde() != null) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get("fecha"), filtros.getFechaDesde()));
+                predicates.add(cb.greaterThanOrEqualTo(root.get("created_at"), filtros.getFechaDesde()));
             }
             if (filtros.getFechaHasta() != null) {
-                predicates.add(cb.lessThanOrEqualTo(root.get("fecha"), filtros.getFechaHasta()));
+                predicates.add(cb.lessThanOrEqualTo(root.get("created_at"), filtros.getFechaHasta()));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
@@ -81,10 +81,10 @@ public class AuditoriaTransaccionSpecification {
                 predicates.add(cb.equal(root.get("transaccionId"), filtros.getTransaccionId()));
             }
             if (filtros.getFechaDesde() != null) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get("fecha"), filtros.getFechaDesde()));
+                predicates.add(cb.greaterThanOrEqualTo(root.get("created_at"), filtros.getFechaDesde()));
             }
             if (filtros.getFechaHasta() != null) {
-                predicates.add(cb.lessThanOrEqualTo(root.get("fecha"), filtros.getFechaHasta()));
+                predicates.add(cb.lessThanOrEqualTo(root.get("created_at"), filtros.getFechaHasta()));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
