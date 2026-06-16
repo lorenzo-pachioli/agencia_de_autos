@@ -18,7 +18,6 @@ import java.util.List;
 @RequestMapping("/favoritos")
 @RequiredArgsConstructor
 @Tag(name = "Favoritos", description = "Controlador para la gestión de vehículos favoritos de los usuarios")
-@SecurityRequirement(name = "Bearer Authentication") // Candado de JWT
 public class FavoritoController {
 
     private final FavoritoService favoritoService;

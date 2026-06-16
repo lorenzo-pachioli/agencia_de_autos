@@ -3,6 +3,7 @@ package utn.programacion3.agencia_de_autos.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,10 @@ import utn.programacion3.agencia_de_autos.service.AuditoriaTransaccionService;
 @RestController
 @RequestMapping("/auditoria")
 @RequiredArgsConstructor
+@Tag(
+        name = "Auditoria Transaccion",
+        description = "Endpoints para el analisis y listado de los cambios que se realizaron historicamente sobre Transacciones "
+)
 public class AuditoriaTransaccionController {
 
     private final AuditoriaTransaccionService auditoriaTransaccionService;
