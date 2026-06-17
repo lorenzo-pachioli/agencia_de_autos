@@ -58,6 +58,13 @@ public class VehiculoServiceImpl implements VehiculoService {
         return vehiculoRepository.findById(id)
                 .orElseThrow(VehiculoNoEncontradoException::new);
     }
+    @Override
+    public VehiculoResponseDTO obtenerVehiculoPorId(Long id){
+
+        return vehiculoMapper.toResponse(vehiculoRepository.findById(id)
+                .orElseThrow(VehiculoNoEncontradoException::new)
+        );
+    }
 
     @Override
     public List<VehiculoPublicResponseDTO> obtenerVehiculosPublicos() {
