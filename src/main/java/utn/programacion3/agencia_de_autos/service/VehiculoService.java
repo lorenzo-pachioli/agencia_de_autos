@@ -21,6 +21,8 @@ public interface VehiculoService {
 
     Vehiculo obtenerVehiculoEntityPorId(Long id);
 
+    VehiculoResponseDTO obtenerVehiculoPorId(Long id);
+
     VehiculoResponseDTO actualizarVehiculo(Long id, VehiculoRequestDTO request);
 
     VehiculoResponseDTO cambiarEstado(Long id, CambiarEstadoVehiculoDTO request);

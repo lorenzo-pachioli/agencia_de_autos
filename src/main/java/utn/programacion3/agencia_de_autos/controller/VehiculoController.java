@@ -60,6 +60,17 @@ public class VehiculoController {
         );
     }
 
+    @Operation(summary = "Buscar un vehículo por id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Vehículo encontrado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Vehículo no encontrado")
+    })
+    @GetMapping("/{id}")
+    public VehiculoResponseDTO buscarPorIdVehiculo(
+            @PathVariable Long id) {
+        return vehiculoService.obtenerVehiculoPorId(id);
+    }
+
     @Operation(summary = "Actualizar un vehículo")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Vehículo actualizado correctamente"),

@@ -1,6 +1,5 @@
 package utn.programacion3.agencia_de_autos.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +20,7 @@ import utn.programacion3.agencia_de_autos.model.Usuario;
 import utn.programacion3.agencia_de_autos.model.Vehiculo;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
+import utn.programacion3.agencia_de_autos.model.enums.Rol;
 import utn.programacion3.agencia_de_autos.repository.TransaccionRepository;
 import utn.programacion3.agencia_de_autos.repository.TransaccionSpecification;
 
@@ -161,11 +161,14 @@ public class TransaccionService {
 
     public TransaccionComisionResponseDTO comisionPorVendedor(TransaccionFilterDTO filtros) {
 
+
+        Usuario vendedor = usuarioService.buscarEntityPorId(filtros.getVendedor_id());
+        if (vendedor.getRolUsuario() != Rol.VENDEDOR)
+            throw new ResourceNotFoundException("El id solicitado no pertenece a un vendedor");
+
         BigDecimal totalComisiones = transaccionRepository.findAll(TransaccionSpecification.conFiltros(filtros)).stream()
                 .map(Transaccion::getComision_calculada)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        Usuario vendedor = usuarioService.buscarEntityPorId(filtros.getVendedor_id());
 
         return TransaccionComisionResponseDTO.builder()
                 .id(vendedor.getId())
