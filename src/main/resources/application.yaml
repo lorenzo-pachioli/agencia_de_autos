@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://agencia-de-autos-lorenzopachioli-42fa.a.aivencloud.com:10664/defaultdb?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://agencia-de-autos-lorenzopachioli-42fa.a.aivencloud.com:10664/defaultdb?createDatabaseIfNotExist=true&sslmode=REQUIRED&serverTimezone=UTC
 
     username: ${DB_USERNAME:root}
     password:  ${MYSQL_PASS:1234}
