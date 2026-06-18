@@ -2,6 +2,7 @@ package utn.programacion3.agencia_de_autos.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -82,8 +83,8 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<ErrorResponseDto> handleInvalidPassword(InvalidPasswordException ex, WebRequest request) {
+    @ExceptionHandler({InvalidPasswordException.class, BadCredentialsException.class})
+    public ResponseEntity<ErrorResponseDto> handleInvalidPassword(RuntimeException ex, WebRequest request) {
         return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 "Error de validación",
