@@ -29,7 +29,7 @@ public class UsuarioAdminRequestDto {
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String password;
 
-    @Schema(description = "Rol asignado al usuario dentro del sistema", example = "ADMIN", allowableValues = {"CLIENTE", "VENDEDOR", "ADMIN"})
+    @Schema(description = "Rol asignado al usuario dentro del sistema", example = "VENDEDOR", allowableValues = {"VENDEDOR"})
     @NotNull(message = "El rol es obligatorio para el administrador")
     private Rol rolUsuario;
 }
