@@ -3,8 +3,9 @@ server:
 
 spring:
   datasource:
-    url: agencia-de-autos-lorenzopachioli-42fa.a.aivencloud.com/defaultdb?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
-    username: avnadmin
+    url: jdbc:mysql://agencia-de-autos-lorenzopachioli-42fa.a.aivencloud.com:10660/defaultdb?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+
+    username: ${DB_USERNAME:root}
     password:  ${MYSQL_PASS:1234}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
