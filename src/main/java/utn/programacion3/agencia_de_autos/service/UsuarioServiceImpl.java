@@ -1,5 +1,9 @@
 package utn.programacion3.agencia_de_autos.service;
 
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +17,7 @@ import utn.programacion3.agencia_de_autos.mapper.UsuarioMapper;
 import utn.programacion3.agencia_de_autos.model.Usuario;
 import utn.programacion3.agencia_de_autos.model.enums.Rol;
 import utn.programacion3.agencia_de_autos.repository.UsuarioRepository;
-import utn.programacion3.agencia_de_autos.service.UsuarioService;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -77,8 +81,11 @@ public class UsuarioServiceImpl implements UsuarioService{
     @Override
     @Transactional
     public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioRequestDTO requestDTO) {
+
         Usuario usuarioExistente = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con el ID: " + id));
+
+        this.esPropioOAdmin(usuarioExistente);
 
         // Validar si intenta cambiar el email por uno que ya pertenece a OTRO usuario
         usuarioRepository.findByEmail(requestDTO.getEmail())
@@ -135,6 +142,21 @@ public class UsuarioServiceImpl implements UsuarioService{
         Usuario vendedorGuardado = usuarioRepository.save(nuevoVendedor);
 
         return usuarioMapper.toResponseDTO(vendedorGuardado);
+    }
+
+    @Override
+    public void esPropioOAdmin(Usuario usuarioExistente){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String emailLogueado = authentication.getName();
+
+        // Valida Seguridad: No es el propio usuario O el usuario logeado es ADMINISTRADOR
+        boolean esElMismoUsuario = usuarioExistente.getEmail().equals(emailLogueado);
+        boolean esAdministrador = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMINISTRADOR"));
+
+        if (!esElMismoUsuario && !esAdministrador) {
+            throw new AccessDeniedException("No tienes permisos para modificar este usuario.");
+        }
     }
 
 }

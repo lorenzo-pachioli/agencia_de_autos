@@ -38,6 +38,7 @@ public class VehiculoController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('VENDEDOR','ADMINISTRADOR')")
     public VehiculoResponseDTO crearVehiculo(
             @Valid @RequestBody VehiculoRequestDTO request) {
 
@@ -77,6 +78,7 @@ public class VehiculoController {
             @ApiResponse(responseCode = "404", description = "Vehículo no encontrado")
     })
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('VENDEDOR','ADMINISTRADOR')")
     public VehiculoResponseDTO actualizarVehiculo(
             @PathVariable Long id,
             @Valid @RequestBody VehiculoRequestDTO request) {
@@ -90,6 +92,7 @@ public class VehiculoController {
             @ApiResponse(responseCode = "404", description = "Vehículo no encontrado")
     })
     @PatchMapping("/{id}/estado")
+    @PreAuthorize("hasAnyRole('VENDEDOR','ADMINISTRADOR')")
     public ResponseEntity<VehiculoResponseDTO> cambiarEstado(
             @PathVariable Long id,
             @Valid @RequestBody CambiarEstadoVehiculoDTO request) {

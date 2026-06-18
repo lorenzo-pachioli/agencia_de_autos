@@ -39,6 +39,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida exitosamente")
     })
     @GetMapping
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioResponseDTO>> listar() {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
@@ -68,6 +69,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "404", description = "No se encontro ningún usuario con el ID provisto")
     })
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioResponseDTO> cambiarEstado(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.darDeBaja(id));
     }
