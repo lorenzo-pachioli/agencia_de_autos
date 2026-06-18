@@ -1,7 +1,6 @@
 package utn.programacion3.agencia_de_autos.service;
 
 
-import utn.programacion3.agencia_de_autos.dto.request.UsuarioAdminRequestDto;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
 import utn.programacion3.agencia_de_autos.model.Usuario;
@@ -23,7 +22,7 @@ public interface UsuarioService {
 
     UsuarioResponseDTO darDeBaja(Long id);
 
-    UsuarioResponseDTO registrarVendedor(UsuarioAdminRequestDto registroDto);
+    UsuarioResponseDTO registrarVendedor(UsuarioRequestDTO registroDto);
 
     void esPropioOAdmin(Usuario usuarioExistente);
 }

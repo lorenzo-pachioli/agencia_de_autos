@@ -7,7 +7,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import utn.programacion3.agencia_de_autos.dto.request.UsuarioAdminRequestDto;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
 import utn.programacion3.agencia_de_autos.exception.EmailAlreadyExistsException;
@@ -19,7 +18,6 @@ import utn.programacion3.agencia_de_autos.model.enums.Rol;
 import utn.programacion3.agencia_de_autos.repository.UsuarioRepository;
 import org.springframework.security.access.AccessDeniedException;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -126,7 +124,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 
     @Override
     @Transactional
-    public UsuarioResponseDTO registrarVendedor(UsuarioAdminRequestDto dto) {
+    public UsuarioResponseDTO registrarVendedor(UsuarioRequestDTO dto) {
 
         if (usuarioRepository.findByEmail(dto.getEmail().trim()).isPresent()) {
             throw new EmailAlreadyExistsException("El email ya se encuentra registrado en el sistema.");
@@ -138,6 +136,7 @@ public class UsuarioServiceImpl implements UsuarioService{
         nuevoVendedor.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         nuevoVendedor.setActivo(true);
+        nuevoVendedor.setRolUsuario(Rol.VENDEDOR);
 
         Usuario vendedorGuardado = usuarioRepository.save(nuevoVendedor);
 
