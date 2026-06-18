@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class FavoritoResponseDTO {
 
     private Long id;
-    private VehiculoResponseDTO vehiculo;
+    private VehiculoPublicResponseDTO vehiculo;
 
 }
