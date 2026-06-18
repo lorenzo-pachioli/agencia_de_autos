@@ -1,9 +1,9 @@
 package utn.programacion3.agencia_de_autos.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.math.BigDecimal;
-
 
 @Getter
 @Setter
@@ -12,14 +12,19 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ReporteGananciaVehiculoDTO {
 
-        private String patente;
+    @Schema(description = "Patente del vehículo vendido", example = "AB123CD")
+    private String patente;
 
-        private String modelo;
+    @Schema(description = "Nombre del modelo del vehículo", example = "Focus")
+    private String modelo;
 
-        private BigDecimal precioAdquisicion;
+    @Schema(description = "Precio al que fue adquirido el vehículo", example = "8500000.00", minimum = "0")
+    private BigDecimal precioAdquisicion;
 
-        private BigDecimal precioVenta;
+    @Schema(description = "Precio al que fue vendido el vehículo", example = "11200000.00", minimum = "0")
+    private BigDecimal precioVenta;
 
-        private BigDecimal ganancia;
-
+    @Schema(description = "Ganancia neta obtenida en la venta (precioVenta - precioAdquisicion)", example = "2700000.00")
+    private BigDecimal ganancia;
 }
+
