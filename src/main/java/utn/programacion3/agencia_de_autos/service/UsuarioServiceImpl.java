@@ -135,7 +135,7 @@ public class UsuarioServiceImpl implements UsuarioService{
         Usuario nuevoVendedor = usuarioMapper.toEntity(dto);
 
         // Encriptar la contraseña por seguridad antes de guardarla
-        // nuevoVendedor.setPassword(passwordEncoder.encode(dto.getPassword()));
+        nuevoVendedor.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         nuevoVendedor.setActivo(true);
 
