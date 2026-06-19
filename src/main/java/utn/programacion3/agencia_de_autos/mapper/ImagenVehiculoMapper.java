@@ -14,5 +14,6 @@ public interface ImagenVehiculoMapper {
     ImagenVehiculoResponseDTO toResponse(ImagenVehiculo entity);
 
     @Mapping(target = "vehiculo", ignore = true)
+    @Mapping(target = "esPrincipal", source = "esPrincipal", defaultValue = "false")
     ImagenVehiculo toEntity(ImagenVehiculoRequestDTO dto);
 }

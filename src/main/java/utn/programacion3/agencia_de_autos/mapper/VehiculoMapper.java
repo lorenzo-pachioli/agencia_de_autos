@@ -14,6 +14,8 @@ import utn.programacion3.agencia_de_autos.model.Vehiculo;
 public interface VehiculoMapper {
 
     @Mapping(target = "modeloNombre", source = "modelo.nombre")
+    @Mapping(target = "imagenPrincipalUrl", ignore = true)
+    @Mapping(target = "imagenes", ignore = true)
     VehiculoResponseDTO toResponse(Vehiculo vehiculo);
 
     @Mapping(target = "modeloNombre", source = "modelo.nombre")
@@ -29,5 +31,7 @@ public interface VehiculoMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "modelo", ignore = true)
     @Mapping(target = "imagenes", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     Vehiculo toEntity(VehiculoRequestDTO dto);
 }

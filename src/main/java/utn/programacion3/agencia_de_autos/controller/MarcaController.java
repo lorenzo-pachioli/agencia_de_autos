@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utn.programacion3.agencia_de_autos.dto.request.MarcaRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.MarcaResponseDTO;
@@ -29,6 +30,7 @@ public class MarcaController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('VENDEDOR','ADMINISTRADOR')")
     public MarcaResponseDTO crearMarca(
             @Valid @RequestBody MarcaRequestDTO request) {
 
@@ -63,6 +65,7 @@ public class MarcaController {
             @ApiResponse(responseCode = "404", description = "Marca no encontrada")
     })
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('VENDEDOR','ADMINISTRADOR')")
     public MarcaResponseDTO actualizarMarca(
             @PathVariable Long id,
             @Valid @RequestBody MarcaRequestDTO request) {
@@ -77,6 +80,7 @@ public class MarcaController {
     })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public void eliminarMarca(
             @PathVariable Long id) {
 

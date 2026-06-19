@@ -87,4 +87,19 @@ public class ImagenVehiculoService {
 
         imagenVehiculoRepository.delete(imagen);
     }
+
+    public String obtenerUrlPrincipal(Long vehiculoId) {
+        return imagenVehiculoRepository
+                .findByVehiculoIdAndEsPrincipalTrue(vehiculoId)
+                .map(ImagenVehiculo::getUrl)
+                .orElse(null);
+    }
+
+    public List<String> obtenerTodasLasUrls(Long vehiculoId) {
+        return imagenVehiculoRepository
+                .findByVehiculoId(vehiculoId)
+                .stream()
+                .map(ImagenVehiculo::getUrl)
+                .toList();
+    }
 }

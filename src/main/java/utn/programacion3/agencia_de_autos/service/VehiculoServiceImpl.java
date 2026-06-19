@@ -22,6 +22,7 @@ import utn.programacion3.agencia_de_autos.repository.VehiculoRepository;
 import utn.programacion3.agencia_de_autos.repository.VehiculoSpecification;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -32,6 +33,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     private final VehiculoRepository vehiculoRepository;
     private final ModeloRepository modeloRepository;
     private final VehiculoMapper vehiculoMapper;
+    private final ImagenVehiculoService imagenVehiculoService;
 
     @Override
     public VehiculoResponseDTO crearVehiculo(VehiculoRequestDTO request) {
@@ -60,10 +62,14 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
     @Override
     public VehiculoResponseDTO obtenerVehiculoPorId(Long id){
-
-        return vehiculoMapper.toResponse(vehiculoRepository.findById(id)
-                .orElseThrow(VehiculoNoEncontradoException::new)
+        Vehiculo vehiculo = vehiculoRepository.findById(id)
+                .orElseThrow(VehiculoNoEncontradoException::new);
+        VehiculoResponseDTO dto = vehiculoMapper.toResponse(vehiculo);
+        dto.setImagenes(imagenVehiculoService.obtenerTodasLasUrls(id));
+        dto.setImagenPrincipalUrl(
+                imagenVehiculoService.obtenerUrlPrincipal(vehiculo.getId())
         );
+        return dto;
     }
 
     @Override
@@ -136,11 +142,14 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Override
     public Page<VehiculoResponseDTO> buscarConFiltros(VehiculoFilterDTO filtros, Pageable pageable) {
 
-        return vehiculoRepository.findAll(
-                        VehiculoSpecification.conFiltros(filtros),
-                        pageable
-                )
-                .map(vehiculoMapper::toResponse);
+        return vehiculoRepository.findAll(VehiculoSpecification.conFiltros(filtros), pageable)
+                .map(vehiculo -> {
+                    VehiculoResponseDTO dto = vehiculoMapper.toResponse(vehiculo);
+                    dto.setImagenPrincipalUrl(
+                            imagenVehiculoService.obtenerUrlPrincipal(vehiculo.getId())
+                    );
+                    return dto;
+                });
     }
 
     @Override

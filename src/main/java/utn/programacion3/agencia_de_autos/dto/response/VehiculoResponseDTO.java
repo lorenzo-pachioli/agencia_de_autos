@@ -10,6 +10,8 @@ import utn.programacion3.agencia_de_autos.model.enums.TipoTransmision;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,6 +28,8 @@ import java.time.LocalDateTime;
         "estado",
         "tipoCombustible",
         "tipoTransmision",
+        "imagenPrincipalUrl",
+        "imagenes",
         "createdAt",
         "updatedAt"
 })
@@ -52,6 +56,11 @@ public class VehiculoResponseDTO {
  private TipoCombustible tipoCombustible;
 
  private TipoTransmision tipoTransmision;
+
+ private String imagenPrincipalUrl;
+
+ @Builder.Default
+ private List<String> imagenes = new ArrayList<>();
 
  private LocalDateTime createdAt;
 

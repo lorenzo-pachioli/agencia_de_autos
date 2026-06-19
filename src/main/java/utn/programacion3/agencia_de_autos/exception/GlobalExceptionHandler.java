@@ -2,6 +2,8 @@ package utn.programacion3.agencia_de_autos.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -83,11 +85,25 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<ErrorResponseDto> handleInvalidPassword(InvalidPasswordException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponseDto> handleInvalidPassword(RuntimeException ex, WebRequest request) {
         return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
-                "Error de validación",
+                "Autenticación fallida",
                 ex.getMessage(),
+                request,
+                null
+        );
+    }
+    @ExceptionHandler({BadCredentialsException.class, DisabledException.class} )
+    public ResponseEntity<ErrorResponseDto> handleAuthenticationErrors(RuntimeException ex, WebRequest request) {
+        String mensajeDescriptivo = "Credenciales incorrectas o usuario inexistente.";
+        if(ex instanceof DisabledException){
+            mensajeDescriptivo = "La cuenta de usuario se encuentra deshabilitada o inactiva.";
+        }
+        return buildErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Autenticación fallida",
+                mensajeDescriptivo,
                 request,
                 null
         );
@@ -98,24 +114,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleAccessDeniedException(AccessDeniedException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.FORBIDDEN.value());
+        response.put("status", HttpStatus.FORBIDDEN);
         response.put("error", "Forbidden");
         response.put("message", "Permisos insuficientes para acceder a este recurso.");
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-    }
-
-    // MANEJADOR GENERAL (Cualquier error inesperado en el servidor)
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDto> handleGlobalException(Exception ex, WebRequest request) {
-        System.out.println(ex);
-        return buildErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR, // Código 500
-                "Error interno del servidor",
-                "Ocurrió un error inesperado en el sistema. Por favor, intente más tarde.",
-                request,
-                null
-        );
     }
 
     // ATRAPA LOS ERRORES GENERADOS POR EL DESERIALIZADOR (POR EJEMPLO UN enum MAL ESCRITO EN EL BODY)
@@ -129,6 +132,18 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 "BAD REQUEST: " + mensajeError,
                 ex.getLocalizedMessage(),
+                request,
+                null
+        );
+    }
+    // MANEJADOR GENERAL (Cualquier error inesperado en el servidor)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDto> handleGlobalException(Exception ex, WebRequest request) {
+        System.out.println(ex);
+        return buildErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR, // Código 500
+                "Error interno del servidor",
+                "Ocurrió un error inesperado en el sistema. Por favor, intente más tarde.",
                 request,
                 null
         );

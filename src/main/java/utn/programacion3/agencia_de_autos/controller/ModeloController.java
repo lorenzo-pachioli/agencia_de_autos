@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utn.programacion3.agencia_de_autos.dto.request.ModeloRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.ModeloResponseDTO;
@@ -29,6 +30,7 @@ public class ModeloController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('VENDEDOR','ADMINISTRADOR')")
     public ModeloResponseDTO crearModelo(
             @Valid @RequestBody ModeloRequestDTO request) {
 
@@ -63,6 +65,7 @@ public class ModeloController {
             @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
     })
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('VENDEDOR','ADMINISTRADOR')")
     public ModeloResponseDTO actualizarModelo(
             @PathVariable Long id,
             @Valid @RequestBody ModeloRequestDTO request) {
@@ -77,6 +80,7 @@ public class ModeloController {
     })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public void eliminarModelo(
             @PathVariable Long id) {
 

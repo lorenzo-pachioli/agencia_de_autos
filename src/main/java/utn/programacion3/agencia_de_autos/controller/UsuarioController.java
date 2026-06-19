@@ -9,7 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import utn.programacion3.agencia_de_autos.dto.request.UsuarioAdminRequestDto;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
 import utn.programacion3.agencia_de_autos.service.UsuarioService;
@@ -39,6 +38,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida exitosamente")
     })
     @GetMapping
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioResponseDTO>> listar() {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
@@ -68,6 +68,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "404", description = "No se encontro ningún usuario con el ID provisto")
     })
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioResponseDTO> cambiarEstado(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.darDeBaja(id));
     }
@@ -83,7 +84,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o email ya existente"),
             @ApiResponse(responseCode = "403", description = "No tienes permisos (Se requiere ser ADMIN)")
     })
-    public ResponseEntity<UsuarioResponseDTO> crearVendedor(@Valid @RequestBody UsuarioAdminRequestDto registroDto) {
+    public ResponseEntity<UsuarioResponseDTO> crearVendedor(@Valid @RequestBody UsuarioRequestDTO registroDto) {
         UsuarioResponseDTO nuevoVendedor = usuarioService.registrarVendedor(registroDto);
         return new ResponseEntity<>(nuevoVendedor, HttpStatus.CREATED);
     }

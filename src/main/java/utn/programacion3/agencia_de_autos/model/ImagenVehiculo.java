@@ -23,4 +23,8 @@ public class ImagenVehiculo {
     @ManyToOne
     @JoinColumn(name = "id_vehiculo", nullable = false)
     private Vehiculo vehiculo;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean esPrincipal = false;
 }
