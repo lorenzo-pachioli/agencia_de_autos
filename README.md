@@ -14,6 +14,10 @@ Sistema backend para gestión de inventario y operaciones comerciales de vehícu
     - VENDEDOR: carlos.garcia@agencia.com , Password123!
     - CLIENTE: Se puede registrar libremente
 
+3. O alternativamente usar el frontend en netlify:
+
+   - https://agencia-de-autos.netlify.app/
+
 ## Tecnologías
 
 - Java 21 · Spring Boot 4.0.6
