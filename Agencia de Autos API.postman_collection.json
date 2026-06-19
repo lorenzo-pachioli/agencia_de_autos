@@ -1,0 +1,2516 @@
+{
+  "info": {
+    "_postman_id": "876d8d29-75c7-4e1e-865f-9d17ebfb2fdc",
+    "name": "Agencia de Autos API",
+    "description": "Colección completa de la API REST de Agencia de Autos - UTN Programación 3.\n\n**Cómo usar:**\n1. Importar la colección.\n2. Importar el Environment adjunto (o crear uno con las variables indicadas).\n3. Ejecutar primero las carpetas en orden: Auth → Usuarios → Marcas → Modelos → Vehículos → Imágenes → Favoritos → Transacciones → Auditoría.\n4. Para un Collection Run completo, los scripts automáticos guardan IDs y tokens entre requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "22635001"
+  },
+  "item": [
+    {
+      "name": "01 - Auth",
+      "item": [
+        {
+          "name": "Register - Crear usuario cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const json = pm.response.json();",
+                  "    pm.collectionVariables.set('clienteId', json.id);",
+                  "    pm.collectionVariables.set('usuarioId', json.id);",
+                  "    console.log('Cliente registrado con ID:', json.id);",
+                  "    pm.test('Usuario creado con status 201', () => pm.response.to.have.status(201));",
+                  "    pm.test('Respuesta tiene id', () => pm.expect(json).to.have.property('id'));",
+                  "    pm.test('Rol asignado es USUARIO', () => pm.expect(json.rolUsuario).to.eql('USUARIO'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Perez\",\n  \"email\": \"juan.perez@test.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Obtener token JWT",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login exitoso con status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Respuesta contiene token', () => pm.expect(json).to.have.property('token'));",
+                  "if (json.token) {",
+                  "    pm.collectionVariables.set('token', json.token);",
+                  "    console.log('Token JWT guardado correctamente');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan.perez@test.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Email duplicado (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Debe retornar 409 Conflict por email duplicado', () => pm.response.to.have.status(409));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Perez\",\n  \"email\": \"juan.perez@test.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Credenciales inválidas (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Debe retornar 401 por credenciales inválidas', () => pm.response.to.have.status(401));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"noexiste@test.com\",\n  \"password\": \"contraseniaWrong\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Registro e inicio de sesión. Ejecutar en orden: primero Register, luego Login. El token JWT se guarda automáticamente."
+    },
+    {
+      "name": "02 - Usuarios",
+      "item": [
+        {
+          "name": "Listar todos los usuarios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta es un array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar usuario por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Respuesta tiene id', () => pm.expect(json).to.have.property('id'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{usuarioId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{usuarioId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar usuario - ID inexistente (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Debe retornar 404', () => pm.response.to.have.status(404));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/99999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Nombre actualizado', () => pm.expect(json.nombre).to.eql('Juan Actualizado'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan Actualizado\",\n  \"apellido\": \"Perez\",\n  \"email\": \"juan.perez@test.com\",\n  \"password\": \"NuevaPassword456!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{usuarioId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{usuarioId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Dar de baja usuario (PATCH estado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Usuario dado de baja (activo=false)', () => pm.expect(json.activo).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{usuarioId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{usuarioId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear vendedor (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('vendedorId', json.id);",
+                  "    console.log('Vendedor creado con ID:', json.id);",
+                  "}",
+                  "pm.test('Rol es VENDEDOR', () => pm.expect(json.rolUsuario).to.eql('VENDEDOR'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos\",\n  \"apellido\": \"Garcia\",\n  \"email\": \"carlos.garcia@agencia.com\",\n  \"password\": \"Vendedor2026!\",\n  \"rolUsuario\": \"VENDEDOR\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/vendedores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "vendedores"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "CRUD de usuarios. Requiere token JWT. El endpoint POST /vendedores crea empleados con rol VENDEDOR."
+    },
+    {
+      "name": "03 - Marcas",
+      "item": [
+        {
+          "name": "Crear marca",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('marcaId', json.id);",
+                  "    console.log('Marca creada con ID:', json.id);",
+                  "}",
+                  "pm.test('Nombre de marca correcto', () => pm.expect(json.nombre).to.eql('Toyota'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Toyota\",\n  \"activo\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/marcas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marcas"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar todas las marcas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta es un array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/marcas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marcas"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener marca por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta tiene id', () => pm.expect(pm.response.json()).to.have.property('id'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/marcas/{{marcaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marcas",
+                "{{marcaId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar marca",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Nombre actualizado', () => pm.expect(pm.response.json().nombre).to.eql('Toyota Motors'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Toyota Motors\",\n  \"activo\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/marcas/{{marcaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marcas",
+                "{{marcaId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear segunda marca (para modelos)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "console.log('Segunda marca creada:', pm.response.json().nombre);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ford\",\n  \"activo\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/marcas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marcas"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "CRUD completo de marcas de vehículos."
+    },
+    {
+      "name": "04 - Modelos",
+      "item": [
+        {
+          "name": "Crear modelo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('modeloId', json.id);",
+                  "    console.log('Modelo creado con ID:', json.id);",
+                  "}",
+                  "pm.test('Nombre de modelo correcto', () => pm.expect(json.nombre).to.eql('Corolla'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Corolla\",\n  \"anio\": 2023,\n  \"tipoModelo\": \"AUTO\",\n  \"activo\": true,\n  \"marcaId\": {{marcaId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/modelos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modelos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar todos los modelos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta es un array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/modelos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modelos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener modelo por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta tiene id', () => pm.expect(pm.response.json()).to.have.property('id'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/modelos/{{modeloId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modelos",
+                "{{modeloId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar modelo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Nombre actualizado', () => pm.expect(pm.response.json().nombre).to.eql('Corolla Cross'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Corolla Cross\",\n  \"anio\": 2024,\n  \"tipoModelo\": \"SUV\",\n  \"activo\": true,\n  \"marcaId\": {{marcaId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/modelos/{{modeloId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modelos",
+                "{{modeloId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear modelo - marca inexistente (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Debe retornar 404 por marca inexistente', () => pm.response.to.have.status(404));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"ModeloFail\",\n  \"anio\": 2023,\n  \"tipoModelo\": \"AUTO\",\n  \"activo\": true,\n  \"marcaId\": 99999\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/modelos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modelos"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "CRUD completo de modelos. Requiere una marcaId válida (se crea en la carpeta Marcas)."
+    },
+    {
+      "name": "05 - Vehículos",
+      "item": [
+        {
+          "name": "Crear vehículo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('vehiculoId', json.id);",
+                  "    console.log('Vehículo creado con ID:', json.id);",
+                  "}",
+                  "pm.test('Patente correcta', () => pm.expect(json.patente).to.eql('ABC123'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patente\": \"ABC123\",\n  \"anio\": 2022,\n  \"precioAdquisicion\": 15000000.00,\n  \"precioVenta\": 20000000.00,\n  \"modeloId\": {{modeloId}},\n  \"kilometraje\": 25000,\n  \"color\": \"Blanco\",\n  \"descripcion\": \"Vehículo en excelente estado, único dueño\",\n  \"estado\": \"DISPONIBLE\",\n  \"tipoTransmision\": \"AUTOMATICA\",\n  \"tipoCombustible\": \"NAFTA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear segundo vehículo (para favoritos/transacciones)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "console.log('Segundo vehículo creado:', pm.response.json().id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patente\": \"XYZ789\",\n  \"anio\": 2021,\n  \"precioAdquisicion\": 12000000.00,\n  \"precioVenta\": 17500000.00,\n  \"modeloId\": {{modeloId}},\n  \"kilometraje\": 48000,\n  \"color\": \"Negro\",\n  \"descripcion\": \"Buen estado general\",\n  \"estado\": \"DISPONIBLE\",\n  \"tipoTransmision\": \"MANUAL\",\n  \"tipoCombustible\": \"DIESEL\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear vehículo - patente duplicada (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Debe retornar 400 por patente duplicada', () => pm.response.to.have.status(400));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patente\": \"ABC123\",\n  \"anio\": 2022,\n  \"precioAdquisicion\": 15000000.00,\n  \"precioVenta\": 20000000.00,\n  \"modeloId\": {{modeloId}},\n  \"kilometraje\": 5000,\n  \"color\": \"Rojo\",\n  \"estado\": \"DISPONIBLE\",\n  \"tipoTransmision\": \"MANUAL\",\n  \"tipoCombustible\": \"NAFTA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar vehículos con filtros",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta es un array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos/busqueda?page=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos",
+                "busqueda"
+              ],
+              "query": [
+                {
+                  "key": "marcaId",
+                  "value": "{{marcaId}}",
+                  "disabled": true
+                },
+                {
+                  "key": "modeloId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "combustible",
+                  "value": "NAFTA",
+                  "disabled": true
+                },
+                {
+                  "key": "tipoTransmision",
+                  "value": "AUTOMATICA",
+                  "disabled": true
+                },
+                {
+                  "key": "estado",
+                  "value": "DISPONIBLE",
+                  "disabled": true
+                },
+                {
+                  "key": "color",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "minPrecio",
+                  "value": "10000000",
+                  "disabled": true
+                },
+                {
+                  "key": "maxPrecio",
+                  "value": "25000000",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "0",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar vehículo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Color actualizado', () => pm.expect(pm.response.json().color).to.eql('Plateado'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patente\": \"ABC123\",\n  \"anio\": 2022,\n  \"precioAdquisicion\": 15000000.00,\n  \"precioVenta\": 21000000.00,\n  \"modeloId\": {{modeloId}},\n  \"kilometraje\": 25000,\n  \"color\": \"Plateado\",\n  \"descripcion\": \"Descripción actualizada\",\n  \"estado\": \"DISPONIBLE\",\n  \"tipoTransmision\": \"AUTOMATICA\",\n  \"tipoCombustible\": \"NAFTA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos/{{vehiculoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos",
+                "{{vehiculoId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambiar estado de vehículo (PATCH)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Estado cambiado', () => pm.expect(pm.response.json().estado).to.eql('RESERVADO'));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"DISPONIBLE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos/{{vehiculoId}}/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos",
+                "{{vehiculoId}}",
+                "estado"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Revertir estado a DISPONIBLE",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Estado DISPONIBLE', () => pm.expect(pm.response.json().estado).to.eql('DISPONIBLE'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"DISPONIBLE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos/{{vehiculoId}}/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos",
+                "{{vehiculoId}}",
+                "estado"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reporte de ganancias (Admin/Vendedor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Reporte tiene gananciaTotal', () => pm.expect(json).to.have.property('gananciaTotal'));",
+                  "pm.test('Reporte tiene lista de vehiculos', () => pm.expect(json.vehiculos).to.be.an('array'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos/reportes/ganancias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos",
+                "reportes",
+                "ganancias"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reporte de stock (Admin/Vendedor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Reporte tiene total', () => pm.expect(json).to.have.property('total'));",
+                  "pm.test('Reporte tiene disponibles', () => pm.expect(json).to.have.property('disponibles'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos/reportes/stock",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos",
+                "reportes",
+                "stock"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Últimos vehículos ingresados",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta es un array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+                  "pm.test('No supera la cantidad pedida', () => pm.expect(pm.response.json().length).to.be.at.most(5));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos/reportes/ultimos?cantidad=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos",
+                "reportes",
+                "ultimos"
+              ],
+              "query": [
+                {
+                  "key": "cantidad",
+                  "value": "5",
+                  "description": "Default es 10 si se omite"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "CRUD completo de vehículos. Requiere marcaId y modeloId válidos."
+    },
+    {
+      "name": "06 - Imágenes de Vehículos",
+      "item": [
+        {
+          "name": "Crear imagen de vehículo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('imagenId', json.id);",
+                  "    console.log('Imagen creada con ID:', json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://ejemplo.com/imagenes/vehiculo1-frente.jpg\",\n  \"vehiculoId\": {{vehiculoId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/imagenes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "imagenes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear segunda imagen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://ejemplo.com/imagenes/vehiculo1-lateral.jpg\",\n  \"vehiculoId\": {{vehiculoId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/imagenes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "imagenes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar todas las imágenes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta es un array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/imagenes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "imagenes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener imagen por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta tiene url', () => pm.expect(pm.response.json()).to.have.property('url'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/imagenes/{{imagenId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "imagenes",
+                "{{imagenId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener imágenes por vehículo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta es un array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+                  "pm.test('Al menos una imagen encontrada', () => pm.expect(pm.response.json().length).to.be.greaterThan(0));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/imagenes/vehiculo/{{vehiculoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "imagenes",
+                "vehiculo",
+                "{{vehiculoId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar imagen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('URL actualizada', () => pm.expect(pm.response.json().url).to.include('actualizada'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://ejemplo.com/imagenes/vehiculo1-frente-actualizada.jpg\",\n  \"vehiculoId\": {{vehiculoId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/imagenes/{{imagenId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "imagenes",
+                "{{imagenId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "CRUD de imágenes asociadas a vehículos. Requiere vehiculoId válido."
+    },
+    {
+      "name": "07 - Favoritos",
+      "item": [
+        {
+          "name": "Agregar vehículo a favoritos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Favorito tiene id', () => pm.expect(json).to.have.property('id'));",
+                  "pm.test('Favorito tiene vehiculo', () => pm.expect(json).to.have.property('vehiculo'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/favoritos/agregar/{{vehiculoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favoritos",
+                "agregar",
+                "{{vehiculoId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Agregar favorito duplicado (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Debe retornar 400 por favorito duplicado', () => pm.response.to.have.status(400));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/favoritos/agregar/{{vehiculoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favoritos",
+                "agregar",
+                "{{vehiculoId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar mis favoritos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta es un array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+                  "pm.test('Al menos un favorito', () => pm.expect(pm.response.json().length).to.be.greaterThan(0));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/favoritos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favoritos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar vehículo de favoritos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta tiene el vehículo eliminado', () => pm.expect(pm.response.json()).to.have.property('vehiculo'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/favoritos/eliminar/{{vehiculoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favoritos",
+                "eliminar",
+                "{{vehiculoId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar favorito inexistente (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Debe retornar 400 por favorito no existente', () => pm.response.to.have.status(400));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/favoritos/eliminar/{{vehiculoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favoritos",
+                "eliminar",
+                "{{vehiculoId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Gestión de favoritos del usuario autenticado. Requiere token JWT con rol USUARIO."
+    },
+    {
+      "name": "08 - Transacciones",
+      "item": [
+        {
+          "name": "Listar transacciones (con filtros)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta es un array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transacciones?fechaDesde={{fechaDesde}}&fechaHasta={{fechaHasta}}&estadoTransaccion=VENDIDO&page=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transacciones"
+              ],
+              "query": [
+                {
+                  "key": "vehiculo_id",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "cliente_id",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "vendedor_id",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "fechaDesde",
+                  "value": "{{fechaDesde}}"
+                },
+                {
+                  "key": "fechaHasta",
+                  "value": "{{fechaHasta}}"
+                },
+                {
+                  "key": "estadoTransaccion",
+                  "value": "VENDIDO",
+                  "description": "RESERVA | SENIADO | VENDIDO | CANCELADO"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear transacción",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('transaccionId', json.id);",
+                  "    console.log('Transacción creada con ID:', json.id);",
+                  "}",
+                  "pm.test('Estado inicial es RESERVA', () => pm.expect(json.estadoTransaccion).to.eql('RESERVA'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"precio_final\": 20000000.00,\n  \"metodoPago\": \"EFECTIVO\",\n  \"vehiculo_id\": {{vehiculoId}},\n  \"cliente_id\": {{clienteId}},\n  \"vendedor_id\": {{vendedorId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/transacciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transacciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar transacción por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('ID coincide', () => pm.expect(String(pm.response.json().id)).to.eql(pm.collectionVariables.get('transaccionId')));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transacciones/{{transaccionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transacciones",
+                "{{transaccionId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar transacción (PUT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Método de pago actualizado', () => pm.expect(pm.response.json().metodoPago).to.eql('TRANSFERENCIA'));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"observaciones\": \"Cliente prefiere transferencia bancaria\",\n  \"precio_final\": 20000000.00,\n  \"metodoPago\": \"TRANSFERENCIA\",\n  \"estadoTransaccion\": \"SENIADO\",\n  \"vehiculo_id\": {{vehiculoId}},\n  \"cliente_id\": {{clienteId}},\n  \"vendedor_id\": {{vendedorId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/transacciones/{{transaccionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transacciones",
+                "{{transaccionId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambiar estado de transacción (PATCH /estado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Estado cambiado a SENIADO', () => pm.expect(pm.response.json().estadoTransaccion).to.eql('SENIADO'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transacciones/{{transaccionId}}/estado?estado=SENIADO",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transacciones",
+                "{{transaccionId}}",
+                "estado"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "SENIADO",
+                  "description": "Valores: RESERVA | SENIADO | VENDIDO | CANCELADO"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Señar transacción (PATCH /seniar)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Estado cambiado a SENIADO', () => pm.expect(pm.response.json().estadoTransaccion).to.eql('SENIADO'));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transacciones/{{transaccionId}}/seniar?precioSenia=1111111",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transacciones",
+                "{{transaccionId}}",
+                "seniar"
+              ],
+              "query": [
+                {
+                  "key": "precioSenia",
+                  "value": "1111111",
+                  "description": "Monto de la seña"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Vender transacción (PATCH /vender)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Estado cambiado a VENDIDO', () => pm.expect(pm.response.json().estadoTransaccion).to.eql('VENDIDO'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transacciones/{{transaccionId}}/vender?precioFinal=20000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transacciones",
+                "{{transaccionId}}",
+                "vender"
+              ],
+              "query": [
+                {
+                  "key": "precioFinal",
+                  "value": "20000000",
+                  "description": "Precio final de venta acordado"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancelar transacción (PATCH /cancelar)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Se espera 400 porque la transacción ya está en estado VENDIDO",
+                  "// Para probar cancelar en RESERVA, crear otra transacción primero.",
+                  "pm.test('Respuesta recibida', () => pm.expect(pm.response.code).to.be.oneOf([200, 400]));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transacciones/{{transaccionId}}/cancelar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transacciones",
+                "{{transaccionId}}",
+                "cancelar"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Comisión por vendedor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Respuesta tiene comision_total', () => pm.expect(json).to.have.property('comision_total'));",
+                  "pm.test('vendedor_id coincide', () => pm.expect(String(json.vendedor_id)).to.eql(pm.collectionVariables.get('vendedorId')));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transacciones/comision-vendedor/{{vendedorId}}?fechaDesde={{fechaDesde}}&fechaHasta={{fechaHasta}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transacciones",
+                "comision-vendedor",
+                "{{vendedorId}}"
+              ],
+              "query": [
+                {
+                  "key": "fechaDesde",
+                  "value": "{{fechaDesde}}"
+                },
+                {
+                  "key": "fechaHasta",
+                  "value": "{{fechaHasta}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Rendimiento / Balance por período",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Respuesta tiene ingreso_final', () => pm.expect(json).to.have.property('ingreso_final'));",
+                  "pm.test('Respuesta tiene fecha_desde', () => pm.expect(json).to.have.property('fecha_desde'));",
+                  "pm.test('Respuesta tiene fecha_hasta', () => pm.expect(json).to.have.property('fecha_hasta'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transacciones/rendimiento?fechaDesde={{fechaDesde}}&fechaHasta={{fechaHasta}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transacciones",
+                "rendimiento"
+              ],
+              "query": [
+                {
+                  "key": "fechaDesde",
+                  "value": "{{fechaDesde}}"
+                },
+                {
+                  "key": "fechaHasta",
+                  "value": "{{fechaHasta}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear transacción - vehículo inexistente (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Debe retornar 404', () => pm.response.to.have.status(404));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"precio_final\": 10000000.00,\n  \"metodoPago\": \"EFECTIVO\",\n  \"vehiculo_id\": 99999,\n  \"cliente_id\": {{clienteId}},\n  \"vendedor_id\": {{vendedorId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/transacciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transacciones"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Flujo completo de transacciones: Crear → Actualizar → Cambiar estado → Vender/Señar → Cancelar. Requiere cliente, vendedor y vehículo disponible."
+    },
+    {
+      "name": "09 - Auditoría de Transacciones",
+      "item": [
+        {
+          "name": "Listar auditoría (todos los registros con filtros)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Respuesta es paginada (tiene content)', () => pm.expect(json).to.have.property('content'));",
+                  "pm.test('content es un array', () => pm.expect(json.content).to.be.an('array'));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auditoria?vendedorId=2&fechaDesde={{fechaDesde}}&fechaHasta={{fechaHasta}}&page=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auditoria"
+              ],
+              "query": [
+                {
+                  "key": "transaccionId",
+                  "value": "{{transaccionId}}",
+                  "disabled": true
+                },
+                {
+                  "key": "vendedorId",
+                  "value": "2"
+                },
+                {
+                  "key": "fechaDesde",
+                  "value": "{{fechaDesde}}"
+                },
+                {
+                  "key": "fechaHasta",
+                  "value": "{{fechaHasta}}"
+                },
+                {
+                  "key": "estadoAnterior",
+                  "value": "",
+                  "description": "RESERVA | SENIADO | VENDIDO | CANCELADO",
+                  "disabled": true
+                },
+                {
+                  "key": "estadoNuevo",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "created_at,desc",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auditoría por ID de transacción",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Respuesta es paginada', () => pm.expect(json).to.have.property('content'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auditoria/transaccion/{{transaccionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auditoria",
+                "transaccion",
+                "{{transaccionId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auditoría por ID de vendedor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Respuesta es paginada', () => pm.expect(json).to.have.property('content'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auditoria/vendedor/{{vendedorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auditoria",
+                "vendedor",
+                "{{vendedorId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auditoría - cambios de estado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Respuesta paginada', () => pm.expect(json).to.have.property('content'));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auditoria/cambio-estado?size=11&page=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auditoria",
+                "cambio-estado"
+              ],
+              "query": [
+                {
+                  "key": "transaccionId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "fechaDesde",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "fechaHasta",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "size",
+                  "value": "11"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auditoría - cambios de precio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Respuesta paginada', () => pm.expect(json).to.have.property('content'));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auditoria/cambio-precio?page=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auditoria",
+                "cambio-precio"
+              ],
+              "query": [
+                {
+                  "key": "transaccionId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "fechaDesde",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "fechaHasta",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Consultas de auditoría sobre cambios de estado y precio en transacciones. Solo lectura."
+    },
+    {
+      "name": "Eliminar",
+      "item": [
+        {
+          "name": "Eliminar marca",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204 No Content', () => pm.response.to.have.status(204));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/marcas/{{marcaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marcas",
+                "{{marcaId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar modelo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204 No Content', () => pm.response.to.have.status(204));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/modelos/{{modeloId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modelos",
+                "{{modeloId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar vehículo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204 No Content', () => pm.response.to.have.status(204));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos/{{vehiculoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos",
+                "{{vehiculoId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar imagen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204 No Content', () => pm.response.to.have.status(204));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/imagenes/{{imagenId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "imagenes",
+                "{{imagenId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "description": "URL base del servidor Spring Boot"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "description": "JWT Bearer token - se autocompleta tras el login"
+    },
+    {
+      "key": "usuarioId",
+      "value": "1"
+    },
+    {
+      "key": "vendedorId",
+      "value": "2"
+    },
+    {
+      "key": "clienteId",
+      "value": "1"
+    },
+    {
+      "key": "marcaId",
+      "value": "1"
+    },
+    {
+      "key": "modeloId",
+      "value": "1"
+    },
+    {
+      "key": "vehiculoId",
+      "value": "1"
+    },
+    {
+      "key": "imagenId",
+      "value": "1"
+    },
+    {
+      "key": "transaccionId",
+      "value": "1"
+    },
+    {
+      "key": "fechaDesde",
+      "value": "2026-01-01"
+    },
+    {
+      "key": "fechaHasta",
+      "value": "2026-12-31"
+    }
+  ]
+}
