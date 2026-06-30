@@ -2,6 +2,22 @@
 
 Sistema backend para gestión de inventario y operaciones comerciales de vehículos.
 
+## Deploy 
+
+1. La rama master deployada en Render es: 
+
+   https://agencia-de-autos.onrender.com/swagger-ui/index.html#
+
+2. Los usuarios disponibles para probarla son:
+
+    - ADMINISTRADOR: admin_test@gmail.com , Password123!
+    - VENDEDOR: carlos.garcia@agencia.com , Password123!
+    - CLIENTE: Se puede registrar libremente
+
+3. O alternativamente usar el frontend en netlify:
+
+   - https://agencia-de-autos.netlify.app/
+
 ## Tecnologías
 
 - Java 21 · Spring Boot 4.0.6
@@ -124,8 +140,8 @@ security/       JWT + Spring Security
 
 Repartición tentativa de trabajo para evitar conflictos de código.
 
-| Nombre    | Módulo                                               |
-| --------- | ---------------------------------------------------- |
-| Persona A | Catálogo (Marca, Modelo, Vehículo, Imágenes)         |
-| Persona B | Operaciones (Transacción, Método de Pago, Historial) |
-| Persona C | Seguridad, Usuarios, Favoritos, Infraestructura      |
+| Nombre | Módulo                                               |
+|  | ---------------------------------------------------- |
+| Emiliano Osorio | Catálogo (Marca, Modelo, Vehículo, Imágenes)         |
+| Lorenzo Pachioli | Operaciones (Transacción, Método de Pago, Historial) |
+| Agustin Avalos | Seguridad, Usuarios, Favoritos, Infraestructura      |
