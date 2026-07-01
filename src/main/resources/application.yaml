@@ -3,13 +3,13 @@ server:
 
 spring:
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/agencia_de_autos_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432}
     username: ${DB_USERNAME:root}
-    password:  ${MYSQL_PASS:1234}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    password:  ${DB_PASSWORD:1234}
+    driver-class-name: org.postgresql.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
