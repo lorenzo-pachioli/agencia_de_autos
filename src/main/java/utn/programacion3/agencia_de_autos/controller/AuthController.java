@@ -7,18 +7,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import utn.programacion3.agencia_de_autos.dto.request.LoginRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.response.HelthCheckResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.LoginResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
 import utn.programacion3.agencia_de_autos.service.AuthService;
 import utn.programacion3.agencia_de_autos.service.UsuarioService;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -49,6 +50,15 @@ public class AuthController {
     public ResponseEntity<UsuarioResponseDTO> registrar(@Valid @RequestBody UsuarioRequestDTO requestDTO) {
         UsuarioResponseDTO response = usuarioService.registrarUsuario(requestDTO);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/healthcheck")
+    @Operation(
+            summary = "Verificar estado del servicio",
+            description = "Endpoint simple para que el frontend 'despierte' el servidor y verificar que este activo."
+    )
+    public ResponseEntity<HelthCheckResponseDTO> healthcheck() {
+        return ResponseEntity.ok( new HelthCheckResponseDTO());
     }
 
     @PostMapping("/login")
