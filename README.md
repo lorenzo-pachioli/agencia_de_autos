@@ -4,14 +4,14 @@ Sistema backend para gestión de inventario y operaciones comerciales de vehícu
 
 ## Deploy 
 
-1. La rama master deployada en Render es: 
+1. La rama deployada en Render es /feature/migracion-a-postgresql: 
 
    https://agencia-de-autos.onrender.com/swagger-ui/index.html#
 
 2. Los usuarios disponibles para probarla son:
 
-    - ADMINISTRADOR: admin_test@gmail.com , Password123!
-    - VENDEDOR: carlos.garcia@agencia.com , Password123!
+    - ADMINISTRADOR: admin_test@gmail.com , Password123! (se crea solo por base de datos)
+    - VENDEDOR: carlos.garcia@agencia.com , Password123! (Los crea solo el Administrador)
     - CLIENTE: Se puede registrar libremente
 
 3. O alternativamente usar el frontend en netlify:
@@ -22,7 +22,7 @@ Sistema backend para gestión de inventario y operaciones comerciales de vehícu
 
 - Java 21 · Spring Boot 4.0.6
 - Spring Security + JWT ⚠️ _(pendiente agregar al pom.xml)_
-- Spring Data JPA + MySQL
+- Spring Data JPA (en master es MySQL y en /feature/migracion-a-postgresql es PostgreSQL)
 - Lombok · MapStruct 1.6.3
 - Swagger/OpenAPI ⚠️ _(pendiente agregar al pom.xml)_
 
