@@ -3,6 +3,7 @@ package utn.programacion3.agencia_de_autos.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,7 @@ public class ImagenVehiculoController {
             @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
     })
     @GetMapping
+    @SecurityRequirements
     public List<ImagenVehiculoResponseDTO> obtenerTodas() {
 
         return imagenVehiculoService.obtenerTodas();
@@ -54,6 +56,7 @@ public class ImagenVehiculoController {
             @ApiResponse(responseCode = "404", description = "Imagen no encontrada")
     })
     @GetMapping("/{id}")
+    @SecurityRequirements
     public ImagenVehiculoResponseDTO obtenerPorId(
             @PathVariable Long id) {
 
@@ -66,6 +69,7 @@ public class ImagenVehiculoController {
             @ApiResponse(responseCode = "404", description = "Vehículo no encontrado")
     })
     @GetMapping("/vehiculo/{vehiculoId}")
+    @SecurityRequirements
     public List<ImagenVehiculoResponseDTO> obtenerPorVehiculo(
             @PathVariable Long vehiculoId) {
 

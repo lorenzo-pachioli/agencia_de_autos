@@ -3,6 +3,7 @@ package utn.programacion3.agencia_de_autos.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,7 @@ public class MarcaController {
             @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
     })
     @GetMapping
+    @SecurityRequirements
     public List<MarcaResponseDTO> listarMarcas() {
 
         return marcaService.listarMarcas();
@@ -53,6 +55,7 @@ public class MarcaController {
             @ApiResponse(responseCode = "404", description = "Marca no encontrada")
     })
     @GetMapping("/{id}")
+    @SecurityRequirements
     public MarcaResponseDTO obtenerMarcaPorId(
             @PathVariable Long id) {
 
