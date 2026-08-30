@@ -3,6 +3,7 @@ package utn.programacion3.agencia_de_autos.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.List;
 @RequestMapping("/vehiculos")
 @RequiredArgsConstructor
 @Tag(name = "Vehículos", description = "Operaciones relacionadas con la gestión de vehículos")
+@SecurityRequirements
 public class VehiculoController {
 
     private final VehiculoServiceImpl vehiculoService;

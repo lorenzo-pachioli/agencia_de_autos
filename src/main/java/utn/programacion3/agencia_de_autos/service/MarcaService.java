@@ -2,6 +2,7 @@ package utn.programacion3.agencia_de_autos.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import utn.programacion3.agencia_de_autos.dto.request.MarcaRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.MarcaResponseDTO;
 import utn.programacion3.agencia_de_autos.mapper.MarcaMapper;
@@ -35,6 +36,7 @@ public class MarcaService {
     }
 
     // Obtener todas las marcas
+    @Transactional(readOnly = true)
     public List<MarcaResponseDTO> listarMarcas() {
 
         return marcaRepository.findAll()
@@ -44,6 +46,7 @@ public class MarcaService {
     }
 
     // Buscar marca por ID
+    @Transactional(readOnly = true)
     public MarcaResponseDTO obtenerMarcaPorId(Long id) {
 
         Marca marca = marcaRepository.findById(id)

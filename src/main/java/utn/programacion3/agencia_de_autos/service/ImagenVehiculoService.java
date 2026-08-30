@@ -2,6 +2,7 @@ package utn.programacion3.agencia_de_autos.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import utn.programacion3.agencia_de_autos.dto.request.ImagenVehiculoRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.ImagenVehiculoResponseDTO;
 import utn.programacion3.agencia_de_autos.mapper.ImagenVehiculoMapper;
@@ -36,6 +37,7 @@ public class ImagenVehiculoService {
     }
 
     // Obtener todas las imagenes
+    @Transactional(readOnly = true)
     public List<ImagenVehiculoResponseDTO> obtenerTodas(){
 
         return imagenVehiculoRepository.findAll()
@@ -45,6 +47,7 @@ public class ImagenVehiculoService {
     }
 
     // Obtener imagen por ID
+    @Transactional(readOnly = true)
     public ImagenVehiculoResponseDTO obtenerPorId(Long id){
 
         ImagenVehiculo imagen = imagenVehiculoRepository.findById(id)
@@ -54,6 +57,7 @@ public class ImagenVehiculoService {
     }
 
     // Obtener imagenes por vehiculo
+    @Transactional(readOnly = true)
     public List<ImagenVehiculoResponseDTO> obtenerPorVehiculo(Long vehiculoId){
 
         return imagenVehiculoRepository.findByVehiculoId(vehiculoId)
@@ -88,6 +92,7 @@ public class ImagenVehiculoService {
         imagenVehiculoRepository.delete(imagen);
     }
 
+    @Transactional(readOnly = true)
     public String obtenerUrlPrincipal(Long vehiculoId) {
         return imagenVehiculoRepository
                 .findByVehiculoIdAndEsPrincipalTrue(vehiculoId)
@@ -95,6 +100,7 @@ public class ImagenVehiculoService {
                 .orElse(null);
     }
 
+    @Transactional(readOnly = true)
     public List<String> obtenerTodasLasUrls(Long vehiculoId) {
         return imagenVehiculoRepository
                 .findByVehiculoId(vehiculoId)

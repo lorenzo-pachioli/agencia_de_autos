@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import utn.programacion3.agencia_de_autos.dto.request.*;
 import utn.programacion3.agencia_de_autos.dto.response.ReporteGananciasResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoPublicResponseDTO;
@@ -55,12 +56,14 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Vehiculo obtenerVehiculoEntityPorId(Long id) {
 
         return vehiculoRepository.findById(id)
                 .orElseThrow(VehiculoNoEncontradoException::new);
     }
     @Override
+    @Transactional(readOnly = true)
     public VehiculoResponseDTO obtenerVehiculoPorId(Long id){
         Vehiculo vehiculo = vehiculoRepository.findById(id)
                 .orElseThrow(VehiculoNoEncontradoException::new);
@@ -73,6 +76,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<VehiculoPublicResponseDTO> obtenerVehiculosPublicos() {
 
         return vehiculoRepository.findAll()
@@ -82,6 +86,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<VehiculoResponseDTO> obtenerVehiculosInternos() {
 
         return vehiculoRepository.findAll()
@@ -140,6 +145,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<VehiculoResponseDTO> buscarConFiltros(VehiculoFilterDTO filtros, Pageable pageable) {
 
         return vehiculoRepository.findAll(VehiculoSpecification.conFiltros(filtros), pageable)
@@ -153,6 +159,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ReporteGananciasResponseDTO obtenerReporteGanancias() {
 
         List<Vehiculo> vehiculos = vehiculoRepository.findAll()
@@ -183,6 +190,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ReporteStockVehiculoDTO obtenerReporteStock() {
 
         long disponibles = vehiculoRepository.countByEstado(EstadoVehiculo.DISPONIBLE);
@@ -203,6 +211,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<VehiculoResponseDTO> obtenerUltimosVehiculos(Integer cantidad) {
 
         Pageable pageable = PageRequest.of(

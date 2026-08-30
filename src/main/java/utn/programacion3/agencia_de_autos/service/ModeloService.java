@@ -2,6 +2,7 @@ package utn.programacion3.agencia_de_autos.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import utn.programacion3.agencia_de_autos.dto.request.ModeloRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.ModeloResponseDTO;
 import utn.programacion3.agencia_de_autos.mapper.ModeloMapper;
@@ -40,6 +41,7 @@ public class ModeloService {
     }
 
     // Obtener todos los modelos
+    @Transactional(readOnly = true)
     public List<ModeloResponseDTO> listarModelos() {
 
         return modeloRepository.findAll()
@@ -49,6 +51,7 @@ public class ModeloService {
     }
 
     // Obtener modelo por ID
+    @Transactional(readOnly = true)
     public ModeloResponseDTO obtenerModeloPorId(Long id) {
 
         Modelo modelo = modeloRepository.findById(id)
