@@ -22,7 +22,7 @@ public interface TransaccionRepository extends
             "SUM(t.vehiculo.precioAdquisicion) as costosVehiculos " +
             "FROM Transaccion t " +
             "WHERE t.created_at BETWEEN :desde AND :hasta " +
-            "AND t.estadoTransaccion = VENDIDO")
+            "AND t.estadoTransaccion = utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion.VENDIDO")
     Optional<BalanceProyeccion> calcularBalanceEntreFechas(
             @Param("desde") LocalDate desde,
             @Param("hasta") LocalDate hasta
