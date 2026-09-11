@@ -64,16 +64,20 @@ public class SecurityConfig {
                                 "/auth/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html",
+                                "/swagger-ui.html"
+                        ).permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET,
                                 "/vehiculos/**",
                                 "/marcas",
-                                "/modelos"
+                                "/marcas/**",
+                                "/modelos",
+                                "/modelos/**",
+                                "/imagenes",
+                                "/imagenes/**"
                         ).permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

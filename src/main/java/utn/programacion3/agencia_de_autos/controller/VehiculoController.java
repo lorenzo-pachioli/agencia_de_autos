@@ -36,7 +36,9 @@ public class VehiculoController {
     @Operation(summary = "Crear un vehículo")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Vehículo creado correctamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos")
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -77,6 +79,9 @@ public class VehiculoController {
     @Operation(summary = "Actualizar un vehículo")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Vehículo actualizado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado"),
             @ApiResponse(responseCode = "404", description = "Vehículo no encontrado")
     })
     @PutMapping("/{id}")
@@ -132,6 +137,10 @@ public class VehiculoController {
         );
     }
 
+    @Operation(summary = "Obtener últimos vehículos registrados")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
+    })
     @GetMapping("/reportes/ultimos")
     public ResponseEntity<List<VehiculoResponseDTO>> obtenerUltimosVehiculos(
             @RequestParam(defaultValue = "10") Integer cantidad) {
@@ -144,9 +153,12 @@ public class VehiculoController {
     @Operation(summary = "Eliminar un vehículo")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Vehículo eliminado correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado"),
             @ApiResponse(responseCode = "404", description = "Vehículo no encontrado")
     })
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminarVehiculo(
             @PathVariable Long id) {

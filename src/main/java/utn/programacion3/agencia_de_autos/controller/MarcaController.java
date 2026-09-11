@@ -27,7 +27,9 @@ public class MarcaController {
     @Operation(summary = "Crear una marca")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Marca creada correctamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos")
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -65,6 +67,9 @@ public class MarcaController {
     @Operation(summary = "Actualizar una marca")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Marca actualizada correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado"),
             @ApiResponse(responseCode = "404", description = "Marca no encontrada")
     })
     @PutMapping("/{id}")
@@ -79,6 +84,8 @@ public class MarcaController {
     @Operation(summary = "Eliminar una marca")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Marca eliminada correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado"),
             @ApiResponse(responseCode = "404", description = "Marca no encontrada")
     })
     @DeleteMapping("/{id}")

@@ -28,7 +28,9 @@ public class ImagenVehiculoController {
     @Operation(summary = "Crear una imagen de vehículo")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Imagen creada correctamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos")
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -79,6 +81,9 @@ public class ImagenVehiculoController {
     @Operation(summary = "Actualizar una imagen")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Imagen actualizada correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado"),
             @ApiResponse(responseCode = "404", description = "Imagen no encontrada")
     })
     @PutMapping("/{id}")
@@ -93,6 +98,8 @@ public class ImagenVehiculoController {
     @Operation(summary = "Eliminar una imagen")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Imagen eliminada correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado"),
             @ApiResponse(responseCode = "404", description = "Imagen no encontrada")
     })
     @DeleteMapping("/{id}")

@@ -27,7 +27,9 @@ public class ModeloController {
     @Operation(summary = "Crear un modelo")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Modelo creado correctamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos")
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -65,6 +67,9 @@ public class ModeloController {
     @Operation(summary = "Actualizar un modelo")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Modelo actualizado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado"),
             @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
     })
     @PutMapping("/{id}")
@@ -79,6 +84,8 @@ public class ModeloController {
     @Operation(summary = "Eliminar un modelo")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Modelo eliminado correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado"),
             @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
     })
     @DeleteMapping("/{id}")
