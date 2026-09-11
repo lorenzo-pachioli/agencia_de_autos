@@ -22,13 +22,20 @@ public class ImagenVehiculoService {
     private final ImagenVehiculoMapper imagenVehiculoMapper;
 
     // Crear imagen
+    @Transactional
     public ImagenVehiculoResponseDTO crearImagen(ImagenVehiculoRequestDTO request){
 
         Vehiculo vehiculo = vehiculoRepository.findById(request.getVehiculoId())
                 .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
 
-        ImagenVehiculo imagen = imagenVehiculoMapper.toEntity(request);
+        boolean esPrincipal = Boolean.TRUE.equals(request.getEsPrincipal());
 
+        if (esPrincipal) {
+            desmarcarImagenPrincipalExistente(vehiculo.getId(), null);
+        }
+
+        ImagenVehiculo imagen = imagenVehiculoMapper.toEntity(request);
+        imagen.setEsPrincipal(esPrincipal);
         imagen.setVehiculo(vehiculo);
 
         ImagenVehiculo imagenGuardada = imagenVehiculoRepository.save(imagen);
@@ -67,6 +74,7 @@ public class ImagenVehiculoService {
     }
 
     // Actualizar imagen
+    @Transactional
     public ImagenVehiculoResponseDTO actualizarImagen(Long id, ImagenVehiculoRequestDTO request){
 
         ImagenVehiculo imagen = imagenVehiculoRepository.findById(id)
@@ -75,7 +83,14 @@ public class ImagenVehiculoService {
         Vehiculo vehiculo = vehiculoRepository.findById(request.getVehiculoId())
                 .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
 
+        boolean esPrincipal = Boolean.TRUE.equals(request.getEsPrincipal());
+
+        if (esPrincipal) {
+            desmarcarImagenPrincipalExistente(vehiculo.getId(), id);
+        }
+
         imagen.setUrl(request.getUrl());
+        imagen.setEsPrincipal(esPrincipal);
         imagen.setVehiculo(vehiculo);
 
         ImagenVehiculo imagenActualizada = imagenVehiculoRepository.save(imagen);
@@ -84,12 +99,23 @@ public class ImagenVehiculoService {
     }
 
     // Eliminar imagen
+    @Transactional
     public void eliminarImagen(Long id){
 
         ImagenVehiculo imagen = imagenVehiculoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Imagen no encontrada"));
 
         imagenVehiculoRepository.delete(imagen);
+    }
+
+    private void desmarcarImagenPrincipalExistente(Long vehiculoId, Long imagenIdActual) {
+        imagenVehiculoRepository.findByVehiculoIdAndEsPrincipalTrue(vehiculoId)
+                .ifPresent(principalActual -> {
+                    if (imagenIdActual == null || !principalActual.getId().equals(imagenIdActual)) {
+                        principalActual.setEsPrincipal(false);
+                        imagenVehiculoRepository.save(principalActual);
+                    }
+                });
     }
 
     @Transactional(readOnly = true)
