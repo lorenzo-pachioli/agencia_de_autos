@@ -34,11 +34,11 @@ public class Transaccion {
     @Builder.Default
     private BigDecimal comision_calculada = BigDecimal.ZERO;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MetodoPago metodoPago;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Builder.Default
     private EstadoTransaccion estadoTransaccion = EstadoTransaccion.RESERVA;
 
