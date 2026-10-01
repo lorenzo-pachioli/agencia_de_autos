@@ -1,39 +1,233 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
+// ── 1. Google Fonts ───────────────────────────────────────────────────────────
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@600;700;800&display=swap');
+
+// ── 2. Paleta de colores personalizadas ──────────────────────────────────────
+$gold-palette: (
+  0: #000000,
+  10: #261a00,
+  20: #3f2e00,
+  25: #4c3800,
+  30: #5a4300,
+  35: #684f00,
+  40: #775b00,
+  50: #967200,
+  60: #b68a00,
+  70: #d4a200,
+  80: #f0be2a,
+  90: #f9de8b,
+  95: #fceebb,
+  98: #fef8ec,
+  99: #fffbf2,
+  100: #ffffff,
+);
+
+// Paleta secundaria: neutral oscura para la UI admin
+$neutral-palette: (
+  0: #000000,
+  10: #0f0f0f,
+  20: #1a1a1a,
+  25: #252525,
+  30: #303030,
+  35: #3c3c3c,
+  40: #484848,
+  50: #606060,
+  60: #797979,
+  70: #939393,
+  80: #aeaeae,
+  90: #cacaca,
+  95: #e3e3e3,
+  98: #f2f2f2,
+  99: #f8f8f8,
+  100: #ffffff,
+);
+
+// ── 3. Definición del tema M3 ─────────────────────────────────────────────────
 html {
   height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
+
+  @include mat.theme((color: (primary: $gold-palette,
+        tertiary: $neutral-palette,
       ),
-      typography: Roboto,
+      typography: 'DM Sans',
       density: 0,
-    )
-  );
+    ));
+
+  // ── Sobreescrituras de CSS variables M3 ─────────────────────────────────
+
+  // Superficie y fondo
+  --mat-sys-background: #f8f8f8;
+  --mat-sys-surface: #ffffff;
+  --mat-sys-surface-variant: #f2f2f2;
+  --mat-sys-on-background: #0f0f0f;
+  --mat-sys-on-surface: #0f0f0f;
+  --mat-sys-on-surface-variant: #64748b; // slate-500
+
+  // Borde global (equivale a border-[#e8e8e8] del frontend)
+  --mat-sys-outline: #e8e8e8;
+  --mat-sys-outline-variant: #e8e8e8;
+
+  // Primary gold exacto
+  --mat-sys-primary: #c9a84c;
+  --mat-sys-on-primary: #0f0f0f;
+  --mat-sys-primary-container: #fceebb;
+  --mat-sys-on-primary-container: #261a00;
+
+  // Error → rojo (badge-baja / btn-admin-danger del frontend)
+  --mat-sys-error: #dc2626; // red-600
+  --mat-sys-on-error: #ffffff;
+  --mat-sys-error-container: #fee2e2; // red-100
+  --mat-sys-on-error-container: #7f1d1d; // red-900
 }
 
+// ── 4. Body ───────────────────────────────────────────────────────────────────
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
   color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
+  background-color: var(--mat-sys-background);
   color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem; // 14px — coincide con text-sm del frontend
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   margin: 0;
   height: 100%;
 }
-/* You can add global styles to this file, and also import other style files */
+
+// ── 5. Tipografía adicional ───────────────────────────────────────────────────
+.mat-display,
+h1,
+h2,
+h3 {
+  font-family: 'Playfair Display', serif;
+}
+
+// ── 6. Overrides de componentes Material ─────────────────────────────────────
+// Botones — filled primary = btn-gold
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-unelevated-button.mat-primary {
+  --mdc-filled-button-container-color: #c9a84c;
+  --mdc-filled-button-label-text-color: #0f0f0f;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-radius: 2px; // rounded-sm del frontend
+}
+
+// Botones — stroked = btn-outline
+.mat-mdc-outlined-button.mat-primary {
+  --mdc-outlined-button-outline-color: #0f0f0f;
+  --mdc-outlined-button-label-text-color: #0f0f0f;
+  font-weight: 600;
+  border-radius: 2px;
+}
+
+// Campos de formulario
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-focus-outline-color: #c9a84c;
+  --mdc-outlined-text-field-focus-label-text-color: #c9a84c;
+  --mdc-outlined-text-field-outline-color: #e8e8e8;
+  --mdc-outlined-text-field-hover-outline-color: #c9a84c;
+  font-size: 0.875rem;
+}
+
+// Cards
+.mat-mdc-card {
+  --mdc-elevated-card-container-color: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px; // rounded-sm
+  box-shadow: none;
+
+  &:hover {
+    border-color: #c9a84c;
+    box-shadow: 0 4px 16px rgba(201, 168, 76, 0.12);
+  }
+}
+
+// Chips / Badges de estado
+mat-chip[color="success"],
+.badge-disponible {
+  --mdc-chip-elevated-container-color: #d1fae5; // emerald-100
+  --mdc-chip-label-text-color: #065f46; // emerald-800
+}
+
+mat-chip[color="warn"],
+.badge-reservado {
+  --mdc-chip-elevated-container-color: #fef3c7; // amber-100
+  --mdc-chip-label-text-color: #92400e; // amber-800
+}
+
+mat-chip[color="accent"],
+.badge-vendido {
+  --mdc-chip-elevated-container-color: #e2e8f0; // slate-200
+  --mdc-chip-label-text-color: #475569; // slate-600
+}
+
+.badge-en_reparacion {
+  --mdc-chip-elevated-container-color: #dbeafe; // blue-100
+  --mdc-chip-label-text-color: #1e40af; // blue-800
+}
+
+.badge-baja {
+  --mdc-chip-elevated-container-color: #fee2e2; // red-100
+  --mdc-chip-label-text-color: #b91c1c; // red-700
+}
+
+// Toolbar / Sidenav
+mat-toolbar.mat-primary {
+  background-color: #0f0f0f;
+  color: #ffffff;
+}
+
+mat-sidenav {
+  background-color: #0f0f0f;
+  color: #f8f8f8;
+  border-right: 1px solid #1a1a1a;
+}
+
+// Snackbar
+.mat-mdc-snack-bar-container {
+  &.snack-success {
+    --mdc-snackbar-container-color: #065f46;
+  }
+
+  &.snack-error {
+    --mdc-snackbar-container-color: #dc2626;
+  }
+
+  &.snack-warn {
+    --mdc-snackbar-container-color: #92400e;
+  }
+}
+
+// Progress bar / Spinner 
+.mat-mdc-progress-bar {
+  --mdc-linear-progress-active-indicator-color: #c9a84c;
+}
+
+.mat-mdc-progress-spinner circle {
+  stroke: #c9a84c;
+}
+
+// Tabs — active tab = gold underline
+.mat-mdc-tab-group {
+  --mdc-tab-indicator-active-indicator-color: #c9a84c;
+  --mat-tab-header-active-label-text-color: #c9a84c;
+  --mat-tab-header-active-ripple-color: rgba(201, 168, 76, 0.12);
+}
+
+// ── 7. Animación global ───────────────────────────────────────────────────────
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.7s ease both;
+}
