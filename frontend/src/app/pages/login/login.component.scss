@@ -1,0 +1,29 @@
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 22rem;
+
+    input {
+      padding: 0.5rem;
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 0.6rem;
+    }
+  }
+
+  &__error {
+    color: #c62828;
+    margin: 0;
+  }
+}

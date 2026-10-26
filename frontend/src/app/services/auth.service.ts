@@ -1,6 +1,6 @@
 import { computed, inject, Service, signal } from '@angular/core';
 import { tap } from 'rxjs';
-import { LoginRequest } from '../models/LoginRequest';
+import { LoginRequest } from '../models/Login';
 import { UsuarioRequest } from '../models/Usuario';
 import { AuthApiService } from './auth-api.service';
 //maneja la sesion
