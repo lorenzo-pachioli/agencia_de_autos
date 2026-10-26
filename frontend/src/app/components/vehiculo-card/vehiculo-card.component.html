@@ -1,14 +1,14 @@
 @if(vehiculo(); as v){
-    <mat-card class="vehiculo-card" appearance="outlined">
-        <img mat-card-image [src]="v.imagenPrincipalUrl" [alt]="v.modeloNombre">
-        <mat-card-content>
-            <mat-card-title>{{v.modeloNombre}} {{v.anio}}</mat-card-title>
-            <mat-card-subtitle>${{v.precioVenta}}</mat-card-subtitle>
-        </mat-card-content>
-        <mat-card-footer class="vehiculo-card-footer">
-            <p>{{v.kilometraje}}km</p>
-            <p>{{v.tipoCombustible}}</p>
-            <p>{{v.tipoTransmision}}</p>
-        </mat-card-footer>
-    </mat-card>
+<mat-card class="vehiculo-card" appearance="outlined">
+    <img class="img-vehiculo" mat-card-image [src]="v.imagenPrincipalUrl" [alt]="v.modeloNombre" width="100%">
+    <mat-card-content>
+        <mat-card-title>{{v.modeloNombre}} {{v.anio}}</mat-card-title>
+        <mat-card-subtitle>{{ v.precioVenta| currency:'ARS':'symbol':'1.0-0' }}</mat-card-subtitle>
+    </mat-card-content>
+    <mat-card-footer class="vehiculo-card-footer">
+        <p>{{v.kilometraje}}km</p>
+        <p>{{v.tipoCombustible}}</p>
+        <p>{{v.tipoTransmision}}</p>
+    </mat-card-footer>
+</mat-card>
 }

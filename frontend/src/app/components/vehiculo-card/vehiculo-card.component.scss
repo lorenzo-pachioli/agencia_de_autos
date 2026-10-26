@@ -1,9 +1,37 @@
-.vehiculo-card {
-  max-width: 400px;
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
+
+.vehiculo-card {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  cursor: pointer;
+  overflow: hidden;
+
+  .img-vehiculo {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+  }
+}
+
+.vehiculo-card:hover .img-vehiculo {
+  transform: scale(1.05);
+  transition: transform 0.3s ease-in-out;
+}
+
 .vehiculo-card-footer {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;
+  position: absolute;
+  bottom: 0%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
 }
