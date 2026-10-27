@@ -1,0 +1,68 @@
+<div class="padre">
+    <form class="formulario" [formGroup]="formularioAutos">
+        <fieldset>
+            <label>Marca</label>
+            <select id="marca" formControlName="marcaIdf">
+                <option value="" disabled>Seleccioná una marca</option>
+                @for (opcion of opcionesMarcaId; track opcion) {
+                    <option [ngValue]="opcion">{{ opcion }}</option>
+                }
+            </select>
+        </fieldset>
+
+        <fieldset>
+            <label for="modelo">Modelo</label>
+            <select id="modelo" formControlName="modeloIdf">
+                <option value="" disabled>Seleccioná un modelo</option>
+                @for (opcion of opcionesModeloId; track opcion) {
+                    <option [ngValue]="opcion">{{ opcion }}</option>
+                }
+            </select>
+        </fieldset>
+
+        <fieldset>
+            <label for="anio">Año</label>
+            <input type="text" formControlName="aniof" id="anio">
+        </fieldset>
+
+        <fieldset>
+            <label for="kilometraje">Kilometraje</label>
+            <input type="text" formControlName="kilometrajef" id="kilometraje">
+        </fieldset>
+        
+        <fieldset>
+            <label for="precioVenta">Precio de venta</label>
+            <input type="text" formControlName="precioVentaf" id="precioVenta">
+        </fieldset>
+
+        <fieldset>
+            <label>Combustible</label>
+            <select id="combustible" formControlName="combustiblef">
+                <option value="" disabled>Seleccioná combustible</option>
+                @for (opcion of opcionesCombustible; track opcion) {
+                    <option [ngValue]="opcion">{{ opcion }}</option>
+                }
+            </select>
+        </fieldset>
+
+        <fieldset>
+            <label>Transmisión</label>
+            <select id="transmision" formControlName="transmisionf">
+                <option value="" disabled>Seleccioná transmisión</option>
+                @for (opcion of opcionesTransmicion; track opcion) {
+                    <option [ngValue]="opcion">{{ opcion }}</option>
+                }
+            </select>
+        </fieldset>
+
+        <fieldset>
+            <label for="color">Color</label>
+            <input type="text" formControlName="colorf" id="color">
+        </fieldset>
+
+        <fieldset>
+            <label for="descripcion">Descripción</label>
+            <input type="text" formControlName="descripcionf" id="descripcion">
+        </fieldset>
+    </form>
+</div>
