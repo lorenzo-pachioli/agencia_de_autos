@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ClientServiceService } from '../../services/client-service.service';
 
 @Component({
   imports: [ReactiveFormsModule],
@@ -9,6 +10,8 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 })
 export class FormClientComponent {
 
+  private clientService = inject(ClientServiceService)
+  
   formularioAutos: FormGroup
   marcaId: FormControl
   modeloId: FormControl
@@ -65,5 +68,9 @@ export class FormClientComponent {
     this.transmision.setValue(valor)
   }
 
-  
+  manejarEnvios(){
+    return this.clientService.postVehicle(this.formularioAutos.value).subscribe({
+      next: (dato: any) => {console.log(dato),alert("vehiculo cargado con exito"),this.formularioAutos.reset()},
+    })
+  }
 }
