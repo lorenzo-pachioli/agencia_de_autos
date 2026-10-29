@@ -2,14 +2,12 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-  imports: [],
+  imports: [ReactiveFormsModule],
   selector: 'app-form-client',
   styleUrl: './form-client.component.scss',
   templateUrl: './form-client.component.html',
 })
 export class FormClientComponent {
-
-
 
   formularioAutos: FormGroup
   marcaId: FormControl
@@ -66,4 +64,6 @@ export class FormClientComponent {
   setTransmision(valor: string) {
     this.transmision.setValue(valor)
   }
+
+  
 }
