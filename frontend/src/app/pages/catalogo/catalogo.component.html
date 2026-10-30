@@ -1,0 +1,19 @@
+<div class="catalogo-container">
+    <div class="catalogo-header">
+        <p class="catalogo">Catalogo</p>
+        <h1>Vehiculos disponibles</h1>
+        <p class="encontrados">{{vehiculos()?.totalElements}} vehiculos encontrados</p>
+    </div>
+    <div class="catalogo-main">
+        <aside class="filtros">
+            <p>Filtros</p>
+        </aside>
+        <mat-grid-list cols="3" gutterSize="16px" rowHeight="300px">
+            @for(v of vehiculosList(); track $index){
+            <mat-grid-tile colspan="1" rowspan="1">
+                <app-vehiculo-card [vehiculo]="v" (irDetalle)="irDetalle(v.id)" />
+            </mat-grid-tile>
+            }
+        </mat-grid-list>
+    </div>
+</div>
