@@ -27,6 +27,7 @@
         font-size: 2rem;
         margin: 0;
     }
+
     .encontrados {
         color: var(--mat-sys-on-surface-variant);
         margin: 0;
@@ -49,6 +50,14 @@
         border: 1px solid lightgrey;
         border-radius: 5px;
         padding: 1em 2em;
+
+        .titulo {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 1em;
+        }
     }
 
     mat-grid-list {

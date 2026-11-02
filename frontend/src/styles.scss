@@ -130,6 +130,15 @@ h3 {
   font-size: 0.875rem;
 }
 
+// Panel desplegable de mat-select (se renderiza en CDK overlay, fuera del componente)
+.mat-mdc-select-panel {
+  --mat-select-panel-background-color: #ffffff;
+  background-color: #ffffff !important;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
 // Cards
 .mat-mdc-card {
   --mdc-elevated-card-container-color: #ffffff;

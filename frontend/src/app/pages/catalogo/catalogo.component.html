@@ -6,14 +6,27 @@
     </div>
     <div class="catalogo-main">
         <aside class="filtros">
-            <p>Filtros</p>
+            <div class="titulo">
+                <mat-icon aria-hidden="false" aria-label="Filtros" fontIcon="filter_list"></mat-icon>
+                <p>Filtros</p>
+            </div>
+            <app-filtros [marcas]="marcas()" [modelos]="modelos()" [combustibles]="combustibles()"
+                [transmisiones]="transmisiones()" (filtrosChange)="onFiltrar($event)" />
+
         </aside>
+        @if (vehiculos() === null) {
+        <p>Cargando vehículos...</p>
+        } @else if ((vehiculos()?.totalElements ?? 0) > 0) {
         <mat-grid-list cols="3" gutterSize="16px" rowHeight="300px">
-            @for(v of vehiculosList(); track $index){
-            <mat-grid-tile colspan="1" rowspan="1">
+            @for (v of vehiculosList(); track v.id) {
+            <mat-grid-tile>
                 <app-vehiculo-card [vehiculo]="v" (irDetalle)="irDetalle(v.id)" />
             </mat-grid-tile>
             }
         </mat-grid-list>
+        } @else {
+        <p>No se encontraron resultados para su búsqueda.</p>
+        }
+
     </div>
 </div>
