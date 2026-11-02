@@ -17,13 +17,27 @@
         @if (vehiculos() === null) {
         <p>Cargando vehículos...</p>
         } @else if ((vehiculos()?.totalElements ?? 0) > 0) {
-        <mat-grid-list cols="3" gutterSize="16px" rowHeight="300px">
-            @for (v of vehiculosList(); track v.id) {
-            <mat-grid-tile>
-                <app-vehiculo-card [vehiculo]="v" (irDetalle)="irDetalle(v.id)" />
-            </mat-grid-tile>
-            }
-        </mat-grid-list>
+        <div class="catalogo-body">
+            <mat-grid-list cols="3" gutterSize="16px" rowHeight="300px">
+                @for (v of vehiculosList(); track v.id) {
+                <mat-grid-tile>
+                    <app-vehiculo-card [vehiculo]="v" (irDetalle)="irDetalle(v.id)" />
+                </mat-grid-tile>
+                }
+
+            </mat-grid-list>
+
+            <mat-paginator 
+            [length]="vehiculos()?.totalElements ?? 0" 
+            [pageIndex]="pageIndex()" 
+            [pageSize]="pageSize()"
+            [pageSizeOptions]="pageSizeOptions" 
+            showFirstLastButtons aria-label="Seleccionar página"
+            (page)="onPagina($event)" 
+            />
+
+        </div>
+
         } @else {
         <p>No se encontraron resultados para su búsqueda.</p>
         }

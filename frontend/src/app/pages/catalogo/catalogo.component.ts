@@ -7,9 +7,10 @@ import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { FiltrosComponent } from '../../components/filtros/filtros.component';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 @Component({
-  imports: [MatGridListModule, VehiculoCardComponent, MatIconModule, FiltrosComponent],
+  imports: [MatGridListModule, VehiculoCardComponent, MatIconModule, FiltrosComponent, MatPaginatorModule],
   selector: 'app-catalogo',
   styleUrl: './catalogo.component.scss',
   templateUrl: './catalogo.component.html',
@@ -29,29 +30,36 @@ export class CatalogoComponent {
   transmisiones = toSignal(this.vehiculosSrv.getTransmisiones(), { initialValue: [] });
 
   filtros = signal<FiltrosVehiculo>({});
-  page = signal(0);
+  pageIndex = signal(0);
+  pageSize = signal(10);
+  readonly pageSizeOptions = [5, 10, 25];
 
   constructor() {
-    this.vehiculosSrv.obtenerTodos(0, 9).subscribe({
-      next: res => {
-        this.vehiculos.set(res)
-      },
-      error: err => console.log(err)
-    });
+    this.cargar();
   }
 
-  irDetalle(id: number) {
-    this.router.navigate(['/vehiculos', id]);
+  private cargar(): void {
+    this.vehiculosSrv
+      .obtenerTodos(this.pageIndex(), this.pageSize(), this.filtros())
+      .subscribe({
+        next: res => this.vehiculos.set(res),
+        error: err => console.log(err),
+      });
   }
 
   onFiltrar(f: FiltrosVehiculo): void {
-    this.filtros.set({ ...f });
-    this.page.set(0);
-    this.vehiculosSrv.obtenerTodos(0, 9, f).subscribe({
-      next: res => {
-        this.vehiculos.set(res)
-      },
-      error: err => console.log(err)
-    });
+    this.filtros.set(f);
+    this.pageIndex.set(0); 
+    this.cargar();
+  }
+
+  onPagina(e: PageEvent): void {
+    this.pageIndex.set(e.pageIndex);
+    this.pageSize.set(e.pageSize);
+    this.cargar();
+  }
+
+  irDetalle(id: number): void {
+    this.router.navigate(['/vehiculos', id]);
   }
 }
