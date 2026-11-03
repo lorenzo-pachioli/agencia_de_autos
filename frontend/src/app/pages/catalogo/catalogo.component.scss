@@ -27,6 +27,7 @@
         font-size: 2rem;
         margin: 0;
     }
+
     .encontrados {
         color: var(--mat-sys-on-surface-variant);
         margin: 0;
@@ -45,10 +46,33 @@
 
     .filtros {
         grid-area: filtros;
-        height: 100%;
+        height: max-content;
         border: 1px solid lightgrey;
         border-radius: 5px;
         padding: 1em 2em;
+
+        .titulo {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 1em;
+        }
+    }
+
+    .catalogo-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1em;
+        min-width: 0;
+        width: 100%;
+
+        mat-paginator {
+            width: 100% !important;
+            border-radius: 5px;
+        }
     }
 
     mat-grid-list {

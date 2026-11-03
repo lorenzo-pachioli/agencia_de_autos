@@ -1,0 +1,63 @@
+<div class="detalle-vehiculo-container">
+    <div class="detalle-vehiculo-header">
+        <a matButton="text" routerLink="" class="volver-catalogo">
+            <mat-icon>chevron_left</mat-icon>
+            Volver al catalogo
+        </a>
+    </div>
+    @if(vehiculo(); as v){
+    <div class="detalle-vehiculo-body">
+        <div class="imagenes">
+            <img class="imagen-principal" [src]="imagenActual()" [alt]="v.modeloNombre">
+
+            @if (imagenes().length > 1) {
+            <div class="selector-imagenes">
+                <button type="button" class="flecha" (click)="anterior()" aria-label="Imagen anterior">
+                    <mat-icon>chevron_left</mat-icon>
+                </button>
+
+                <div class="miniaturas">
+                    @for (img of imagenes(); track img; let i = $index) {
+                    <button type="button" class="miniatura" [class.activa]="i === indice()" (click)="indice.set(i)">
+                        <img [src]="img" [alt]="v.modeloNombre + ' - imagen ' + (i + 1)">
+                    </button>
+                    }
+                </div>
+
+                <button type="button" class="flecha" (click)="siguiente()" aria-label="Imagen siguiente">
+                    <mat-icon>chevron_right</mat-icon>
+                </button>
+            </div>
+            }
+        </div>
+        <div class="detalle-vehiculo-main">
+            <h1>{{v.modeloNombre}}</h1>
+            <h2>{{ v.precioVenta | currency }}</h2>
+            <div class="sub-items">
+                <ul>
+                    <li><mat-icon class="icon-primary">calendar_today</mat-icon>Año {{v.anio}}</li>
+                    <li><mat-icon class="icon-primary">local_gas_station</mat-icon> Combustible {{v.tipoCombustible}}</li>
+                    <li><mat-icon class="icon-primary">palette</mat-icon>Color {{v.color}}</li>
+                </ul>
+                <ul>
+                    <li><mat-icon class="icon-primary">speed</mat-icon>Kilometraje {{v.kilometraje}}</li>
+                    <li><mat-icon class="icon-primary">settings</mat-icon>Transmision {{v.tipoTransmision}}</li>
+                </ul>
+            </div>
+            <h3>Descripcion</h3>
+            <p>{{v.descripcion}}</p>
+            @if(logged()){
+                <a class="solicitar-turno" matButton="filled">Solicitar turno</a>
+            }@else {
+                <button class="solicitar-turno" matButton="outlined">
+                    ¿Te interesa este vehículo? <a routerLink="/login">Iniciá sesión</a> o <a routerLink="/register">creá tu cuenta</a>.
+                </button>
+            }
+
+        </div>
+    </div>
+    }@else {
+    <h1>404 - No se encontro el vehiculo</h1>
+    }
+
+</div>

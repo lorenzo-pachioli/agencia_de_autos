@@ -55,21 +55,80 @@ INSERT INTO vehiculos (id_vehiculo, anio, color, created_at, descripcion, estado
 
 -- ----------------------------------------------------------------
 -- 5. IMAGENES VEHICULO
+--    1 imagen principal + 3 secundarias por vehiculo (URLs de fotos reales
+--    de la web, hotlinkeadas; no son de uso libre: sirven para desarrollo/demo).
+--    Si alguna URL deja de cargar, se reemplaza con un UPDATE por id.
 -- ----------------------------------------------------------------
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=1200&q=80', 1);
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80', 1);
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200&q=80', 1);
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1200&q=80', 2);
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&w=1200&q=80', 2);
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1200&q=80', 3);
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1200&q=80', 3);
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://images.unsplash.com/photo-1551830820-330a71b99659?auto=format&fit=crop&w=1200&q=80', 4);
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=1200&q=80', 5);
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=1200&q=80', 6);
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80', 7);
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=1200&q=80', 8);
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=1200&q=80', 9);
-INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=1200&q=80', 10);
+
+-- 1 · Toyota Corolla 2022 (Blanco)
+--     Fuentes: AutoScout24 (Corolla 2022 blanco) + Zigwheels. Orden: principal, 3 secundarias.
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtcOORrFCwG_7WJ29s7IBJSPPAvFcr10H6iXtY_215ZA&s=10', 1);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imagecdn.zigwheels.ae/large/gallery/exterior/40/417/toyota-corolla-front-angle-low-view-931780.jpg?tr=w-930', 1);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://prod.pictures.autoscout24.net/listing-images/169b1fd0-dc07-425a-affe-638b633cd4d6_17ec5585-6625-4b61-9c0d-5ec7207c2731.jpg/1920x1080.webp', 1);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imagecdn.zigwheels.ae/large/gallery/interior/40/417/toyota-corolla-dashboard-view-806093.jpg?tr=w-930', 1);
+
+-- 2 · Toyota Hilux 2023 (Gris Oscuro, cabina doble)
+--     Fuente: Autocar India (Hilux). Frente, lateral, trasera, interior.
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://cdn-s3.autocarindia.com/Toyota/Hilux/2026_Toyota_Hilux_Front_Quarter_Static.jpg', 2);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://cdn-s3.autocarindia.com/Toyota/Hilux/2026_Toyota_Hilux_Side_Tracking.jpg', 2);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://cdn-s3.autocarindia.com/Toyota/Hilux/2026_Toyota_Hilux_Rear_Quarter_Static.jpg', 2);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://cdn-s3.autocarindia.com/Toyota/Hilux/2026_Toyota_Hilux_Interior.jpg', 2);
+
+-- 3 · Toyota RAV4 Hybrid 2023 (Negro)
+--     Fuente: Sayarabay (RAV4 HEV). Frente, trasera lateral, trasera, interior.
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://imgcdn.sayaratbay.com/medium/gallery/exterior/40/1675/toyota-rav-4-hev-full-front-view-926803.jpg', 3);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imgcdn.sayaratbay.com/medium/gallery/exterior/40/1675/toyota-rav-4-hev-rear-medium-side-view-530466.jpg', 3);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imgcdn.sayaratbay.com/medium/gallery/exterior/40/1675/toyota-rav-4-hev-rear-cross-view-993654.jpg', 3);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imgcdn.sayaratbay.com/medium/gallery/interior/40/1675/toyota-rav-4-hev-dashboard-view-941454.jpg', 3);
+
+-- 4 · Ford Focus 2021 (Rojo)
+--     Fuente: Zigwheels (Focus). Frente, lateral, trasera, interior.
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://imagecdn.zigwheels.ae/large/gallery/exterior/12/112/ford-focus-front-angle-low-view-247844.jpg?tr=w-930', 4);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imagecdn.zigwheels.ae/large/gallery/exterior/12/112/ford-focus-side-view-439448.jpg?tr=w-930', 4);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imagecdn.zigwheels.ae/large/gallery/exterior/12/112/ford-focus-rear-angle-view-591108.jpg?tr=w-930', 4);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imagecdn.zigwheels.ae/large/gallery/interior/12/112/ford-focus-stereo-view-862014.jpg?tr=w-930', 4);
+
+-- 5 · Ford Ranger XLT 2022 (Blanco)
+--     Fuente: AutoDeal (nota sobre la Ranger XLT 2022). Fotos del mismo modelo/año.
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://d1hv7ee95zft1i.cloudfront.net/custom/blog-post/original/2022-ford-ranger-xlt-62a1b9ff4f411.jpg', 5);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://d1hv7ee95zft1i.cloudfront.net/custom/blog-post-photo/gallery/ford-ranger-exterior-62a1bd0ddc8b2.jpg', 5);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://d1hv7ee95zft1i.cloudfront.net/custom/blog-post-photo/gallery/ford-ranger-xlt-driving-and-handling-62a1bbe19f39b.jpg', 5);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://d1hv7ee95zft1i.cloudfront.net/custom/blog-post-photo/gallery/ford-ranger-xlt-interior-passenger-seat-62a1bbbc7dd45.jpg', 5);
+
+-- 6 · Volkswagen Golf 2022 (Plata)
+--     Fuente: Zigwheels. OJO: son fotos del Golf GTI (misma generacion), no del Comfortline.
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://imagecdn.zigwheels.ae/large/gallery/exterior/41/1182/volkswagen-golf-gti-front-angle-low-view-676498.jpg?tr=w-930', 6);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imagecdn.zigwheels.ae/large/gallery/exterior/41/1182/volkswagen-golf-gti-side-view-856051.jpg?tr=w-930', 6);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imagecdn.zigwheels.ae/large/gallery/exterior/41/1182/volkswagen-golf-gti-rear-angle-view-144784.jpg?tr=w-930', 6);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imagecdn.zigwheels.ae/large/gallery/interior/41/1182/volkswagen-golf-gti-dashboard-view-204039.jpg?tr=w-930', 6);
+
+-- 7 · Chevrolet Cruze 2021 (Azul Metalizado)
+--     Fuente: Perfil/Parabrisas (lanzamiento Cruze 2021 Argentina). Angulos de las fotos 2-4 sin verificar.
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://fotos.perfil.com/2021/01/21/chevrolet-cruze-1117286.jpg', 7);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://fotos.perfil.com/2021/01/21/chevrolet-cruze-1117290.jpg', 7);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://fotos.perfil.com/2021/01/21/chevrolet-cruze-1117289.jpg', 7);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://fotos.perfil.com/2021/01/21/chevrolet-cruze-1117288.jpg', 7);
+
+-- 8 · Honda Civic 2023 (Negro)
+--     Fuente: Zigwheels (Civic 2022-2023). Frente, lateral, trasera (luz), interior.
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://imagecdn.zigwheels.ae/large/gallery/exterior/14/132/honda-civic-front-angle-low-view-781258.jpg?tr=w-930', 8);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imagecdn.zigwheels.ae/large/gallery/exterior/14/132/honda-civic-front-side-view-763437.jpg?tr=w-930', 8);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imagecdn.zigwheels.ae/large/gallery/exterior/14/132/honda-civic-tail-light-644115.jpg?tr=w-930', 8);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imagecdn.zigwheels.ae/large/gallery/interior/14/132/honda-civic-dashboard-view-301286.jpg?tr=w-930', 8);
+
+-- 9 · Renault Duster 2022 (Gris)
+--     Fuente: Sayarabay (Duster 2022-2024). Frente, lateral, trasera, interior.
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://imgcdn.sayaratbay.com/medium/gallery/exterior/33/1086/renault-duster-front-medium-view-376682.jpg', 9);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imgcdn.sayaratbay.com/medium/gallery/exterior/33/1086/renault-duster-side-view-586782.jpg', 9);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imgcdn.sayaratbay.com/medium/gallery/exterior/33/1086/renault-duster-rear-angle-view-631190.jpg', 9);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://imgcdn.sayaratbay.com/medium/gallery/interior/33/1086/renault-duster-dashboard-view-312982.jpg', 9);
+
+-- 10 · Fiat Cronos 2023 (Blanco)
+--     Fuente: Perfil/Parabrisas (Cronos Precision 2023 Argentina). Angulos de las fotos 2-4 sin verificar.
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (true,  'https://fotos.perfil.com/2022/07/21/fiat-cronos-precision-2023-1389802.jpg', 10);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://fotos.perfil.com/2022/07/21/fiat-cronos-precision-2023-1389808.jpg', 10);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://fotos.perfil.com/2022/07/21/fiat-cronos-precision-2023-1389809.jpg', 10);
+INSERT INTO imagenes_vehiculo (es_principal, url, id_vehiculo) VALUES (false, 'https://fotos.perfil.com/2022/07/21/fiat-cronos-precision-2023-1389810.jpg', 10);
 
 -- ----------------------------------------------------------------
 -- 6. TRANSACCIONES
