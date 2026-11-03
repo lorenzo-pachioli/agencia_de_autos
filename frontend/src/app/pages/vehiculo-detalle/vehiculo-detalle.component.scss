@@ -1,0 +1,141 @@
+* {
+    margin: 0px;
+}
+
+.detalle-vehiculo-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 3em;
+}
+
+.detalle-vehiculo-header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 1em;
+
+    .volver-catalogo {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        color: var(--mat-sys-on-surface-variant) !important;
+    }
+}
+
+.detalle-vehiculo-body {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 4em;
+
+    .imagenes {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 1em;
+        max-width: 50%;
+
+        .imagen-principal {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .selector-imagenes {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .miniaturas {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+            overflow-x: auto;
+            scroll-snap-type: x proximity;
+        }
+
+        .miniatura {
+            flex: 0 0 80px;
+            height: 56px;
+            padding: 0;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            opacity: 0.6;
+            scroll-snap-align: start;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+
+            &.activa {
+                border-color: var(--mat-sys-primary);
+                opacity: 1;
+            }
+        }
+
+        .flecha {
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    }
+}
+
+.detalle-vehiculo-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 100%;
+    gap: 2em;
+
+    .sub-items {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 70%;
+
+        ul {
+            display: flex;
+            flex-direction: column;
+            padding: 0px;
+            gap: 2em;
+
+            li {
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 1em;
+
+                .icon-primary {
+                    color: var(--mat-sys-primary);
+
+                }
+            }
+        }
+    }
+
+    .solicitar-turno {
+        width: 100% !important;
+    }
+}

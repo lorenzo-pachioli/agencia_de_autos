@@ -130,6 +130,15 @@ h3 {
   font-size: 0.875rem;
 }
 
+// Panel desplegable de mat-select (se renderiza en CDK overlay, fuera del componente)
+.mat-mdc-select-panel {
+  --mat-select-panel-background-color: #ffffff;
+  background-color: #ffffff !important;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
 // Cards
 .mat-mdc-card {
   --mdc-elevated-card-container-color: #ffffff;
@@ -230,4 +239,26 @@ mat-sidenav {
 
 .animate-fade-up {
   animation: fadeUp 0.7s ease both;
+}
+
+// Paginador
+mat-paginator.mat-mdc-paginator {
+  --mat-paginator-container-background-color: var(--mat-sys-surface);
+  --mat-paginator-container-text-color: var(--mat-sys-on-surface-variant);
+  --mat-paginator-container-text-font: var(--mat-sys-body-medium-font);
+  --mat-paginator-container-text-size: 0.8125rem;
+  --mat-paginator-enabled-icon-color: var(--mat-sys-on-surface);
+  --mat-paginator-disabled-icon-color: color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent);
+
+  border: 1px solid var(--mat-sys-outline);
+  border-radius: 4px;
+
+  .mat-mdc-paginator-container {
+    justify-content: space-between;
+  }
+
+  // El hover dorado va sobre el botón, no sobre el paginador (ver nota)
+  .mat-mdc-icon-button {
+    --mat-icon-button-state-layer-color: var(--mat-sys-primary);
+  }
 }
