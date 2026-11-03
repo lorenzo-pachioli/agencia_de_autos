@@ -59,7 +59,7 @@ export class CatalogoComponent {
     this.cargar();
   }
 
-  irDetalle(id: number): void {
+  irDetalle(id: number) {
     this.router.navigate(['/vehiculos', id]);
   }
 }

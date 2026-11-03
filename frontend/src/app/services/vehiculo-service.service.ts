@@ -10,7 +10,7 @@ import { Marca, Modelo } from '../models/Opciones';
 export class VehiculoService {
     private readonly http = inject(HttpClient);
 
-    obtenerPorId(id: number): Observable<Vehiculo> {
+    obtenerPorId(id: string): Observable<Vehiculo> {
         return this.http.get<Vehiculo>(`${VEHICULOS_URL}/${id}`);
     }
 
