@@ -1,12 +1,23 @@
 import { Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../services/auth.service';
 import type { ApiError } from '../../models/ApiError';
 
 @Component({
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
   selector: 'app-login',
   styleUrl: './login.component.scss',
   templateUrl: './login.component.html',
@@ -22,6 +33,7 @@ export class LoginComponent {
 
   readonly error = signal('');
   readonly cargando = signal(false);
+  readonly ocultarPassword = signal(true);
 
   ingresar(): void {
     if (this.form.invalid) {
@@ -35,14 +47,18 @@ export class LoginComponent {
       next: () => this.router.navigate([this.auth.isAdmin() ? '/dashboard' : '/catalogo']),
       error: (err: HttpErrorResponse) => {
         this.cargando.set(false);
-        if (err.status === 401 || err.status === 403) {
-          this.error.set('Email o contraseña incorrectos.');
-        } else if (err.status === 0) {
-          this.error.set('No se pudo conectar con el servidor.');
-        } else {
-          this.error.set((err.error as ApiError)?.message ?? 'Ocurrió un error inesperado.');
-        }
+        this.manejarError(err);
       },
     });
+  }
+
+  private manejarError(err: HttpErrorResponse): void {
+    if (err.status === 0) {
+      this.error.set('No se pudo conectar con el servidor.');
+      return;
+    }
+
+    // Credenciales inválidas o cuenta deshabilitada: el backend devuelve 400 con un mensaje descriptivo
+    this.error.set((err.error as ApiError)?.message ?? 'Email o contraseña incorrectos.');
   }
 }
