@@ -88,7 +88,7 @@
           <p class="registro__error" role="alert">{{ error() }}</p>
         }
 
-        <button mat-raised-button color="primary" type="submit" class="registro__submit" [disabled]="cargando()">
+        <button mat-flat-button color="primary" type="submit" class="registro__submit" [disabled]="cargando()">
           {{ cargando() ? 'Creando cuenta...' : 'Crear cuenta' }}
         </button>
       </form>
@@ -99,7 +99,7 @@
         <mat-icon class="registro__success-icon" fontIcon="check_circle"></mat-icon>
         <h1 class="registro__title">¡Cuenta creada!</h1>
         <p class="registro__subtitle">Ya podés iniciar sesión con tu email y contraseña.</p>
-        <a mat-raised-button color="primary" routerLink="/login">Iniciar sesión</a>
+        <a mat-flat-button color="primary" routerLink="/login">Iniciar sesión</a>
       </div>
     }
   </div>
