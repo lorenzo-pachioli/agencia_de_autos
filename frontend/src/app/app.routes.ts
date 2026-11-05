@@ -24,4 +24,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/registro/registro.component').then((m) => m.RegistroComponent),
   },
+  {
+    path: 'dashboard',
+    loadChildren: () =>
+      import('./pages/dashboard/dashboard.routes').then((m) => m.routes),
+  },
 ];

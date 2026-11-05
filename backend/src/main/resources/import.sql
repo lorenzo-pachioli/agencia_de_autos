@@ -6,12 +6,12 @@
 -- ----------------------------------------------------------------
 -- 1. USUARIOS
 -- ----------------------------------------------------------------
-INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES (true, CURRENT_DATE, 'Admin', 'admin_test@gmail.com', 'Administrador', '$2a$10$w4PmPgEBGiJmVTGi4ww0H.nGq6bKmWz.RlFQVaGLlVnBx3V1K7I3e', 'ADMINISTRADOR');
-INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES (true, CURRENT_DATE, 'García', 'carlos.garcia@agencia.com', 'Carlos', '$2a$10$w4PmPgEBGiJmVTGi4ww0H.nGq6bKmWz.RlFQVaGLlVnBx3V1K7I3e', 'VENDEDOR');
-INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES (true, CURRENT_DATE, 'Fernández', 'lucia.fernandez@agencia.com', 'Lucía', '$2a$10$w4PmPgEBGiJmVTGi4ww0H.nGq6bKmWz.RlFQVaGLlVnBx3V1K7I3e', 'VENDEDOR');
-INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES (true, CURRENT_DATE, 'Pérez', 'juan.perez@gmail.com', 'Juan', '$2a$10$w4PmPgEBGiJmVTGi4ww0H.nGq6bKmWz.RlFQVaGLlVnBx3V1K7I3e', 'USUARIO');
-INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES (true, CURRENT_DATE, 'Gómez', 'maria.gomez@gmail.com', 'María', '$2a$10$w4PmPgEBGiJmVTGi4ww0H.nGq6bKmWz.RlFQVaGLlVnBx3V1K7I3e', 'USUARIO');
-INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES (true, CURRENT_DATE, 'Rodríguez', 'roberto.rodriguez@gmail.com', 'Roberto', '$2a$10$w4PmPgEBGiJmVTGi4ww0H.nGq6bKmWz.RlFQVaGLlVnBx3V1K7I3e', 'USUARIO');
+INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES (true, CURRENT_DATE, 'Admin', 'admin_test@gmail.com', 'Administrador', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'ADMINISTRADOR');
+INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES (true, CURRENT_DATE, 'García', 'carlos.garcia@agencia.com', 'Carlos', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'VENDEDOR');
+INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES (true, CURRENT_DATE, 'Fernández', 'lucia.fernandez@agencia.com', 'Lucía', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'VENDEDOR');
+INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES (true, CURRENT_DATE, 'Pérez', 'juan.perez@gmail.com', 'Juan', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'USUARIO');
+INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES (true, CURRENT_DATE, 'Gómez', 'maria.gomez@gmail.com', 'María', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'USUARIO');
+INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES (true, CURRENT_DATE, 'Rodríguez', 'roberto.rodriguez@gmail.com', 'Roberto', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'USUARIO');
 
 -- ----------------------------------------------------------------
 -- 2. MARCAS
