@@ -1,7 +1,11 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, effect, inject, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatOption, MatSelect } from '@angular/material/select';
 import { map } from 'rxjs';
 import Vehicle from '../../models/vehicle-model';
 import { ClientServiceService } from '../../services/client-service.service';
@@ -10,7 +14,7 @@ import { ClientServiceService } from '../../services/client-service.service';
 const PATENTE_REGEX = /^([A-Za-z]{3}\d{3}|[A-Za-z]{2}\d{3}[A-Za-z]{2})$/;
 
 @Component({
-  imports: [ReactiveFormsModule, MatButton],
+  imports: [ReactiveFormsModule, MatButton, MatFormField, MatLabel, MatError, MatInput, MatSelect, MatOption],
   selector: 'app-form-client',
   styleUrl: './form-client.component.scss',
   standalone: true,
@@ -62,7 +66,7 @@ export class FormClientComponent {
 
   // true cuando el formulario está completo y es válido (el padre puede usarlo en su [disabled])
   valido = toSignal(
-    this.formularioAutos.statusChanges.pipe(map((estado : any) => estado === 'VALID')),
+    this.formularioAutos.statusChanges.pipe(map((estadoDelFormulario) => estadoDelFormulario === 'VALID')),
     { initialValue: this.formularioAutos.valid },
   )
   incompleto = computed(() => !this.valido())
@@ -70,19 +74,19 @@ export class FormClientComponent {
   constructor() {
     // Si el padre manda un vehículo, se precargan los campos
     effect(() => {
-      const v = this.vehiculo()
-      if (v) {
+      const vehiculoPrecargado = this.vehiculo()
+      if (vehiculoPrecargado) {
         this.formularioAutos.patchValue({
-          patente: v.patente,
-          modeloId: v.modeloId,
-          anio: v.anio,
-          kilometraje: v.kilometraje,
-          precioAdquisicion: v.precioAdquisicion,
-          precioVenta: v.precioVenta,
-          tipoCombustible: v.tipoCombustible,
-          tipoTransmision: v.tipoTransmision,
-          color: v.color,
-          descripcion: v.descripcion ?? '',
+          patente: vehiculoPrecargado.patente,
+          modeloId: vehiculoPrecargado.modeloId,
+          anio: vehiculoPrecargado.anio,
+          kilometraje: vehiculoPrecargado.kilometraje,
+          precioAdquisicion: vehiculoPrecargado.precioAdquisicion,
+          precioVenta: vehiculoPrecargado.precioVenta,
+          tipoCombustible: vehiculoPrecargado.tipoCombustible,
+          tipoTransmision: vehiculoPrecargado.tipoTransmision,
+          color: vehiculoPrecargado.color,
+          descripcion: vehiculoPrecargado.descripcion ?? '',
         })
       }
     })
@@ -91,35 +95,46 @@ export class FormClientComponent {
   // Devuelve el vehículo listo para mandar al backend, o null si el form está incompleto
   obtenerVehiculo(): Vehicle | null {
     if (this.formularioAutos.invalid) return null
-    const v = this.formularioAutos.getRawValue()
+    const valoresDelFormulario = this.formularioAutos.getRawValue()
     return {
-      patente: v.patente.trim().toUpperCase(),
-      anio: v.anio!,
-      precioAdquisicion: v.precioAdquisicion!,
-      precioVenta: v.precioVenta!,
-      modeloId: v.modeloId!,
-      kilometraje: v.kilometraje!,
-      color: v.color.trim(),
-      descripcion: v.descripcion.trim(),
+      patente: valoresDelFormulario.patente.trim().toUpperCase(),
+      anio: valoresDelFormulario.anio!,
+      precioAdquisicion: valoresDelFormulario.precioAdquisicion!,
+      precioVenta: valoresDelFormulario.precioVenta!,
+      modeloId: valoresDelFormulario.modeloId!,
+      kilometraje: valoresDelFormulario.kilometraje!,
+      color: valoresDelFormulario.color.trim(),
+      descripcion: valoresDelFormulario.descripcion.trim(),
       estado: this.vehiculo()?.estado ?? 'DISPONIBLE', // un vehículo nuevo arranca disponible
-      tipoTransmision: v.tipoTransmision!,
-      tipoCombustible: v.tipoCombustible!,
+      tipoTransmision: valoresDelFormulario.tipoTransmision!,
+      tipoCombustible: valoresDelFormulario.tipoCombustible!,
     }
   }
 
   // Botón "Cargar vehículo": manda el vehículo a postVehicle()
   manejarEnvios() {
     if (!this.mostrarBoton()) return
-    const vehiculo = this.obtenerVehiculo()
-    if (!vehiculo) return
+    const vehiculoParaEnviar = this.obtenerVehiculo()
+    if (!vehiculoParaEnviar) return
 
-    this.clientService.postVehicle(vehiculo).subscribe({
+    this.clientService.postVehicle(vehiculoParaEnviar).subscribe({
       next: () => {
         alert('Vehículo cargado con éxito')
         this.formularioAutos.reset()
       },
-      error: (e: { error?: { message?: string } }) =>
-        alert(e.error?.message ?? 'No se pudo cargar el vehículo'),
+      error: (errorDelServidor: HttpErrorResponse) =>
+        alert(errorDelServidor.error?.message ?? 'No se pudo cargar el vehículo'),
     })
+  }
+
+  // Texto que se muestra debajo de un campo inválido (<mat-error>)
+  obtenerMensajeDeError(nombreDelCampo: keyof FormClientComponent['formularioAutos']['controls']): string {
+    const erroresDelCampo = this.formularioAutos.controls[nombreDelCampo].errors
+    if (!erroresDelCampo) return ''
+    if (erroresDelCampo['required']) return 'Campo obligatorio'
+    if (erroresDelCampo['pattern']) return 'Formato inválido (ej: AB123CD o ABC123)'
+    if (erroresDelCampo['min']) return `El mínimo es ${erroresDelCampo['min'].min}`
+    if (erroresDelCampo['max']) return `El máximo es ${erroresDelCampo['max'].max}`
+    return 'Valor inválido'
   }
 }

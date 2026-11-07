@@ -1,0 +1,177 @@
+.pagina-detalles {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 20px 48px;
+    color: var(--mat-sys-on-surface);
+}
+
+.volver {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: var(--mat-sys-on-surface-variant);
+    text-decoration: none;
+
+    &:hover {
+        color: var(--mat-sys-primary);
+    }
+}
+
+.mensaje {
+    padding: 48px 0;
+    text-align: center;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+.mensaje-error {
+    color: #b3261e;
+}
+
+.detalles {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+}
+
+// ── Galería ────────────────────────────────────────────────────────────────
+.imagen-grande {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--mat-sys-outline);
+    background-color: var(--mat-sys-surface);
+}
+
+.sin-imagen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+.miniaturas {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 0;
+    list-style: none;
+    flex-wrap: wrap;
+
+    button {
+        padding: 0;
+        width: 84px;
+        height: 64px;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        background: none;
+
+        &.seleccionada {
+            border-color: var(--mat-sys-primary);
+        }
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+// ── Datos ──────────────────────────────────────────────────────────────────
+.datos {
+    align-self: start;
+    padding: 24px;
+}
+
+.encabezado {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+
+    h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        line-height: 1.15;
+    }
+}
+
+.estado {
+    flex-shrink: 0;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background-color: #e3e3e3;
+    color: #303030;
+}
+
+.estado-disponible {
+    background-color: #dff3e3;
+    color: #1b5e20;
+}
+
+.estado-reservado {
+    background-color: #fdf0c9;
+    color: #7a5b00;
+}
+
+.estado-vendido {
+    background-color: #e3e3e3;
+    color: #303030;
+}
+
+.estado-baja {
+    background-color: #fbdedc;
+    color: #8c1d18;
+}
+
+.precio {
+    margin: 16px 0 24px;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--mat-sys-primary);
+}
+
+.ficha-tecnica {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+    margin-bottom: 28px;
+
+    dt {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--mat-sys-on-surface-variant);
+    }
+
+    dd {
+        margin: 2px 0 0;
+        font-weight: 500;
+    }
+}
+
+h2 {
+    margin: 20px 0 8px;
+    font-size: 1.1rem;
+}
+
+.descripcion {
+    line-height: 1.5;
+}
+
+.fechas {
+    margin-top: 24px;
+    font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+// ── Celulares: una sola columna ────────────────────────────────────────────
+@media (max-width: 800px) {
+    .detalles {
+        grid-template-columns: 1fr;
+    }
+}

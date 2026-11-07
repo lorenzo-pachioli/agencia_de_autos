@@ -1,83 +1,90 @@
 <div class="padre">
     <form class="formulario" [formGroup]="formularioAutos" (ngSubmit)="manejarEnvios()">
-        <fieldset>
-            <label for="patente">Patente</label>
-            <input type="text" formControlName="patente" id="patente" maxlength="7" placeholder="AB123CD">
-        </fieldset>
 
-        <fieldset>
-            <label for="marca">Marca</label>
-            <select id="marca" formControlName="marcaId">
-                <option [ngValue]="null" disabled>Seleccioná una marca</option>
-                @for (opcion of opcionesMarcaId; track opcion) {
-                    <option [ngValue]="opcion">{{ opcion }}</option>
+        <mat-form-field appearance="outline">
+            <mat-label>Patente</mat-label>
+            <input matInput formControlName="patente" maxlength="7" placeholder="AB123CD">
+            <mat-error>{{ obtenerMensajeDeError('patente') }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Color</mat-label>
+            <input matInput formControlName="color">
+            <mat-error>{{ obtenerMensajeDeError('color') }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Marca</mat-label>
+            <mat-select formControlName="marcaId">
+                @for (opcionDeMarca of opcionesMarcaId; track opcionDeMarca) {
+                    <mat-option [value]="opcionDeMarca">{{ opcionDeMarca }}</mat-option>
                 }
-            </select>
-        </fieldset>
+            </mat-select>
+            <mat-error>{{ obtenerMensajeDeError('marcaId') }}</mat-error>
+        </mat-form-field>
 
-        <fieldset>
-            <label for="modelo">Modelo</label>
-            <select id="modelo" formControlName="modeloId">
-                <option [ngValue]="null" disabled>Seleccioná un modelo</option>
-                @for (opcion of opcionesModeloId; track opcion) {
-                    <option [ngValue]="opcion">{{ opcion }}</option>
+        <mat-form-field appearance="outline">
+            <mat-label>Modelo</mat-label>
+            <mat-select formControlName="modeloId">
+                @for (opcionDeModelo of opcionesModeloId; track opcionDeModelo) {
+                    <mat-option [value]="opcionDeModelo">{{ opcionDeModelo }}</mat-option>
                 }
-            </select>
-        </fieldset>
+            </mat-select>
+            <mat-error>{{ obtenerMensajeDeError('modeloId') }}</mat-error>
+        </mat-form-field>
 
-        <fieldset>
-            <label for="anio">Año</label>
-            <input type="number" formControlName="anio" id="anio">
-        </fieldset>
+        <mat-form-field appearance="outline">
+            <mat-label>Año</mat-label>
+            <input matInput type="number" formControlName="anio">
+            <mat-error>{{ obtenerMensajeDeError('anio') }}</mat-error>
+        </mat-form-field>
 
-        <fieldset>
-            <label for="kilometraje">Kilometraje</label>
-            <input type="number" formControlName="kilometraje" id="kilometraje">
-        </fieldset>
+        <mat-form-field appearance="outline">
+            <mat-label>Kilometraje</mat-label>
+            <input matInput type="number" formControlName="kilometraje">
+            <mat-error>{{ obtenerMensajeDeError('kilometraje') }}</mat-error>
+        </mat-form-field>
 
-        <fieldset>
-            <label for="precioAdquisicion">Precio de adquisición</label>
-            <input type="number" formControlName="precioAdquisicion" id="precioAdquisicion">
-        </fieldset>
+        <mat-form-field appearance="outline">
+            <mat-label>Precio de adquisición</mat-label>
+            <input matInput type="number" formControlName="precioAdquisicion">
+            <mat-error>{{ obtenerMensajeDeError('precioAdquisicion') }}</mat-error>
+        </mat-form-field>
 
-        <fieldset>
-            <label for="precioVenta">Precio de venta</label>
-            <input type="number" formControlName="precioVenta" id="precioVenta">
-        </fieldset>
+        <mat-form-field appearance="outline">
+            <mat-label>Precio de venta</mat-label>
+            <input matInput type="number" formControlName="precioVenta">
+            <mat-error>{{ obtenerMensajeDeError('precioVenta') }}</mat-error>
+        </mat-form-field>
 
-        <fieldset>
-            <label for="combustible">Combustible</label>
-            <select id="combustible" formControlName="tipoCombustible">
-                <option [ngValue]="null" disabled>Seleccioná combustible</option>
-                @for (opcion of opcionesCombustible; track opcion.value) {
-                    <option [ngValue]="opcion.value">{{ opcion.label }}</option>
+        <mat-form-field appearance="outline">
+            <mat-label>Combustible</mat-label>
+            <mat-select formControlName="tipoCombustible">
+                @for (opcionDeCombustible of opcionesCombustible; track opcionDeCombustible.value) {
+                    <mat-option [value]="opcionDeCombustible.value">{{ opcionDeCombustible.label }}</mat-option>
                 }
-            </select>
-        </fieldset>
+            </mat-select>
+            <mat-error>{{ obtenerMensajeDeError('tipoCombustible') }}</mat-error>
+        </mat-form-field>
 
-        <fieldset>
-            <label for="transmision">Transmisión</label>
-            <select id="transmision" formControlName="tipoTransmision">
-                <option [ngValue]="null" disabled>Seleccioná transmisión</option>
-                @for (opcion of opcionesTransmision; track opcion.value) {
-                    <option [ngValue]="opcion.value">{{ opcion.label }}</option>
+        <mat-form-field appearance="outline">
+            <mat-label>Transmisión</mat-label>
+            <mat-select formControlName="tipoTransmision">
+                @for (opcionDeTransmision of opcionesTransmision; track opcionDeTransmision.value) {
+                    <mat-option [value]="opcionDeTransmision.value">{{ opcionDeTransmision.label }}</mat-option>
                 }
-            </select>
-        </fieldset>
+            </mat-select>
+            <mat-error>{{ obtenerMensajeDeError('tipoTransmision') }}</mat-error>
+        </mat-form-field>
 
-        <fieldset>
-            <label for="color">Color</label>
-            <input type="text" formControlName="color" id="color">
-        </fieldset>
-
-        <fieldset>
-            <label for="descripcion">Descripción (opcional)</label>
-            <input type="text" formControlName="descripcion" id="descripcion">
-        </fieldset>
+        <mat-form-field appearance="outline" class="ancho-completo">
+            <mat-label>Descripción (opcional)</mat-label>
+            <textarea matInput rows="3" formControlName="descripcion"></textarea>
+        </mat-form-field>
 
         <!-- Solo se muestra cuando el form se usa solo. En detalles el padre pone sus propios botones -->
         @if (mostrarBoton()) {
-            <button mat-flat-button type="submit" [disabled]="incompleto()">
+            <button mat-flat-button type="submit" class="boton-enviar" [disabled]="incompleto()">
                 Cargar vehículo
             </button>
         }
