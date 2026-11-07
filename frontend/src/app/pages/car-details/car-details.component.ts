@@ -13,7 +13,7 @@ export class CarDetailsComponent implements OnInit {
   private carService = inject(ClientServiceService)
   private route = inject(ActivatedRoute)
 
-  private carId = this.route.snapshot.paramMap.get('id')
+  private carId = Number(this.route.snapshot.params['id'])
   private autoSeleccionado? : VehicleModel
 
   ngOnInit(){
@@ -21,26 +21,23 @@ export class CarDetailsComponent implements OnInit {
   }
 
   traerAutoSeleccionado() {
-    if (this.carId === null) return
 
-    const carId = Number(this.carId)
-    if (Number.isNaN(carId)) return
-
-    this.carService.getVehicleById(carId).subscribe((csl : any) => {
+    this.carService.getVehicleById(this.carId).subscribe((csl : any) => {
       this.autoSeleccionado = csl;
     });
   }
 
   borrarAuto(){
-    this.carService.deleteVehicle(Number(this.carId)).suscribe({
+    this.carService.deleteVehicle(Number(this.carId)).subscribe({
       next: () => {alert("vehiculo eliminado con exito")}
     })
   }
 
   modificarAuto(){
-    if (!this.autoSeleccionado) return
+    const autoSeleccionado = this.autoSeleccionado
+    if (!autoSeleccionado) return
 
-    this.carService.putVehicle(this.autoSeleccionado).suscribe({
+    this.carService.putVehicle(autoSeleccionado).subscribe({
       next: () => {alert("vehiculo modificado con exito")}
     })
   }
