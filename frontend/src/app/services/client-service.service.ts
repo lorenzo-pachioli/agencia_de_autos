@@ -22,10 +22,9 @@ export class ClientServiceService {
     ))
   }
 
+  // Devuelve el Observable: quien lo llame hace el .subscribe() y decide qué mostrar
   postVehicle(vehicle : Vehicle){
-    return this.http.post(this.URL,vehicle).subscribe(() => (
-        alert("vehiculo cargado con exito")
-    ))
+    return this.http.post(this.URL,vehicle)
   }
 
   deleteVehicle(id: number){

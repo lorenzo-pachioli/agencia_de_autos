@@ -1,1 +1,12 @@
-<p>list-client works!</p>
+<div class="listado">
+    <ul>
+        @for(car of arrayVehicles; track $index){
+        <li>
+            <a [routerLink]="car.patente"></a>
+            <h3>{{ car.patente }}</h3>
+            <p>{{ car.anio }}</p>
+            <p>{{ car.descripcion }}</p>
+        </li>
+        }
+    </ul>
+</div>

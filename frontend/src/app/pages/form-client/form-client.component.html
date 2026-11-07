@@ -1,9 +1,14 @@
 <div class="padre">
-    <form class="formulario" [formGroup]="formularioAutos">
+    <form class="formulario" [formGroup]="formularioAutos" (ngSubmit)="manejarEnvios()">
         <fieldset>
-            <label>Marca</label>
-            <select id="marca" formControlName="marcaIdf">
-                <option value="" disabled>Seleccioná una marca</option>
+            <label for="patente">Patente</label>
+            <input type="text" formControlName="patente" id="patente" maxlength="7" placeholder="AB123CD">
+        </fieldset>
+
+        <fieldset>
+            <label for="marca">Marca</label>
+            <select id="marca" formControlName="marcaId">
+                <option [ngValue]="null" disabled>Seleccioná una marca</option>
                 @for (opcion of opcionesMarcaId; track opcion) {
                     <option [ngValue]="opcion">{{ opcion }}</option>
                 }
@@ -12,8 +17,8 @@
 
         <fieldset>
             <label for="modelo">Modelo</label>
-            <select id="modelo" formControlName="modeloIdf">
-                <option value="" disabled>Seleccioná un modelo</option>
+            <select id="modelo" formControlName="modeloId">
+                <option [ngValue]="null" disabled>Seleccioná un modelo</option>
                 @for (opcion of opcionesModeloId; track opcion) {
                     <option [ngValue]="opcion">{{ opcion }}</option>
                 }
@@ -22,47 +27,59 @@
 
         <fieldset>
             <label for="anio">Año</label>
-            <input type="text" formControlName="aniof" id="anio">
+            <input type="number" formControlName="anio" id="anio">
         </fieldset>
 
         <fieldset>
             <label for="kilometraje">Kilometraje</label>
-            <input type="text" formControlName="kilometrajef" id="kilometraje">
-        </fieldset>
-        
-        <fieldset>
-            <label for="precioVenta">Precio de venta</label>
-            <input type="text" formControlName="precioVentaf" id="precioVenta">
+            <input type="number" formControlName="kilometraje" id="kilometraje">
         </fieldset>
 
         <fieldset>
-            <label>Combustible</label>
-            <select id="combustible" formControlName="combustiblef">
-                <option value="" disabled>Seleccioná combustible</option>
-                @for (opcion of opcionesCombustible; track opcion) {
-                    <option [ngValue]="opcion">{{ opcion }}</option>
+            <label for="precioAdquisicion">Precio de adquisición</label>
+            <input type="number" formControlName="precioAdquisicion" id="precioAdquisicion">
+        </fieldset>
+
+        <fieldset>
+            <label for="precioVenta">Precio de venta</label>
+            <input type="number" formControlName="precioVenta" id="precioVenta">
+        </fieldset>
+
+        <fieldset>
+            <label for="combustible">Combustible</label>
+            <select id="combustible" formControlName="tipoCombustible">
+                <option [ngValue]="null" disabled>Seleccioná combustible</option>
+                @for (opcion of opcionesCombustible; track opcion.value) {
+                    <option [ngValue]="opcion.value">{{ opcion.label }}</option>
                 }
             </select>
         </fieldset>
 
         <fieldset>
-            <label>Transmisión</label>
-            <select id="transmision" formControlName="transmisionf">
-                <option value="" disabled>Seleccioná transmisión</option>
-                @for (opcion of opcionesTransmicion; track opcion) {
-                    <option [ngValue]="opcion">{{ opcion }}</option>
+            <label for="transmision">Transmisión</label>
+            <select id="transmision" formControlName="tipoTransmision">
+                <option [ngValue]="null" disabled>Seleccioná transmisión</option>
+                @for (opcion of opcionesTransmision; track opcion.value) {
+                    <option [ngValue]="opcion.value">{{ opcion.label }}</option>
                 }
             </select>
         </fieldset>
 
         <fieldset>
             <label for="color">Color</label>
-            <input type="text" formControlName="colorf" id="color">
+            <input type="text" formControlName="color" id="color">
         </fieldset>
 
         <fieldset>
-            <label for="descripcion">Descripción</label>
-            <input type="text" formControlName="descripcionf" id="descripcion">
+            <label for="descripcion">Descripción (opcional)</label>
+            <input type="text" formControlName="descripcion" id="descripcion">
         </fieldset>
+
+        <!-- Solo se muestra cuando el form se usa solo. En detalles el padre pone sus propios botones -->
+        @if (mostrarBoton()) {
+            <button mat-flat-button type="submit" [disabled]="incompleto()">
+                Cargar vehículo
+            </button>
+        }
     </form>
 </div>
