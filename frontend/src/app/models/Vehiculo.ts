@@ -61,3 +61,17 @@ export interface Pagina<T> {
     numberOfElements: number;
     empty: boolean;
 }
+
+export interface ReporteStockVehiculos {
+    disponibles: number;
+    reservados: number;
+    vendidos: number;
+    baja: number;
+    total: number;
+}
+
+export interface ReporteGananciasVehiculos {
+    totalInvertido: number;
+    totalVenta: number;
+    gananciaTotal: number;
+}
