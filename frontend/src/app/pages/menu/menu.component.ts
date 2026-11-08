@@ -6,8 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   imports: [MatSidenavModule, MatListModule, MatIconModule, RouterLink, RouterLinkActive, RouterOutlet],
-  selector: 'app-dashboard',
-  styleUrl: './dashboard.component.scss',
-  templateUrl: './dashboard.component.html',
+  selector: 'app-menu',
+  styleUrl: './menu.component.scss',
+  templateUrl: './menu.component.html',
 })
-export class DashboardComponent {}
+export class MenuComponent {}
