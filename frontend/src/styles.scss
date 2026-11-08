@@ -79,6 +79,11 @@ html {
   --mat-sys-on-error: #ffffff;
   --mat-sys-error-container: #fee2e2; // red-100
   --mat-sys-on-error-container: #7f1d1d; // red-900
+
+  @include mat.datepicker-overrides((
+    calendar-body-label-text-color: var(--mat-sys-on-surface),
+    calendar-container-background-color: var(--mat-sys-surface),
+  ));
 }
 
 // ── 4. Body ───────────────────────────────────────────────────────────────────
@@ -262,3 +267,4 @@ mat-paginator.mat-mdc-paginator {
     --mat-icon-button-state-layer-color: var(--mat-sys-primary);
   }
 }
+

@@ -16,11 +16,18 @@ export interface BalanceTransacciones {
 export class TransaccionService {
   private readonly http = inject(HttpClient);
 
-  obtenerBalance(fechaDesde: string, fechaHasta: string): Observable<BalanceTransacciones> {
+  obtenerBalance(fechaDesde: Date, fechaHasta: Date): Observable<BalanceTransacciones> {
     const params = new HttpParams()
-      .set('fechaDesde', fechaDesde)
-      .set('fechaHasta', fechaHasta);
+      .set('fechaDesde', this.formatearFecha(fechaDesde))
+      .set('fechaHasta', this.formatearFecha(fechaHasta));
 
     return this.http.get<BalanceTransacciones>(`${TRANSACCIONES_URL}/rendimiento`, { params });
+  }
+
+  private formatearFecha(fecha: Date): string {
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    return `${anio}-${mes}-${dia}`;
   }
 }
