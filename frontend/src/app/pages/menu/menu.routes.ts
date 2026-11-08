@@ -4,13 +4,13 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./dashboard.component').then((m) => m.DashboardComponent),
+      import('./menu.component').then((m) => m.MenuComponent),
     children: [
       {
         path: '',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./inicio/inicio.component').then((m) => m.InicioComponent),
+          import('./dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       {
         path: 'marcas',
