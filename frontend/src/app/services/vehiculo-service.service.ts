@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Service } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { FiltrosVehiculo, Pagina, TipoCombustible, TipoTransmision, Vehiculo } from '../models/Vehiculo';
+import { FiltrosVehiculo, Pagina, ReporteGananciasVehiculos, ReporteStockVehiculos, TipoCombustible, TipoTransmision, Vehiculo } from '../models/Vehiculo';
 import { MARCAS_URL, MODELOS_URL, VEHICULOS_URL } from './api_config';
 import { Marca, Modelo } from '../models/Opciones';
 
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class VehiculoService {
     private readonly http = inject(HttpClient);
 
@@ -43,6 +43,14 @@ export class VehiculoService {
     }
     getTransmisiones(): Observable<TipoTransmision[]> {
         return of(Object.values(TipoTransmision));
+    }
+
+    obtenerReporteStock(): Observable<ReporteStockVehiculos> {
+        return this.http.get<ReporteStockVehiculos>(`${VEHICULOS_URL}/reportes/stock`);
+    }
+
+    obtenerReporteGanancias(): Observable<ReporteGananciasVehiculos> {
+        return this.http.get<ReporteGananciasVehiculos>(`${VEHICULOS_URL}/reportes/ganancias`);
     }
 }
 
