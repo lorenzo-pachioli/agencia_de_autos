@@ -25,6 +25,7 @@ export class DashboardComponent {
   readonly auth = inject(AuthService);
   private readonly vehiculoService = inject(VehiculoService);
   private readonly transaccionService = inject(TransaccionService);
+
   readonly hoy = new Date();
   readonly periodo = signal({ desde: new Date(this.hoy.getFullYear(), this.hoy.getMonth(), 1), hasta: this.hoy });
   readonly fechaDesdeControl = new FormControl<Date | null>(this.periodo().desde);
@@ -35,21 +36,19 @@ export class DashboardComponent {
   readonly error = signal(false);
 
   readonly stock = toSignal<ReporteStockVehiculos | null>(
-    this.autorizado()
-      ? this.vehiculoService.obtenerReporteStock().pipe(catchError(() => {
-          this.error.set(true);
-          return of(null);
-        }))
-      : of(null),
-    { initialValue: null },
+    this.vehiculoService.obtenerReporteStock().pipe(catchError(() => {
+      this.error.set(true);
+      return of(null);
+    })),
+    { initialValue: null }
   );
-  
+
   readonly ganancias = toSignal<ReporteGananciasVehiculos | null>(
     this.autorizado()
       ? this.vehiculoService.obtenerReporteGanancias().pipe(catchError(() => {
-          this.error.set(true);
-          return of(null);
-        }))
+        this.error.set(true);
+        return of(null);
+      }))
       : of(null),
     { initialValue: null },
   );

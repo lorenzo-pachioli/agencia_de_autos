@@ -24,12 +24,41 @@
     }
   </header>
 
-  @if (auth.isAdmin()) {
+
     @if (cargando()) {
       <p class="dashboard__mensaje">Cargando indicadores…</p>
     } @else if (error() && !stock() && !balanceConsulta()) {
       <p class="dashboard__error" role="alert">No se pudieron cargar los indicadores. Verificá tu conexión e intentá de nuevo.</p>
     } @else {
+      @if (auth.isAdmin()) {
+        <section class="dashboard__seccion" aria-labelledby="finanzas-heading">
+          <hr class="dashboard__separador" />
+          <div class="dashboard__seccion-titulo">
+            <div>
+              <p class="dashboard__sobretitulo">FINANZAS</p>
+              <h2 id="finanzas-heading">Rendimiento</h2>
+              <p>{{ periodo().desde | date:'dd/MM/yyyy' }} al {{ periodo().hasta | date:'dd/MM/yyyy' }}</p>
+            </div>
+          </div>
+          @if (cargandoBalance()) {
+            <p class="dashboard__mensaje">Actualizando el período…</p>
+          } @else if (balanceConsulta()) {
+            <div class="dashboard__grid">
+              @for (tarjeta of tarjetasFinancieras; track tarjeta.titulo) {
+                <app-dashboard-card [card]="tarjeta" />
+              }
+            </div>
+          }
+        </section>
+      } @else {
+        <section class="dashboard__bienvenida">
+          <div>
+            <h2>Todo listo para trabajar</h2>
+            <p>Desde el menú podés gestionar vehículos y consultar las operaciones de la agencia.</p>
+          </div>
+        </section>
+      }
+
       <section class="dashboard__seccion" aria-labelledby="stock-heading">
         <hr class="dashboard__separador" />
         <div class="dashboard__seccion-titulo">
@@ -50,33 +79,5 @@
           </div>
         }
       </section>
-
-      <section class="dashboard__seccion" aria-labelledby="finanzas-heading">
-        <hr class="dashboard__separador" />
-        <div class="dashboard__seccion-titulo">
-          <div>
-            <p class="dashboard__sobretitulo">FINANZAS</p>
-            <h2 id="finanzas-heading">Rendimiento</h2>
-            <p>{{ periodo().desde | date:'dd/MM/yyyy' }} al {{ periodo().hasta | date:'dd/MM/yyyy' }}</p>
-          </div>
-        </div>
-        @if (cargandoBalance()) {
-          <p class="dashboard__mensaje">Actualizando el período…</p>
-        } @else if (balanceConsulta()) {
-          <div class="dashboard__grid">
-            @for (tarjeta of tarjetasFinancieras; track tarjeta.titulo) {
-              <app-dashboard-card [card]="tarjeta" />
-            }
-          </div>
-        }
-      </section>
     }
-  } @else {
-    <section class="dashboard__bienvenida">
-      <div>
-        <h2>Todo listo para trabajar</h2>
-        <p>Desde el menú podés gestionar vehículos y consultar las operaciones de la agencia.</p>
-      </div>
-    </section>
-  }
 </main>
