@@ -1,0 +1,11 @@
+<mat-card appearance="outlined">
+  <mat-card-content>
+    <p>{{ card().titulo }}</p>
+    @if (card().moneda) {
+      <h3>{{ card().valor | currency:'ARS' }}</h3>
+    } @else {
+      <h3>{{ card().valor }}</h3>
+    }
+    <p>{{ card().descripcion }}</p>
+  </mat-card-content>
+</mat-card>
