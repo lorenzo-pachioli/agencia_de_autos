@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import utn.programacion3.agencia_de_autos.dto.request.SolicitudTransaccionRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionBalanceResponseDTO;
@@ -13,6 +14,7 @@ import utn.programacion3.agencia_de_autos.dto.response.TransaccionResponseDTO;
 import utn.programacion3.agencia_de_autos.exception.ResourceNotFoundException;
 import utn.programacion3.agencia_de_autos.exception.TransaccionNoModificableException;
 import utn.programacion3.agencia_de_autos.exception.VehiculoNoDisponibleException;
+import utn.programacion3.agencia_de_autos.mapper.SolicitudTransaccionMapper;
 import utn.programacion3.agencia_de_autos.mapper.TransaccionMapper;
 import utn.programacion3.agencia_de_autos.model.BalanceProyeccion;
 import utn.programacion3.agencia_de_autos.model.Transaccion;
@@ -34,6 +36,7 @@ public class TransaccionService {
 
     private final TransaccionRepository transaccionRepository;
     private final TransaccionMapper transaccionMapper;
+    private final SolicitudTransaccionMapper solicitudTransaccionMapper;
     private final UsuarioService usuarioService;
     private final VehiculoServiceImpl vehiculoService;
     private final AuditoriaTransaccionService auditoriaTransaccionService;
@@ -75,6 +78,25 @@ public class TransaccionService {
     }
 
     @Transactional
+    public TransaccionResponseDTO solicitar(SolicitudTransaccionRequestDTO dto) {
+
+        Usuario cliente = usuarioService.buscarEntityPorId(dto.getCliente_id());
+        Vehiculo vehiculo = vehiculoService.obtenerVehiculoEntityPorId(dto.getVehiculo_id());
+
+        if (vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE)
+            throw new VehiculoNoDisponibleException("El vehiculo requerido no está disponible");
+
+        Transaccion solicitud = solicitudTransaccionMapper.toEntity(dto);
+        solicitud.setCliente(cliente);
+        solicitud.setVehiculo(vehiculo);
+
+        Transaccion solicitudGuardada = transaccionRepository.save(solicitud);
+        auditoriaTransaccionService.registrarCreacion(solicitudGuardada);
+
+        return transaccionMapper.toResponseDTO(solicitudGuardada);
+    }
+
+    @Transactional
     public TransaccionResponseDTO actualizar(Long id, TransaccionRequestDTO dto) {
 
         Transaccion transaccion = buscarEntityPorId(id);
@@ -91,6 +113,22 @@ public class TransaccionService {
         transaccion.setCliente(cliente);
         transaccion.setVendedor(vendedor);
         transaccion.setVehiculo(vehiculo);
+
+        EstadoTransaccion nuevoEstado = dto.getEstadoTransaccion();
+
+        if (nuevoEstado != snapshotAnterior.getEstadoTransaccion()) {
+            if (snapshotAnterior.getEstadoTransaccion() == EstadoTransaccion.CANCELADO)
+                throw new TransaccionNoModificableException("No se puede cambiar el estado de una Transaccion en CANCELADO");
+            if (nuevoEstado == EstadoTransaccion.SOLICITAR)
+                throw new TransaccionNoModificableException("No se puede volver una Transaccion al estado SOLICITAR");
+
+            if (snapshotAnterior.getEstadoTransaccion() == EstadoTransaccion.SOLICITAR
+                    && nuevoEstado != EstadoTransaccion.CANCELADO
+                    && vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE)
+                throw new VehiculoNoDisponibleException("El vehiculo requerido ya no está disponible");
+
+            asignacionCambioDeEstado(transaccion, nuevoEstado);
+        }
 
         auditoriaTransaccionService.registrarCambio(snapshotAnterior, transaccion);
 

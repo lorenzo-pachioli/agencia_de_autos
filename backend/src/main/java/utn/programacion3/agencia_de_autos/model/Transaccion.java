@@ -28,7 +28,6 @@ public class Transaccion {
 
     private LocalDate updated_at;
 
-    @Column(nullable = false)
     private BigDecimal precio_final;
 
     @Builder.Default
@@ -50,7 +49,7 @@ public class Transaccion {
     @JoinColumn(name = "cliente_id")
     private Usuario cliente;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "vendedor_id")
     private Usuario vendedor;
 

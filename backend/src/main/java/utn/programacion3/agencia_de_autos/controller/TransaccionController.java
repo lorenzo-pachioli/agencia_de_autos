@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import utn.programacion3.agencia_de_autos.dto.request.SolicitudTransaccionRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionBalanceResponseDTO;
@@ -84,6 +85,22 @@ public class TransaccionController {
     @PostMapping
     public ResponseEntity<TransaccionResponseDTO> crearTransaccion(@Validated(Groups.Crear.class) @RequestBody TransaccionRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(transaccionService.crear(dto));
+    }
+
+    @Operation(
+            summary = "Solicitar una transacción",
+            description = "Crea una transacción en estado SOLICITAR, sin vendedor ni precio. No reserva el vehículo."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Solicitud registrada de forma exitosa"),
+            @ApiResponse(responseCode = "400", description = "Cuerpo de la petición inválido"),
+            @ApiResponse(responseCode = "404", description = "El cliente o el vehículo no existen"),
+            @ApiResponse(responseCode = "409", description = "El vehículo no está disponible")
+    })
+    @PreAuthorize("hasAnyRole('USUARIO', 'ADMINISTRADOR', 'VENDEDOR')")
+    @PostMapping("/solicitar")
+    public ResponseEntity<TransaccionResponseDTO> solicitarTransaccion(@Valid @RequestBody SolicitudTransaccionRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(transaccionService.solicitar(dto));
     }
 
     @Operation(

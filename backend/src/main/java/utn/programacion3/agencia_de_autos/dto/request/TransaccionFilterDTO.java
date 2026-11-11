@@ -36,6 +36,6 @@ public class TransaccionFilterDTO {
     private LocalDate fechaHasta;
 
     @Schema(description = "Estado de la transacción a filtrar", example = "RESERVA",
-            allowableValues = {"RESERVA", "SENIADO", "VENDIDO", "CANCELADO"})
+            allowableValues = {"SOLICITAR", "RESERVA", "SENIADO", "VENDIDO", "CANCELADO"})
     private EstadoTransaccion estadoTransaccion;
 }
