@@ -1,1 +1,49 @@
-<p>usuarios works!</p>
+<h2>Usuarios</h2>
+
+@if (usuarios() === undefined) {
+    <p>Cargando usuarios...</p>
+}@else if (usuarios() === null){
+    <p>No se pudieron cargar los usuarios.</p>
+}@else {
+    <table mat-table [dataSource]="usuarios()!">
+
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef> ID </th>
+            <td mat-cell *matCellDef="let usuario"> {{usuario.id}} </td>
+        </ng-container>
+        <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef> Nombre </th>
+            <td mat-cell *matCellDef="let usuario"> {{usuario.nombre}} </td>
+        </ng-container>
+        <ng-container matColumnDef="apellido">
+            <th mat-header-cell *matHeaderCellDef> Apellido </th>
+            <td mat-cell *matCellDef="let usuario"> {{usuario.apellido}} </td>
+        </ng-container>
+        <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef> Email </th>
+            <td mat-cell *matCellDef="let usuario"> {{usuario.email}} </td>
+        </ng-container>
+        <ng-container matColumnDef="rolUsuario">
+            <th mat-header-cell *matHeaderCellDef> Rol </th>
+            <td mat-cell *matCellDef="let usuario"> {{usuario.rolUsuario}} </td>
+        </ng-container>
+        <ng-container matColumnDef="activo">
+            <th mat-header-cell *matHeaderCellDef> Activo </th>
+            <td mat-cell *matCellDef="let usuario"> {{usuario.activo ? 'Sí' : 'No'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="alta">
+            <th mat-header-cell *matHeaderCellDef> Alta </th>
+            <td mat-cell *matCellDef="let usuario"> {{usuario.alta | date: 'dd/MM/yyyy'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef> Acciones </th>
+            <td mat-cell *matCellDef="let usuario">
+                <button mat-button color="primary">Editar</button>
+                <button mat-button color="warn">Eliminar</button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+    </table>
+}
