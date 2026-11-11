@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import utn.programacion3.agencia_de_autos.model.BalanceProyeccion;
 import utn.programacion3.agencia_de_autos.model.Transaccion;
+import utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -15,6 +16,12 @@ import java.util.Optional;
 public interface TransaccionRepository extends
         JpaRepository<Transaccion,Long>,
         JpaSpecificationExecutor<Transaccion> {
+
+    boolean existsByVehiculoIdAndClienteEmailAndEstadoTransaccionNot(
+            Long vehiculoId,
+            String clienteEmail,
+            EstadoTransaccion estadoTransaccion
+    );
 
     @Query("SELECT " +
             "SUM(t.precio_final) as precioFinalTotal, " +

@@ -31,7 +31,9 @@ import java.util.List;
         "imagenPrincipalUrl",
         "imagenes",
         "createdAt",
-        "updatedAt"
+        "updatedAt",
+        "tieneTransaccionActiva",
+        "esPersonalAgencia"
 })
 public class VehiculoResponseDTO {
 
@@ -65,4 +67,9 @@ public class VehiculoResponseDTO {
  private LocalDateTime createdAt;
 
  private LocalDateTime updatedAt;
+
+ // Solo se completan en el detalle (GET /vehiculos/{id}) segun el usuario autenticado
+ private boolean tieneTransaccionActiva;
+
+ private boolean esPersonalAgencia;
 }
