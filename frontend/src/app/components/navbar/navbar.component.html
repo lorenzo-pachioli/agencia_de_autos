@@ -20,9 +20,9 @@
         Registrarse
       </a>
     } @else if (auth.isAdmin()) {
-      <a mat-button routerLink="/dashboard" routerLinkActive="navbar__link--active"
+      <a mat-button routerLink="/menu/dashboard" routerLinkActive="navbar__link--active"
         [routerLinkActiveOptions]="{ exact: true }">
-        Dashboard
+        Menu
       </a>
       <a mat-button routerLink="/catalogo" routerLinkActive="navbar__link--active"
         [routerLinkActiveOptions]="{ exact: true }">
@@ -37,9 +37,9 @@
         Cerrar sesión
       </button>
     } @else {
-      <a mat-button routerLink="/catalogo" routerLinkActive="navbar__link--active"
+      <a mat-button routerLink="/menu" routerLinkActive="navbar__link--active"
         [routerLinkActiveOptions]="{ exact: true }">
-        Catálogo
+        Menu
       </a>
       <a mat-button routerLink="/perfil" routerLinkActive="navbar__link--active"
         [routerLinkActiveOptions]="{ exact: true }">
