@@ -12,6 +12,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import utn.programacion3.agencia_de_autos.dto.request.SolicitudTransaccionRequestDTO;
@@ -99,8 +100,10 @@ public class TransaccionController {
     })
     @PreAuthorize("hasAnyRole('USUARIO', 'ADMINISTRADOR', 'VENDEDOR')")
     @PostMapping("/solicitar")
-    public ResponseEntity<TransaccionResponseDTO> solicitarTransaccion(@Valid @RequestBody SolicitudTransaccionRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(transaccionService.solicitar(dto));
+    public ResponseEntity<TransaccionResponseDTO> solicitarTransaccion(
+            @Valid @RequestBody SolicitudTransaccionRequestDTO dto,
+            Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(transaccionService.solicitar(dto, authentication.getName()));
     }
 
     @Operation(

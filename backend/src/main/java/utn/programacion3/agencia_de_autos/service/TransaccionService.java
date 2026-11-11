@@ -78,9 +78,9 @@ public class TransaccionService {
     }
 
     @Transactional
-    public TransaccionResponseDTO solicitar(SolicitudTransaccionRequestDTO dto) {
+    public TransaccionResponseDTO solicitar(SolicitudTransaccionRequestDTO dto, String emailCliente) {
 
-        Usuario cliente = usuarioService.buscarEntityPorId(dto.getCliente_id());
+        Usuario cliente = usuarioService.buscarEntityPorEmail(emailCliente);
         Vehiculo vehiculo = vehiculoService.obtenerVehiculoEntityPorId(dto.getVehiculo_id());
 
         if (vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE)

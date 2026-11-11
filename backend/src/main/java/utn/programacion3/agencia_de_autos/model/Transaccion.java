@@ -34,7 +34,6 @@ public class Transaccion {
     private BigDecimal comision_calculada = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private MetodoPago metodoPago;
 
     @Enumerated(EnumType.STRING)
