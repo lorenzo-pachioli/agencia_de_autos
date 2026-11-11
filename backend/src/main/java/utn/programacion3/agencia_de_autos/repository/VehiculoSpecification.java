@@ -3,6 +3,7 @@ package utn.programacion3.agencia_de_autos.repository;
 import org.springframework.data.jpa.domain.Specification;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoFilterDTO;
 import utn.programacion3.agencia_de_autos.model.Vehiculo;
+import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,15 @@ public class VehiculoSpecification {
                         cb.equal(
                                 root.get("tipoCombustible"),
                                 filtros.getCombustible()
+                        )
+                );
+            }
+
+            if (!filtros.isIncluirVendidos()) {
+                predicates.add(
+                        cb.notEqual(
+                                root.get("estado"),
+                                EstadoVehiculo.VENDIDO
                         )
                 );
             }
