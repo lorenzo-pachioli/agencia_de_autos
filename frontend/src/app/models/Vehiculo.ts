@@ -14,6 +14,8 @@ export interface Vehiculo {
   imagenes: string[];
   createdAt: string;
   updatedAt: string;
+  tieneTransaccionActiva?: boolean;
+  esPersonalAgencia?: boolean;
 }
 
 export enum EstadoVehiculo {
@@ -22,6 +24,13 @@ export enum EstadoVehiculo {
   VENDIDO = 'VENDIDO',
   BAJA = 'BAJA',
 }
+
+export const ETIQUETA_ESTADO_VEHICULO: Record<EstadoVehiculo, string> = {
+  [EstadoVehiculo.DISPONIBLE]: 'Disponible',
+  [EstadoVehiculo.RESERVADO]: 'Reservado',
+  [EstadoVehiculo.VENDIDO]: 'Vendido',
+  [EstadoVehiculo.BAJA]: 'No disponible',
+};
 
 export enum TipoCombustible {
   NAFTA = 'NAFTA',
@@ -41,6 +50,7 @@ export interface FiltrosVehiculo {
   combustible?: TipoCombustible;
   tipoTransmision?: TipoTransmision;
   estado?: EstadoVehiculo;
+  incluirVendidos?: boolean;
   color?: string;
   minPrecio?: number;
   maxPrecio?: number;

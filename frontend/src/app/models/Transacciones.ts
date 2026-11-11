@@ -1,5 +1,6 @@
 
 export enum EstadoTransaccion {
+    SOLICITAR = 'SOLICITAR',
     RESERVA = 'RESERVA',
     SENIADO = 'SENIADO',
     VENDIDO = 'VENDIDO',
@@ -14,6 +15,7 @@ export enum MetodoPago {
 }
 
 export const ETIQUETA_ESTADO: Record<EstadoTransaccion, string> = {
+  [EstadoTransaccion.SOLICITAR]: 'Solicitada',
   [EstadoTransaccion.RESERVA]: 'Reserva',
   [EstadoTransaccion.SENIADO]: 'Señada',
   [EstadoTransaccion.VENDIDO]: 'Vendida',
@@ -54,6 +56,12 @@ export interface CrearTransaccion {
     vehiculo_id: number;
     cliente_id: number;
     vendedor_id: number;
+}
+
+export interface SolicitarTransaccion {
+    observaciones?: string;
+    metodoPago?: MetodoPago;
+    vehiculo_id: number;
 }
 
 export interface BalanceTransacciones {

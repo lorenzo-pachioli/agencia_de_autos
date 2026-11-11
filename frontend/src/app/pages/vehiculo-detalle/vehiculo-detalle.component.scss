@@ -135,7 +135,24 @@
         }
     }
 
+    .estado-vehiculo {
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-weight: 500;
+        background: var(--mat-sys-tertiary-container);
+        color: var(--mat-sys-on-tertiary-container);
+
+        &.vendido {
+            background: var(--mat-sys-error-container);
+            color: var(--mat-sys-on-error-container);
+        }
+    }
+
     .solicitar-turno {
         width: 100% !important;
+    }
+
+    .solicitud-error {
+        color: var(--mat-sys-error);
     }
 }
