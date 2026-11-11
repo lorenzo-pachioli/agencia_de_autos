@@ -1,1 +1,172 @@
-<p>transacciones works!</p>
+<main class="transactions-page">
+  <header class="page-heading">
+    <div>
+      <h1>Transacciones</h1>
+      <p>Gestión comercial — reservas y ventas</p>
+    </div>
+    <button matButton="filled" class="button-dark new-button" type="button" (click)="abrirCrear()"><span aria-hidden="true">＋</span>
+      Nueva transacción</button>
+  </header>
+
+  <nav class="status-filters" aria-label="Filtrar por estado">
+    <button [matButton]="estadoActivo() === null ? 'filled' : 'outlined'" [attr.aria-pressed]="estadoActivo() === null" (click)="filtrarEstado(null)">Todas</button>
+    @for (e of estados(); track e) {
+    <button [matButton]="estadoActivo() === e ? 'filled' : 'outlined'" [attr.aria-pressed]="estadoActivo() === e" (click)="filtrarEstado(e)">{{ etiquetaEstado[e] }}</button>
+    }
+  </nav>
+
+  <div class="date-filters">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Desde</mat-label>
+      <input matInput [matDatepicker]="pickerDesde" [(ngModel)]="fechaDesde" [max]="fechaHasta"
+        (dateChange)="aplicarFechas()">
+      <mat-datepicker-toggle matIconSuffix [for]="pickerDesde" />
+      <mat-datepicker #pickerDesde />
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Hasta</mat-label>
+      <input matInput [matDatepicker]="pickerHasta" [(ngModel)]="fechaHasta" [min]="fechaDesde"
+        (dateChange)="aplicarFechas()">
+      <mat-datepicker-toggle matIconSuffix [for]="pickerHasta" />
+      <mat-datepicker #pickerHasta />
+    </mat-form-field>
+    <button matButton="outlined" class="button-outline" type="button" (click)="limpiarFechas()">Limpiar</button>
+  </div>
+
+  @if (mensaje()) { <div class="notice success">{{ mensaje() }}</div> }
+  @if (error() && !modal) { <div class="notice error-notice">{{ error() }}</div> }
+
+  <section class="table-card" aria-label="Listado de transacciones">
+    <div class="table-scroll">
+      <table mat-table [dataSource]="transacciones()?.content ?? []">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let t">#{{ t.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="vehiculo">
+          <th mat-header-cell *matHeaderCellDef>Vehículo</th>
+          <td mat-cell *matCellDef="let t">#{{ t.vehiculo_id }} – {{ t.patente }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="cliente">
+          <th mat-header-cell *matHeaderCellDef>Cliente</th>
+          <td mat-cell *matCellDef="let t">#{{ t.cliente_id }} – {{ t.cliente_email }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="vendedor">
+          <th mat-header-cell *matHeaderCellDef>Vendedor</th>
+          <td mat-cell *matCellDef="let t">#{{ t.vendedor_id }} – {{ t.vendedor_email }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let t">{{ etiquetaDe(t.estadoTransaccion) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="precio">
+          <th mat-header-cell *matHeaderCellDef>Precio</th>
+          <td mat-cell *matCellDef="let t">$ {{ formatearPrecio(t.precio_final) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let t">
+            @if (t.estadoTransaccion === EstadoTransaccion.RESERVA) {
+            <button matButton="outlined" class="button-outline" type="button" (click)="abrirAccion('senia', t)">Señar</button>
+            }
+            @if (t.estadoTransaccion === EstadoTransaccion.RESERVA || t.estadoTransaccion === EstadoTransaccion.SENIADO)
+            {
+            <button matButton="filled" class="button-dark" type="button" (click)="abrirAccion('venta', t)">Vender</button>
+            <button matButton="filled" class="button-danger" type="button" (click)="cancelar(t)">Cancelar</button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+        <tr mat-row *matRowDef="let fila; columns: columnas"></tr>
+      </table>
+    </div>
+
+    @if (cargando()) {
+    <p class="table-status">Cargando transacciones…</p>
+    } @else if (!transacciones()?.content?.length) {
+    <p class="table-status">No hay transacciones para los filtros seleccionados.</p>
+    }
+
+    @if (transacciones(); as pagina) {
+    <mat-paginator [length]="pagina.totalElements" [pageIndex]="pageIndex" [pageSize]="pageSize" [hidePageSize]="true"
+      (page)="cambiarPagina($event)" aria-label="Páginas de transacciones" />
+    }
+  </section>
+</main>
+
+<ng-template #dialogo>
+  @if (modal === 'crear') {
+  <h2 mat-dialog-title>Nueva transacción</h2>
+  <form class="dialog-form" (ngSubmit)="crear()">
+    <mat-dialog-content>
+      <p class="dialog-description">Ingresá los datos de la reserva para iniciar la operación.</p>
+      <mat-form-field appearance="outline">
+        <mat-label>Vehículo (ID)</mat-label>
+        <input matInput type="number" min="1" name="vehiculo" [(ngModel)]="formulario.vehiculo_id" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Cliente (ID)</mat-label>
+        <input matInput type="number" min="1" name="cliente" [(ngModel)]="formulario.cliente_id" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Vendedor (ID)</mat-label>
+        <input matInput type="number" min="1" name="vendedor" [(ngModel)]="formulario.vendedor_id" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Precio acordado</mat-label>
+        <input matInput type="number" min="1" name="precio" [(ngModel)]="formulario.precio_final" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Método de pago</mat-label>
+        <mat-select name="metodoPago" [(ngModel)]="formulario.metodoPago">
+          @for (m of metodosPago(); track m) { <mat-option [value]="m">{{ m }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Observaciones</mat-label>
+        <textarea matInput name="observaciones" [(ngModel)]="formulario.observaciones" rows="3"></textarea>
+      </mat-form-field>
+      @if (error()) { <p class="form-error">{{ error() }}</p> }
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button type="button" matButton="outlined" class="button-outline" (click)="cerrarModal()">Volver</button>
+      <button matButton="filled" class="button-dark" type="submit">Crear reserva</button>
+    </mat-dialog-actions>
+  </form>
+  } @else if (modal === 'cancelar') {
+  <h2 mat-dialog-title>Cancelar transacción</h2>
+  <form class="dialog-form" (ngSubmit)="confirmarCancelacion()">
+    <mat-dialog-content>
+      <p class="dialog-description">¿Seguro que querés cancelar la transacción #{{ transaccionSeleccionada?.id }} · {{ transaccionSeleccionada?.patente }}? Esta acción no se puede deshacer.</p>
+      @if (error()) { <p class="form-error">{{ error() }}</p> }
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button type="button" matButton="outlined" class="button-outline" (click)="cerrarModal()">Volver</button>
+      <button matButton="filled" class="button-danger" type="submit">Cancelar transacción</button>
+    </mat-dialog-actions>
+  </form>
+  } @else {
+  <h2 mat-dialog-title>{{ modal === 'senia' ? 'Registrar seña' : 'Confirmar venta' }}</h2>
+  <form class="dialog-form" (ngSubmit)="confirmarAccion()">
+    <mat-dialog-content>
+      <p class="dialog-description">Transacción #{{ transaccionSeleccionada?.id }} · {{ transaccionSeleccionada?.patente }}</p>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ modal === 'senia' ? 'Monto de la seña' : 'Precio final de venta' }}</mat-label>
+        <input matInput type="number" min="1" name="monto" [(ngModel)]="montoAccion" required>
+      </mat-form-field>
+      @if (error()) { <p class="form-error">{{ error() }}</p> }
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button type="button" matButton="outlined" class="button-outline" (click)="cerrarModal()">Volver</button>
+      <button matButton="filled" class="button-dark" type="submit">{{ modal === 'senia' ? 'Registrar seña' : 'Vender' }}</button>
+    </mat-dialog-actions>
+  </form>
+  }
+</ng-template>

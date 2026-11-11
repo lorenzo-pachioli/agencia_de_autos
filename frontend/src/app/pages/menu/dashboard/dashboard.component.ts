@@ -10,9 +10,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { catchError, of } from 'rxjs';
 import { DashboardCardComponent, DashboardCardData } from '../../../components/dashboard-card/dashboard-card.component';
 import { AuthService } from '../../../services/auth.service';
-import { BalanceTransacciones, TransaccionService } from '../../../services/transaccion.service';
+import { TransaccionService } from '../../../services/transaccion.service';
 import { VehiculoService } from '../../../services/vehiculo-service.service';
 import { ReporteGananciasVehiculos, ReporteStockVehiculos } from '../../../models/Vehiculo';
+import { BalanceTransacciones } from '../../../models/Transacciones';
 
 @Component({
   imports: [DashboardCardComponent, DatePipe, ReactiveFormsModule, MatDatepickerModule, MatFormFieldModule, MatInputModule, MatButtonModule],
