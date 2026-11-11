@@ -12,7 +12,7 @@
 -- ----------------------------------------------------------------
 -- 1. USUARIOS
 -- ----------------------------------------------------------------
-INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES ( true, CURRENT_DATE, 'Admin', 'admin_test@gmail.com', 'Administrador', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'ADMINISTRADOR' ), ( true, CURRENT_DATE, 'García', 'carlos.garcia@agencia.com', 'Carlos', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'VENDEDOR' );
+INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES ( true, CURRENT_DATE, 'Admin', 'admin_test@gmail.com', 'Administrador', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'ADMINISTRADOR' ), ( true, CURRENT_DATE, 'García', 'carlos.garcia@agencia.com', 'Carlos', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'VENDEDOR' ), ( true, CURRENT_DATE, 'Perez', 'usuarioJuan@gmail.com', 'Juan', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'USUARIO' );
 
 -- ----------------------------------------------------------------
 -- 2. MARCAS
