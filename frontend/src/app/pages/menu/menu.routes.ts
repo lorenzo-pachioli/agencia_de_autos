@@ -7,8 +7,7 @@ export const routes: Routes = [
       import('./menu.component').then((m) => m.MenuComponent),
     children: [
       {
-        path: '',
-        pathMatch: 'full',
+        path: 'dashboard',
         loadComponent: () =>
           import('./dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
