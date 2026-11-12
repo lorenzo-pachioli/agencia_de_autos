@@ -1,0 +1,78 @@
+:host {
+    display: block;
+  }
+  
+  .usuarios_container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .usuarios__titulo {
+    margin: 0 0 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--mat-sys-primary);
+  }
+  
+  // Contenedor con scroll horizontal por si la tabla no entra en pantallas chicas
+  .usuarios__tabla-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--mat-sys-outline);
+    border-radius: 4px;
+    background: var(--mat-sys-surface);
+  }
+  
+  table {
+    width: 100%;
+  }
+  
+  th.mat-mdc-header-cell {
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+    background: var(--mat-sys-surface-variant);
+  }
+  
+  tr.mat-mdc-row:hover {
+    background: var(--mat-sys-primary-container);
+  }
+  
+  // Badges de estado (activo / baja)
+  .badge {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .badge--activo {
+    color: #065f46;
+    background: #d1fae5;
+  }
+  
+  .badge--baja {
+    color: #b91c1c;
+    background: #fee2e2;
+  }
+  
+  .usuarios__mensaje,
+  .usuarios__error {
+    padding: 1rem;
+    border: 1px solid var(--mat-sys-outline);
+    border-radius: 4px;
+    background: var(--mat-sys-surface);
+  }
+  
+  .usuarios__error {
+    color: var(--mat-sys-error);
+  }
+  
+  @media (max-width: 560px) {
+    .usuarios_container {
+      padding: 1rem;
+    }
+  }
+  

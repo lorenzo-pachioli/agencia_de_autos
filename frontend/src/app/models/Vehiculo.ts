@@ -28,13 +28,11 @@ export enum TipoCombustible {
   DIESEL = 'DIESEL',
   ELECTRICO = 'ELECTRICO',
   HIBRIDO = 'HIBRIDO',
-  GNC = 'GNC',
 }
 
 export enum TipoTransmision {
   MANUAL = 'MANUAL',
   AUTOMATICA = 'AUTOMATICA',
-  SEMIAUTOMATICA = 'SEMIAUTOMATICA',
 }
 
 export interface FiltrosVehiculo {

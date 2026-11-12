@@ -1,9 +1,7 @@
 @use '@angular/material' as mat;
 
-// ── 1. Google Fonts ───────────────────────────────────────────────────────────
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@600;700;800&display=swap');
 
-// ── 2. Paleta de colores personalizadas ──────────────────────────────────────
 $gold-palette: (
   0: #000000,
   10: #261a00,
@@ -23,7 +21,6 @@ $gold-palette: (
   100: #ffffff,
 );
 
-// Paleta secundaria: neutral oscura para la UI admin
 $neutral-palette: (
   0: #000000,
   10: #0f0f0f,
@@ -43,7 +40,6 @@ $neutral-palette: (
   100: #ffffff,
 );
 
-// ── 3. Definición del tema M3 ─────────────────────────────────────────────────
 html {
   height: 100%;
 
@@ -54,31 +50,31 @@ html {
       density: 0,
     ));
 
-  // ── Sobreescrituras de CSS variables M3 ─────────────────────────────────
-
-  // Superficie y fondo
   --mat-sys-background: #f8f8f8;
   --mat-sys-surface: #ffffff;
   --mat-sys-surface-variant: #f2f2f2;
   --mat-sys-on-background: #0f0f0f;
   --mat-sys-on-surface: #0f0f0f;
-  --mat-sys-on-surface-variant: #64748b; // slate-500
+  --mat-sys-on-surface-variant: #64748b; 
 
-  // Borde global (equivale a border-[#e8e8e8] del frontend)
   --mat-sys-outline: #e8e8e8;
   --mat-sys-outline-variant: #e8e8e8;
 
-  // Primary gold exacto
   --mat-sys-primary: #c9a84c;
   --mat-sys-on-primary: #0f0f0f;
   --mat-sys-primary-container: #fceebb;
   --mat-sys-on-primary-container: #261a00;
 
-  // Error → rojo (badge-baja / btn-admin-danger del frontend)
-  --mat-sys-error: #dc2626; // red-600
+  --mat-sys-error: #dc2626; 
   --mat-sys-on-error: #ffffff;
-  --mat-sys-error-container: #fee2e2; // red-100
-  --mat-sys-on-error-container: #7f1d1d; // red-900
+  --mat-sys-error-container: #fee2e2;
+  --mat-sys-on-error-container: #7f1d1d;
+
+  --app-text-body: #5b6b82;
+  --app-text-muted: #8291a8;
+  --app-border: #dbe3ee;
+  --app-border-soft: #edf1f6;
+  --app-surface-subtle: #f8fafc;
 
   @include mat.datepicker-overrides((
     calendar-body-label-text-color: var(--mat-sys-on-surface),
@@ -86,20 +82,18 @@ html {
   ));
 }
 
-// ── 4. Body ───────────────────────────────────────────────────────────────────
 body {
   color-scheme: light;
   background-color: var(--mat-sys-background);
   color: var(--mat-sys-on-surface);
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.875rem; // 14px — coincide con text-sm del frontend
+  font-size: 0.875rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   height: 100%;
 }
 
-// ── 5. Tipografía adicional ───────────────────────────────────────────────────
 .mat-display,
 h1,
 h2,
@@ -107,18 +101,15 @@ h3 {
   font-family: 'Playfair Display', serif;
 }
 
-// ── 6. Overrides de componentes Material ─────────────────────────────────────
-// Botones — filled primary = btn-gold
 .mat-mdc-raised-button.mat-primary,
 .mat-mdc-unelevated-button.mat-primary {
   --mdc-filled-button-container-color: #c9a84c;
   --mdc-filled-button-label-text-color: #0f0f0f;
   font-weight: 600;
   letter-spacing: 0.05em;
-  border-radius: 2px; // rounded-sm del frontend
+  border-radius: 2px; 
 }
 
-// Botones — stroked = btn-outline
 .mat-mdc-outlined-button.mat-primary {
   --mdc-outlined-button-outline-color: #0f0f0f;
   --mdc-outlined-button-label-text-color: #0f0f0f;
@@ -126,7 +117,6 @@ h3 {
   border-radius: 2px;
 }
 
-// Campos de formulario
 .mat-mdc-form-field {
   --mdc-outlined-text-field-focus-outline-color: #c9a84c;
   --mdc-outlined-text-field-focus-label-text-color: #c9a84c;
@@ -135,7 +125,6 @@ h3 {
   font-size: 0.875rem;
 }
 
-// Panel desplegable de mat-select (se renderiza en CDK overlay, fuera del componente)
 .mat-mdc-select-panel {
   --mat-select-panel-background-color: #ffffff;
   background-color: #ffffff !important;
@@ -144,7 +133,6 @@ h3 {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
-// Cards
 .mat-mdc-card {
   --mdc-elevated-card-container-color: #ffffff;
   border: 1px solid #e8e8e8;
@@ -157,36 +145,35 @@ h3 {
   }
 }
 
-// Chips / Badges de estado
+
 mat-chip[color="success"],
 .badge-disponible {
-  --mdc-chip-elevated-container-color: #d1fae5; // emerald-100
-  --mdc-chip-label-text-color: #065f46; // emerald-800
+  --mdc-chip-elevated-container-color: #d1fae5; 
+  --mdc-chip-label-text-color: #065f46; 
 }
 
 mat-chip[color="warn"],
 .badge-reservado {
-  --mdc-chip-elevated-container-color: #fef3c7; // amber-100
-  --mdc-chip-label-text-color: #92400e; // amber-800
+  --mdc-chip-elevated-container-color: #fef3c7; 
+  --mdc-chip-label-text-color: #92400e; 
 }
 
 mat-chip[color="accent"],
 .badge-vendido {
-  --mdc-chip-elevated-container-color: #e2e8f0; // slate-200
-  --mdc-chip-label-text-color: #475569; // slate-600
+  --mdc-chip-elevated-container-color: #e2e8f0;
+  --mdc-chip-label-text-color: #475569; 
 }
 
 .badge-en_reparacion {
-  --mdc-chip-elevated-container-color: #dbeafe; // blue-100
-  --mdc-chip-label-text-color: #1e40af; // blue-800
+  --mdc-chip-elevated-container-color: #dbeafe; 
+  --mdc-chip-label-text-color: #1e40af; 
 }
 
 .badge-baja {
-  --mdc-chip-elevated-container-color: #fee2e2; // red-100
-  --mdc-chip-label-text-color: #b91c1c; // red-700
+  --mdc-chip-elevated-container-color: #fee2e2; 
+  --mdc-chip-label-text-color: #b91c1c; 
 }
 
-// Toolbar / Sidenav
 mat-toolbar.mat-primary {
   background-color: #0f0f0f;
   color: #ffffff;
@@ -198,7 +185,6 @@ mat-sidenav {
   border-right: 1px solid #1a1a1a;
 }
 
-// Snackbar
 .mat-mdc-snack-bar-container {
   &.snack-success {
     --mdc-snackbar-container-color: #065f46;
@@ -213,7 +199,6 @@ mat-sidenav {
   }
 }
 
-// Progress bar / Spinner 
 .mat-mdc-progress-bar {
   --mdc-linear-progress-active-indicator-color: #c9a84c;
 }
@@ -222,14 +207,12 @@ mat-sidenav {
   stroke: #c9a84c;
 }
 
-// Tabs — active tab = gold underline
 .mat-mdc-tab-group {
   --mdc-tab-indicator-active-indicator-color: #c9a84c;
   --mat-tab-header-active-label-text-color: #c9a84c;
   --mat-tab-header-active-ripple-color: rgba(201, 168, 76, 0.12);
 }
 
-// ── 7. Animación global ───────────────────────────────────────────────────────
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -246,7 +229,6 @@ mat-sidenav {
   animation: fadeUp 0.7s ease both;
 }
 
-// Paginador
 mat-paginator.mat-mdc-paginator {
   --mat-paginator-container-background-color: var(--mat-sys-surface);
   --mat-paginator-container-text-color: var(--mat-sys-on-surface-variant);
@@ -262,9 +244,90 @@ mat-paginator.mat-mdc-paginator {
     justify-content: space-between;
   }
 
-  // El hover dorado va sobre el botón, no sobre el paginador (ver nota)
   .mat-mdc-icon-button {
     --mat-icon-button-state-layer-color: var(--mat-sys-primary);
   }
 }
 
+
+.mat-mdc-table {
+  --mat-table-background-color: transparent;
+  --mat-table-header-container-height: 50px;
+  --mat-table-row-item-container-height: 55px;
+  --mat-table-header-headline-color: var(--mat-sys-on-surface-variant);
+  --mat-table-header-headline-size: 13px;
+  --mat-table-header-headline-weight: 500;
+  --mat-table-row-item-label-text-color: var(--app-text-body);
+  --mat-table-row-item-label-text-size: 15px;
+  --mat-table-row-item-outline-color: var(--app-border-soft);
+  --mat-table-header-divider-color: var(--app-border-soft);
+
+  width: 100%;
+
+  .mat-mdc-header-row {
+    background: var(--app-surface-subtle);
+  }
+
+  .mat-mdc-header-cell {
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .mat-mdc-header-cell,
+  .mat-mdc-cell {
+    padding: 0 20px;
+  }
+
+  .mat-mdc-cell {
+    padding-block: 14px;
+    line-height: 1.55;
+  }
+
+  .mat-mdc-row:last-child .mat-mdc-cell {
+    border-bottom: 0;
+  }
+}
+
+.table-card {
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+  border-radius: 16px;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 2px 3px #11243a0a;
+
+  .table-scroll { overflow-x: auto; }
+
+  mat-paginator { border-top: 1px solid var(--app-border-soft); }
+
+  .table-status {
+    margin: 0;
+    padding: 40px 20px;
+    color: var(--mat-sys-on-surface-variant);
+    text-align: center;
+  }
+}
+
+.button-dark,
+.button-danger,
+.button-outline {
+  --mat-button-filled-container-shape: 10px;
+  --mat-button-outlined-container-shape: 10px;
+  --mat-button-filled-label-text-weight: 700;
+}
+
+.button-dark {
+  --mat-button-filled-container-color: var(--mat-sys-on-surface);
+  --mat-button-filled-label-text-color: var(--mat-sys-surface);
+}
+
+.button-danger {
+  --mat-button-filled-container-color: var(--mat-sys-error);
+  --mat-button-filled-label-text-color: var(--mat-sys-on-error);
+}
+
+.button-outline {
+  --mat-button-outlined-outline-color: var(--app-border);
+  --mat-button-outlined-label-text-color: var(--app-text-body);
+  --mat-button-outlined-label-text-weight: 500;
+}
