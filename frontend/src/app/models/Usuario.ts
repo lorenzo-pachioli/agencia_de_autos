@@ -15,6 +15,14 @@ export interface UsuarioRequest {
   password: string;
 }
 
+export interface PerfilUpdateRequest {
+  nombre: string;
+  apellido: string;
+  email: string;
+  // Opcional: si se omite, el backend no modifica la contraseña actual
+  password?: string;
+}
+
 export enum ROL {
   VENDEDOR = "VENDEDOR",
   ADMINISTRADOR = "ADMINISTRADOR",

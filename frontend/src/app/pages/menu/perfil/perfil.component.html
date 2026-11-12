@@ -1,0 +1,132 @@
+<section class="perfil">
+  <header class="perfil__header">
+    <h1 class="perfil__title">Mi perfil</h1>
+    <p class="perfil__subtitle">Consultá y actualizá tus datos personales.</p>
+  </header>
+
+  @if (cargandoPerfil()) {
+    <div class="perfil__loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Cargando perfil...</span>
+    </div>
+  } @else if (errorCarga()) {
+    <div class="perfil__carga-error" role="alert">
+      <mat-icon fontIcon="error_outline"></mat-icon>
+      <p>{{ errorCarga() }}</p>
+      <button mat-stroked-button type="button" (click)="cargarPerfil()">Reintentar</button>
+    </div>
+  } @else {
+    <div class="perfil__card">
+      <!-- Datos no editables -->
+      <dl class="perfil__meta">
+        <div class="perfil__meta-item">
+          <dt>Rol</dt>
+          <dd>{{ usuario()?.rolUsuario }}</dd>
+        </div>
+        <div class="perfil__meta-item">
+          <dt>Estado</dt>
+          <dd>{{ usuario()?.activo ? 'Activo' : 'Inactivo' }}</dd>
+        </div>
+        <div class="perfil__meta-item">
+          <dt>Miembro desde</dt>
+          <dd>{{ usuario()?.alta }}</dd>
+        </div>
+      </dl>
+
+      <form class="perfil__form" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+        <div class="perfil__row">
+          <mat-form-field appearance="outline" class="perfil__field">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre" autocomplete="given-name" />
+            <mat-error>
+              @if (form.controls.nombre.hasError('required')) {
+                El nombre es obligatorio.
+              } @else if (form.controls.nombre.hasError('pattern')) {
+                Solo puede contener letras.
+              } @else if (form.controls.nombre.hasError('backend')) {
+                {{ form.controls.nombre.getError('backend') }}
+              }
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="perfil__field">
+            <mat-label>Apellido</mat-label>
+            <input matInput formControlName="apellido" autocomplete="family-name" />
+            <mat-error>
+              @if (form.controls.apellido.hasError('required')) {
+                El apellido es obligatorio.
+              } @else if (form.controls.apellido.hasError('pattern')) {
+                Solo puede contener letras.
+              } @else if (form.controls.apellido.hasError('backend')) {
+                {{ form.controls.apellido.getError('backend') }}
+              }
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="perfil__field">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="email" />
+          <mat-error>
+            @if (form.controls.email.hasError('required')) {
+              El email es obligatorio.
+            } @else if (form.controls.email.hasError('email')) {
+              Ingresá un email válido.
+            } @else if (form.controls.email.hasError('backend')) {
+              {{ form.controls.email.getError('backend') }}
+            }
+          </mat-error>
+        </mat-form-field>
+
+        <p class="perfil__section-label">Cambiar contraseña (opcional)</p>
+
+        <mat-form-field appearance="outline" class="perfil__field">
+          <mat-label>Nueva contraseña</mat-label>
+          <input matInput [type]="ocultarPassword() ? 'password' : 'text'" formControlName="password"
+            autocomplete="new-password" />
+          <button type="button" mat-icon-button matSuffix (click)="ocultarPassword.set(!ocultarPassword())"
+            [attr.aria-label]="ocultarPassword() ? 'Mostrar contraseña' : 'Ocultar contraseña'">
+            <mat-icon [fontIcon]="ocultarPassword() ? 'visibility' : 'visibility_off'"></mat-icon>
+          </button>
+          <mat-hint>Dejá el campo vacío para mantener tu contraseña actual.</mat-hint>
+          <mat-error>
+            @if (form.controls.password.hasError('minlength')) {
+              Debe tener al menos 8 caracteres.
+            } @else if (form.controls.password.hasError('backend')) {
+              {{ form.controls.password.getError('backend') }}
+            }
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="perfil__field">
+          <mat-label>Confirmar nueva contraseña</mat-label>
+          <input matInput [type]="ocultarConfirmar() ? 'password' : 'text'" formControlName="confirmarPassword"
+            autocomplete="new-password" />
+          <button type="button" mat-icon-button matSuffix (click)="ocultarConfirmar.set(!ocultarConfirmar())"
+            [attr.aria-label]="ocultarConfirmar() ? 'Mostrar contraseña' : 'Ocultar contraseña'">
+            <mat-icon [fontIcon]="ocultarConfirmar() ? 'visibility' : 'visibility_off'"></mat-icon>
+          </button>
+        </mat-form-field>
+
+        @if (form.controls.confirmarPassword.touched && form.hasError('passwordsDistintas')) {
+          <p class="perfil__mismatch" role="alert">Las contraseñas no coinciden.</p>
+        }
+
+        @if (error()) {
+          <p class="perfil__error" role="alert">{{ error() }}</p>
+        }
+
+        @if (guardado()) {
+          <p class="perfil__success" role="status">
+            <mat-icon fontIcon="check_circle"></mat-icon> Cambios guardados correctamente.
+          </p>
+        }
+
+        <button mat-flat-button color="primary" type="submit" class="perfil__submit"
+          [disabled]="guardando() || form.pristine">
+          {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </form>
+    </div>
+  }
+</section>

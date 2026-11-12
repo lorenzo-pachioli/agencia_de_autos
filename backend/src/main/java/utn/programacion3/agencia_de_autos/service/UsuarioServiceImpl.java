@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import utn.programacion3.agencia_de_autos.dto.request.PerfilUpdateDTO;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
 import utn.programacion3.agencia_de_autos.exception.EmailAlreadyExistsException;
@@ -96,18 +97,61 @@ public class UsuarioServiceImpl implements UsuarioService{
         usuarioExistente.setNombre(requestDTO.getNombre());
         usuarioExistente.setApellido(requestDTO.getApellido());
         usuarioExistente.setEmail(requestDTO.getEmail());
-        if (requestDTO.getPassword() != null && !requestDTO.getPassword().isBlank()) {
-            String nuevaPasswordLimpia = requestDTO.getPassword().trim();
-
-            if (usuarioExistente.getPassword().equals(nuevaPasswordLimpia)) {
-                throw new InvalidPasswordException("La nueva contraseña no puede ser igual a la contraseña actual.");
-            }
-
-            usuarioExistente.setPassword(nuevaPasswordLimpia);
-        }
+        aplicarCambioPassword(usuarioExistente, requestDTO.getPassword());
 
         Usuario usuarioActualizado = usuarioRepository.save(usuarioExistente);
         return usuarioMapper.toResponseDTO(usuarioActualizado);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UsuarioResponseDTO obtenerPerfilActual() {
+        return usuarioMapper.toResponseDTO(obtenerUsuarioAutenticado());
+    }
+
+    @Override
+    @Transactional
+    public UsuarioResponseDTO actualizarPerfilActual(PerfilUpdateDTO requestDTO) {
+        Usuario usuarioActual = obtenerUsuarioAutenticado();
+
+        // Validar si intenta cambiar el email por uno que ya pertenece a OTRO usuario
+        usuarioRepository.findByEmail(requestDTO.getEmail())
+                .ifPresent(u -> {
+                    if (!u.getId().equals(usuarioActual.getId())) {
+                        throw new EmailAlreadyExistsException("El email ya esta en uso por otro usuario.");
+                    }
+                });
+
+        usuarioActual.setNombre(requestDTO.getNombre());
+        usuarioActual.setApellido(requestDTO.getApellido());
+        usuarioActual.setEmail(requestDTO.getEmail());
+        // El rol no se modifica desde el perfil: nunca se toca requestDTO sobre rolUsuario
+        aplicarCambioPassword(usuarioActual, requestDTO.getPassword());
+
+        Usuario usuarioActualizado = usuarioRepository.save(usuarioActual);
+        return usuarioMapper.toResponseDTO(usuarioActualizado);
+    }
+
+    // Aplica la nueva contraseña (encriptada) solo si viene informada; evita repetir la actual
+    private void aplicarCambioPassword(Usuario usuario, String passwordNueva) {
+        if (passwordNueva == null || passwordNueva.isBlank()) {
+            return;
+        }
+        String passwordLimpia = passwordNueva.trim();
+
+        if (passwordEncoder.matches(passwordLimpia, usuario.getPassword())) {
+            throw new InvalidPasswordException("La nueva contraseña no puede ser igual a la contraseña actual.");
+        }
+
+        usuario.setPassword(passwordEncoder.encode(passwordLimpia));
+    }
+
+    // Recupera la entidad del usuario autenticado a partir del email del JWT (SecurityContext)
+    private Usuario obtenerUsuarioAutenticado() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String emailLogueado = authentication.getName();
+        return usuarioRepository.findByEmail(emailLogueado)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario autenticado no encontrado: " + emailLogueado));
     }
 
     @Override
