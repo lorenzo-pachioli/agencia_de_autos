@@ -21,7 +21,7 @@ import type { ApiError } from '../../../models/ApiError';
 // Mismo patrón que valida el backend (nombre/apellido solo letras)
 const NOMBRE_PATTERN = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/;
 
-// La confirmación solo debe coincidir cuando el usuario escribió una contraseña nueva
+
 function passwordsIgualesValidator(): ValidatorFn {
   return (grupo: AbstractControl): ValidationErrors | null => {
     const password = grupo.get('password')?.value;
@@ -61,7 +61,6 @@ export class PerfilComponent {
         nonNullable: true,
         validators: [Validators.required, Validators.email],
       }),
-      // Opcionales: la contraseña solo se cambia si se completa
       password: new FormControl('', { nonNullable: true, validators: [Validators.minLength(8)] }),
       confirmarPassword: new FormControl('', { nonNullable: true }),
     },
@@ -116,7 +115,6 @@ export class PerfilComponent {
 
     const { nombre, apellido, email, password } = this.form.getRawValue();
     const perfil: PerfilUpdateRequest = { nombre, apellido, email };
-    // Solo enviamos la contraseña si el usuario la completó
     if (password) {
       perfil.password = password;
     }
@@ -144,7 +142,6 @@ export class PerfilComponent {
 
     const apiError = err.error as ApiError | undefined;
 
-    // 400: errores de validación por campo (MethodArgumentNotValidException en el backend)
     if (apiError?.validationErrors) {
       Object.entries(apiError.validationErrors).forEach(([campo, mensaje]) => {
         this.form.get(campo)?.setErrors({ backend: mensaje });
@@ -153,7 +150,6 @@ export class PerfilComponent {
       return;
     }
 
-    // 409: email ya registrado por otro usuario (EmailAlreadyExistsException)
     if (err.status === 409) {
       const mensaje = apiError?.message ?? 'Ese email ya está en uso por otro usuario.';
       this.form.get('email')?.setErrors({ backend: mensaje });

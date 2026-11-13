@@ -17,7 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../services/auth.service';
 import type { ApiError } from '../../models/ApiError';
 
-// Mismo patrón que valida el backend en UsuarioRequestDTO (nombre/apellido solo letras)
+
 const NOMBRE_PATTERN = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/;
 
 function passwordsIgualesValidator(): ValidatorFn {
@@ -103,7 +103,6 @@ export class RegistroComponent {
 
     const apiError = err.error as ApiError | undefined;
 
-    // 400: errores de validación por campo (MethodArgumentNotValidException en el backend)
     if (apiError?.validationErrors) {
       Object.entries(apiError.validationErrors).forEach(([campo, mensaje]) => {
         this.form.get(campo)?.setErrors({ backend: mensaje });
@@ -112,7 +111,6 @@ export class RegistroComponent {
       return;
     }
 
-    // 409: email ya registrado (EmailAlreadyExistsException)
     if (err.status === 409) {
       const mensaje = apiError?.message ?? 'Ese email ya está registrado.';
       this.form.get('email')?.setErrors({ backend: mensaje });

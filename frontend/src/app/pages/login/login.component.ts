@@ -58,7 +58,6 @@ export class LoginComponent {
       return;
     }
 
-    // Credenciales inválidas o cuenta deshabilitada: el backend devuelve 400 con un mensaje descriptivo
     this.error.set((err.error as ApiError)?.message ?? 'Email o contraseña incorrectos.');
   }
 }
