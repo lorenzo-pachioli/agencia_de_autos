@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
@@ -41,6 +42,19 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioResponseDTO>> listar() {
         return ResponseEntity.ok(usuarioService.listarTodos());
+    }
+
+    @Operation(
+            summary = "Obtener el usuario logueado",
+            description = "Devuelve los datos del usuario autenticado, identificado por el email de la sesión (JWT)."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario obtenido exitosamente"),
+            @ApiResponse(responseCode = "401", description = "No hay una sesión válida")
+    })
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioResponseDTO> usuarioActual(Authentication authentication) {
+        return ResponseEntity.ok(usuarioService.buscarPorEmail(authentication.getName()));
     }
 
     @Operation(

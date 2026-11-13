@@ -20,6 +20,8 @@ public interface UsuarioService {
 
     Usuario buscarEntityPorEmail(String email);
 
+    UsuarioResponseDTO buscarPorEmail(String email);
+
     UsuarioResponseDTO actualizarUsuario(Long id, UsuarioRequestDTO requestDTO);
 
     UsuarioResponseDTO darDeBaja(Long id);

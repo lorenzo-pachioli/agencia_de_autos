@@ -84,6 +84,12 @@ public class UsuarioServiceImpl implements UsuarioService{
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public UsuarioResponseDTO buscarPorEmail(String email) {
+        return usuarioMapper.toResponseDTO(buscarEntityPorEmail(email));
+    }
+
+    @Override
     @Transactional
     public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioRequestDTO requestDTO) {
 
