@@ -29,11 +29,13 @@ export const ETIQUETA_METODO_PAGO: Record<MetodoPago, string> = {
   [MetodoPago.CUOTA_BANCARIZADA]: 'Cuota bancarizada',
 };
 
+export const SIN_OBSERVACIONES = 'Sin observaciones';
+
 export interface Transaccion {
     id: number;
     observaciones: string | null;
-    precio_final: number;
-    metodoPago: MetodoPago;
+    precio_final: number | null;
+    metodoPago: MetodoPago | null;
     estadoTransaccion: EstadoTransaccion;
     vehiculo_id: number;
     patente: string;
@@ -62,6 +64,10 @@ export interface SolicitarTransaccion {
     observaciones?: string;
     metodoPago?: MetodoPago;
     vehiculo_id: number;
+}
+
+export interface ActualizarTransaccion extends CrearTransaccion {
+    estadoTransaccion: EstadoTransaccion;
 }
 
 export interface BalanceTransacciones {

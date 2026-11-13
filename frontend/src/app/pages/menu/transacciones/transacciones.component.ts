@@ -19,22 +19,35 @@ import {
   EstadoTransaccion,
   FiltrosTransaccion,
   MetodoPago,
+  SIN_OBSERVACIONES,
   Transaccion,
 } from '../../../models/Transacciones';
 import { MatButton } from '@angular/material/button';
+import { AuthService } from '../../../services/auth.service';
+import { UsuarioService } from '../../../services/usuario.service';
+import {
+  AccionMontoDialogComponent,
+  AccionMontoDialogData,
+} from '../../../components/accion-monto-dialog/accion-monto-dialog.component';
+import {
+  AsignarSolicitudDialogComponent,
+  DatosAsignacion,
+} from '../../../components/asignar-solicitud-dialog/asignar-solicitud-dialog.component';
 
-type Modal = 'crear' | 'senia' | 'venta' | 'cancelar';
+type Modal = 'crear' | 'cancelar';
 
 const DURACION_MENSAJE_MS = 3500;
 
+const TAMANIO_DIALOGO = { width: '480px', maxWidth: '92vw' };
+
 const MSG = {
   camposObligatorios: 'Completá precio, vehículo, cliente y vendedor.',
-  montoInvalido: 'Ingresá un monto mayor a cero.',
   errorCarga: 'No se pudieron cargar las transacciones.',
   errorOperacion: 'No se pudo completar la operación. Revisá los datos e intentá nuevamente.',
   creada: 'Transacción creada.',
   senia: 'Seña registrada.',
   venta: 'Venta registrada.',
+  asignada: 'Solicitud asignada a tu nombre.',
   cancelada: 'Transacción cancelada.',
 };
 
@@ -59,6 +72,8 @@ const MSG = {
 export class TransaccionesComponent {
   private readonly transaccionService = inject(TransaccionService);
   private readonly dialog = inject(MatDialog);
+  private readonly auth = inject(AuthService);
+  private readonly usuarioService = inject(UsuarioService);
   private readonly plantillaDialogo = viewChild.required<TemplateRef<unknown>>('dialogo');
   private dialogRef: MatDialogRef<unknown> | null = null;
 
@@ -74,6 +89,7 @@ export class TransaccionesComponent {
   readonly error = signal('');
   readonly mensaje = signal('');
   readonly estadoActivo = signal<EstadoTransaccion | null>(null);
+  readonly vendedorId = signal<number | null>(null);
 
   readonly pageSize = 10;
   pageIndex = 0;
@@ -82,10 +98,12 @@ export class TransaccionesComponent {
   modal: Modal | null = null;
   transaccionSeleccionada: Transaccion | null = null;
   formulario: CrearTransaccion = this.formularioVacio();
-  montoAccion: number | null = null;
 
   constructor() {
     this.cargar();
+    if (this.auth.isVendedor()) {
+      this.usuarioService.getMe().subscribe(usuario => this.vendedorId.set(usuario.id));
+    }
   }
 
   cargar(): void {
@@ -136,9 +154,44 @@ export class TransaccionesComponent {
   }
 
   abrirAccion(tipo: 'senia' | 'venta', transaccion: Transaccion): void {
-    this.transaccionSeleccionada = transaccion;
-    this.montoAccion = transaccion.precio_final;
-    this.abrirModal(tipo);
+    this.error.set('');
+    this.dialog
+      .open<AccionMontoDialogComponent, AccionMontoDialogData, number>(AccionMontoDialogComponent, {
+        ...TAMANIO_DIALOGO,
+        data: { tipo, transaccion },
+      })
+      .afterClosed()
+      .subscribe(monto => {
+        if (!monto) return;
+        const solicitud = tipo === 'senia'
+          ? this.transaccionService.senar(transaccion.id, monto)
+          : this.transaccionService.vender(transaccion.id, monto);
+        this.ejecutar(solicitud, tipo === 'senia' ? MSG.senia : MSG.venta);
+      });
+  }
+
+  abrirAsignar(transaccion: Transaccion): void {
+    const vendedorId = this.vendedorId();
+    if (!vendedorId) return;
+
+    this.error.set('');
+    this.dialog
+      .open<AsignarSolicitudDialogComponent, Transaccion, DatosAsignacion>(AsignarSolicitudDialogComponent, {
+        ...TAMANIO_DIALOGO,
+        data: transaccion,
+      })
+      .afterClosed()
+      .subscribe(datos => {
+        if (!datos) return;
+        const solicitud = this.transaccionService.actualizar(transaccion.id, {
+          ...datos,
+          observaciones: transaccion.observaciones || SIN_OBSERVACIONES,
+          vehiculo_id: transaccion.vehiculo_id,
+          cliente_id: transaccion.cliente_id,
+          vendedor_id: vendedorId,
+        });
+        this.ejecutar(solicitud, MSG.asignada);
+      });
   }
 
   crear(): void {
@@ -148,22 +201,6 @@ export class TransaccionesComponent {
       return;
     }
     this.ejecutar(this.transaccionService.crear(this.formulario), MSG.creada);
-  }
-
-  confirmarAccion(): void {
-    const transaccion = this.transaccionSeleccionada;
-    const monto = this.montoAccion;
-    if (!transaccion || !monto || monto <= 0) {
-      this.error.set(MSG.montoInvalido);
-      return;
-    }
-
-    const esSenia = this.modal === 'senia';
-    const solicitud = esSenia
-      ? this.transaccionService.senar(transaccion.id, monto)
-      : this.transaccionService.vender(transaccion.id, monto);
-
-    this.ejecutar(solicitud, esSenia ? MSG.senia : MSG.venta);
   }
 
   cancelar(transaccion: Transaccion): void {
@@ -188,7 +225,7 @@ export class TransaccionesComponent {
   private abrirModal(modal: Modal): void {
     this.error.set('');
     this.modal = modal;
-    this.dialogRef = this.dialog.open(this.plantillaDialogo(), { width: '480px', maxWidth: '92vw' });
+    this.dialogRef = this.dialog.open(this.plantillaDialogo(), TAMANIO_DIALOGO);
     this.dialogRef.afterClosed().subscribe(() => {
       this.modal = null;
       this.dialogRef = null;

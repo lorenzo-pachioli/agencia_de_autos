@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Asignarme visita</h2>
+<form class="dialog-form" (ngSubmit)="confirmar(EstadoTransaccion.RESERVA)">
+  <mat-dialog-content>
+    <p class="dialog-description">Solicitud #{{ transaccion.id }} · {{ transaccion.patente }}. Al confirmar quedás como vendedor y la transacción pasa a reserva o seña.</p>
+    <mat-form-field appearance="outline">
+      <mat-label>Método de pago</mat-label>
+      <mat-select name="metodoPago" [(ngModel)]="metodoPago" required>
+        @for (m of metodosPago; track m) { <mat-option [value]="m">{{ etiquetaMetodoPago[m] }}</mat-option> }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Precio final</mat-label>
+      <input matInput type="number" min="1" name="precio" [(ngModel)]="precio" required>
+    </mat-form-field>
+    @if (error()) { <p class="form-error">{{ error() }}</p> }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button type="button" matButton="outlined" class="button-outline" (click)="cerrar()">Volver</button>
+    <button matButton="outlined" class="button-outline" type="button" (click)="confirmar(EstadoTransaccion.SENIADO)">Señar</button>
+    <button matButton="filled" class="button-dark" type="submit">Reservar</button>
+  </mat-dialog-actions>
+</form>
