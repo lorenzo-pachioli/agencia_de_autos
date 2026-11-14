@@ -21,10 +21,6 @@ export class UsuarioService {
     return this.http.get<Usuario>(`${this.apiUrl}/${id}`);
   }
 
-  getMe(): Observable<Usuario> {
-    return this.http.get<Usuario>(`${this.apiUrl}/me`);
-  }
-
   updateMe(perfil: PerfilUpdateRequest): Observable<Usuario> {
     return this.http.put<Usuario>(`${this.apiUrl}/me`, perfil);
   }

@@ -44,7 +44,7 @@ export class LoginComponent {
     this.cargando.set(true);
 
     this.auth.login(this.form.getRawValue()).subscribe({
-      next: () => this.router.navigate([this.auth.isAdmin() ? '/dashboard' : '/catalogo']),
+      next: () => this.router.navigate([this.auth.isAdmin() ? '/menu/dashboard' : '/catalogo']),
       error: (err: HttpErrorResponse) => {
         this.cargando.set(false);
         this.manejarError(err);
