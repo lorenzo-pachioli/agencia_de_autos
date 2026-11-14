@@ -32,6 +32,11 @@
         </div>
         <div class="detalle-vehiculo-main">
             <h1>{{v.modeloNombre}}</h1>
+            @if (v.estado !== EstadoVehiculo.DISPONIBLE) {
+                <span class="estado-vehiculo" [class.vendido]="v.estado === EstadoVehiculo.VENDIDO">
+                    {{ etiquetaEstado[v.estado] }}
+                </span>
+            }
             <h2>{{ v.precioVenta | currency }}</h2>
             <div class="sub-items">
                 <ul>
@@ -47,7 +52,32 @@
             <h3>Descripcion</h3>
             <p>{{v.descripcion}}</p>
             @if(logged()){
-                <a class="solicitar-turno" matButton="filled">Solicitar turno</a>
+                @if (solicitudEnviada()) {
+                    <button class="solicitar-turno" matButton="outlined" type="button">
+                        ¡Solicitud enviada! La agencia se va a comunicar con vos.
+                    </button>
+                } @else if (v.tieneTransaccionActiva) {
+                    <button class="solicitar-turno" matButton="outlined" type="button">
+                        Ya tenés una solicitud o transacción en curso sobre este vehículo.
+                    </button>
+                } @else if (v.tieneSolicitudPendiente) {
+                    <button class="solicitar-turno" matButton="outlined" type="button">
+                        Ya tenés una visita pendiente. Cuando la agencia la resuelva vas a poder pedir otra.
+                    </button>
+                } @else if (v.estado !== EstadoVehiculo.DISPONIBLE) {
+                } @else if (v.esPersonalAgencia) {
+                    <button class="solicitar-turno" matButton="outlined" type="button">
+                        Sos parte del personal de la agencia, no podés solicitar turno para un vehículo.
+                    </button>
+                } @else {
+                    <button class="solicitar-turno" matButton="filled" type="button"
+                        [disabled]="enviandoSolicitud()" (click)="solicitarTurno()">
+                        {{ enviandoSolicitud() ? 'Enviando...' : 'Solicitar turno' }}
+                    </button>
+                    @if (errorSolicitud(); as error) {
+                        <p class="solicitud-error">{{ error }}</p>
+                    }
+                }
             }@else {
                 <button class="solicitar-turno" matButton="outlined">
                     ¿Te interesa este vehículo? <a routerLink="/login">Iniciá sesión</a> o <a routerLink="/register">creá tu cuenta</a>.

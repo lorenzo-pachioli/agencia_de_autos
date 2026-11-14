@@ -78,6 +78,19 @@ public class UsuarioServiceImpl implements UsuarioService{
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Usuario buscarEntityPorEmail(String email) {
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con el email: " + email));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UsuarioResponseDTO buscarPorEmail(String email) {
+        return usuarioMapper.toResponseDTO(buscarEntityPorEmail(email));
+    }
+
+    @Override
     @Transactional
     public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioRequestDTO requestDTO) {
 

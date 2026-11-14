@@ -16,6 +16,8 @@ public interface VehiculoMapper {
     @Mapping(target = "modeloNombre", source = "modelo.nombre")
     @Mapping(target = "imagenPrincipalUrl", ignore = true)
     @Mapping(target = "imagenes", ignore = true)
+    @Mapping(target = "tieneTransaccionActiva", ignore = true)
+    @Mapping(target = "esPersonalAgencia", ignore = true)
     VehiculoResponseDTO toResponse(Vehiculo vehiculo);
 
     @Mapping(target = "modeloNombre", source = "modelo.nombre")

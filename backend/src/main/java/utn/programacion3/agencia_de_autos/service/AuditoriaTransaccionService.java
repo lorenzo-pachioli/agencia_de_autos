@@ -49,7 +49,7 @@ public class AuditoriaTransaccionService {
 
         AuditoriaTransaccion auditoria = AuditoriaTransaccion.builder()
                 .transaccion_id(anterior.getId())
-                .vendedor_id(anterior.getVendedor().getId())
+                .vendedor_id(idVendedor(anterior.getVendedor() != null ? anterior : nueva))
                 .precioFinalAnterior(anterior.getPrecio_final())
                 .precioFinalNuevo(nueva.getPrecio_final())
                 .metodoPagoAnterior(anterior.getMetodoPago())
@@ -61,11 +61,15 @@ public class AuditoriaTransaccionService {
         repository.save(auditoria);
     }
 
+    private Long idVendedor(Transaccion transaccion) {
+        return transaccion.getVendedor() != null ? transaccion.getVendedor().getId() : null;
+    }
+
     public void registrarCreacion(Transaccion nueva) {
 
         AuditoriaTransaccion auditoria = AuditoriaTransaccion.builder()
                 .transaccion_id(nueva.getId())
-                .vendedor_id(nueva.getVendedor().getId())
+                .vendedor_id(idVendedor(nueva))
                 .precioFinalAnterior(null)
                 .precioFinalNuevo(nueva.getPrecio_final())
                 .metodoPagoAnterior(null)

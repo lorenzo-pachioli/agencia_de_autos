@@ -1,0 +1,90 @@
+<div class="pagina-detalles">
+    <a mat-button class="volver" routerLink="/list-client">← Volver al listado</a>
+
+    @if (estaCargando()) {
+        <div class="mensaje">
+            <mat-progress-spinner mode="indeterminate" [diameter]="40" />
+        </div>
+    } @else if (mensajeDeError(); as mensaje) {
+        <p class="mensaje mensaje-error">{{ mensaje }}</p>
+    } @else if (vehiculoSeleccionado(); as vehiculo) {
+        <article class="detalles">
+
+            <!-- Galería -->
+            <section class="galeria">
+                @if (urlDeImagenMostrada(); as urlDeImagen) {
+                    <img class="imagen-grande" [src]="urlDeImagen" [alt]="vehiculo.modeloNombre + ' ' + vehiculo.anio">
+                } @else {
+                    <div class="imagen-grande sin-imagen">Sin imágenes</div>
+                }
+
+                @if (listaDeImagenes().length > 1) {
+                    <ul class="miniaturas">
+                        @for (urlDeImagen of listaDeImagenes(); track urlDeImagen) {
+                            <li>
+                                <button type="button" (click)="mostrarImagen(urlDeImagen)"
+                                    [class.seleccionada]="urlDeImagen === urlDeImagenMostrada()">
+                                    <img [src]="urlDeImagen" alt="Miniatura de {{ vehiculo.modeloNombre }}">
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+
+            <!-- Datos -->
+            <mat-card class="datos" appearance="outlined">
+                <mat-card-content>
+                <header class="encabezado">
+                    <h1>{{ vehiculo.modeloNombre }} {{ vehiculo.anio }}</h1>
+                    <span class="estado" [class]="'estado estado-' + vehiculo.estado.toLowerCase()">
+                        {{ obtenerEtiquetaDeEstado(vehiculo.estado) }}
+                    </span>
+                </header>
+
+                <p class="precio">{{ formatearPrecio(vehiculo.precioVenta) }}</p>
+
+                <dl class="ficha-tecnica">
+                    <div>
+                        <dt>Patente</dt>
+                        <dd>{{ vehiculo.patente }}</dd>
+                    </div>
+                    <div>
+                        <dt>Año</dt>
+                        <dd>{{ vehiculo.anio }}</dd>
+                    </div>
+                    <div>
+                        <dt>Kilometraje</dt>
+                        <dd>{{ formatearKilometraje(vehiculo.kilometraje) }}</dd>
+                    </div>
+                    <div>
+                        <dt>Color</dt>
+                        <dd>{{ vehiculo.color }}</dd>
+                    </div>
+                    <div>
+                        <dt>Combustible</dt>
+                        <dd>{{ obtenerEtiquetaDeCombustible(vehiculo.tipoCombustible) }}</dd>
+                    </div>
+                    <div>
+                        <dt>Transmisión</dt>
+                        <dd>{{ obtenerEtiquetaDeTransmision(vehiculo.tipoTransmision) }}</dd>
+                    </div>
+                </dl>
+
+                @if (vehiculo.descripcion) {
+                    <mat-divider />
+                    <h2>Descripción</h2>
+                    <p class="descripcion">{{ vehiculo.descripcion }}</p>
+                }
+
+                <p class="fechas">
+                    Cargado el {{ formatearFecha(vehiculo.createdAt) }}
+                    · Actualizado el {{ formatearFecha(vehiculo.updatedAt) }}
+                </p>
+
+                <!-- Acá van tus botones de eliminar y modificar -->
+                </mat-card-content>
+            </mat-card>
+        </article>
+    }
+</div>

@@ -12,7 +12,7 @@
 -- ----------------------------------------------------------------
 -- 1. USUARIOS
 -- ----------------------------------------------------------------
-INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES ( true, CURRENT_DATE, 'Admin', 'admin_test@gmail.com', 'Administrador', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'ADMINISTRADOR' ), ( true, CURRENT_DATE, 'García', 'carlos.garcia@agencia.com', 'Carlos', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'VENDEDOR' );
+INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuario) VALUES ( true, CURRENT_DATE, 'Admin', 'admin_test@gmail.com', 'Administrador', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'ADMINISTRADOR' ), ( true, CURRENT_DATE, 'García', 'carlos.garcia@agencia.com', 'Carlos', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'VENDEDOR' ), ( true, CURRENT_DATE, 'Perez', 'usuarioJuan@gmail.com', 'Juan', '$2a$10$yCOJQwn.XSnYhaIjpTeGneOgAdq3XLdP5it7Vwy9x1EKY8N9np6MC', 'USUARIO' );
 
 -- ----------------------------------------------------------------
 -- 2. MARCAS
@@ -86,11 +86,11 @@ INSERT INTO usuario (activo, alta, apellido, email, nombre, password, rol_usuari
 
 -- ----------------------------------------------------------------
 -- 7. TRANSACCIONES  (estado final de cada operación; una por vehículo)
---    estado_transaccion: RESERVA | SENIADO | VENDIDO | CANCELADO
+--    estado_transaccion: SOLICITAR | RESERVA | SENIADO | VENDIDO | CANCELADO
 --    metodo_pago: EFECTIVO | TRANSFERENCIA | PLAN_AHORRO | CUOTA_BANCARIZADA
 --    comision_calculada = 2% del precio_final, solo en las VENDIDO.
 --    Los estados de los vehículos (sección 4) son consistentes con estas filas:
---      VENDIDO -> VENDIDO | RESERVA/SENIADO -> RESERVADO | CANCELADO -> DISPONIBLE
+--      VENDIDO -> VENDIDO | SOLICITAR -> (sin cambio, vehiculo no retenido) | RESERVA/SENIADO -> RESERVADO | CANCELADO -> DISPONIBLE
 -- ----------------------------------------------------------------
 INSERT INTO transaccion (comision_calculada, created_at, estado_transaccion, metodo_pago, precio_final, updated_at, cliente_id, vehiculo_id, vendedor_id, observaciones) VALUES (440000, DATEADD('DAY', -60, CURRENT_DATE), 'VENDIDO', 'TRANSFERENCIA', 22000000, DATEADD('DAY', -55, CURRENT_DATE), (SELECT id FROM usuario WHERE email = 'martin.perez@gmail.com'), (SELECT id_vehiculo FROM vehiculos WHERE patente = 'AB123CD'), (SELECT id FROM usuario WHERE email = 'carlos.garcia@agencia.com'), 'Venta Corolla XEI. Seña de 2.000.000 imputada.'),  (296000, DATEADD('DAY', -30, CURRENT_DATE), 'VENDIDO', 'EFECTIVO', 14800000, DATEADD('DAY', -30, CURRENT_DATE), (SELECT id FROM usuario WHERE email = 'sofia.rodriguez@gmail.com'), (SELECT id_vehiculo FROM vehiculos WHERE patente = 'GH012IJ'), (SELECT id FROM usuario WHERE email = 'laura.fernandez@agencia.com'), 'Venta Focus S contado.'),  (570000, DATEADD('DAY', -40, CURRENT_DATE), 'VENDIDO', 'CUOTA_BANCARIZADA', 28500000, DATEADD('DAY', -35, CURRENT_DATE), (SELECT id FROM usuario WHERE email = 'sofia.rodriguez@gmail.com'), (SELECT id_vehiculo FROM vehiculos WHERE patente = 'KL678MN'), (SELECT id FROM usuario WHERE email = 'laura.fernandez@agencia.com'), 'Venta Golf Comfortline financiada. Seña de 1.500.000 imputada.'),  (0, DATEADD('DAY', -6, CURRENT_DATE), 'SENIADO', 'PLAN_AHORRO', 44000000, DATEADD('DAY', -5, CURRENT_DATE), (SELECT id FROM usuario WHERE email = 'diego.gomez@gmail.com'), (SELECT id_vehiculo FROM vehiculos WHERE patente = 'CD456EF'), (SELECT id FROM usuario WHERE email = 'carlos.garcia@agencia.com'), 'Seña Hilux SRX de 4.000.000, saldo vía plan de ahorro.'),  (0, DATEADD('DAY', -3, CURRENT_DATE), 'RESERVA', 'TRANSFERENCIA', 35500000, DATEADD('DAY', -3, CURRENT_DATE), (SELECT id FROM usuario WHERE email = 'valentina.martinez@gmail.com'), (SELECT id_vehiculo FROM vehiculos WHERE patente = 'OP234QR'), (SELECT id FROM usuario WHERE email = 'laura.fernandez@agencia.com'), 'Reserva Civic EX-L por 7 días.'),  (0, DATEADD('DAY', -25, CURRENT_DATE), 'CANCELADO', 'CUOTA_BANCARIZADA', 38000000, DATEADD('DAY', -18, CURRENT_DATE), (SELECT id FROM usuario WHERE email = 'diego.gomez@gmail.com'), (SELECT id_vehiculo FROM vehiculos WHERE patente = 'IJ345KL'), (SELECT id FROM usuario WHERE email = 'carlos.garcia@agencia.com'), 'Cancelada: el cliente no obtuvo el crédito.');
 
