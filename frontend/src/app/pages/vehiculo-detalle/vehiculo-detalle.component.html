@@ -1,0 +1,93 @@
+<div class="detalle-vehiculo-container">
+    <div class="detalle-vehiculo-header">
+        <a matButton="text" routerLink="" class="volver-catalogo">
+            <mat-icon>chevron_left</mat-icon>
+            Volver al catalogo
+        </a>
+    </div>
+    @if(vehiculo(); as v){
+    <div class="detalle-vehiculo-body">
+        <div class="imagenes">
+            <img class="imagen-principal" [src]="imagenActual()" [alt]="v.modeloNombre">
+
+            @if (imagenes().length > 1) {
+            <div class="selector-imagenes">
+                <button type="button" class="flecha" (click)="anterior()" aria-label="Imagen anterior">
+                    <mat-icon>chevron_left</mat-icon>
+                </button>
+
+                <div class="miniaturas">
+                    @for (img of imagenes(); track img; let i = $index) {
+                    <button type="button" class="miniatura" [class.activa]="i === indice()" (click)="indice.set(i)">
+                        <img [src]="img" [alt]="v.modeloNombre + ' - imagen ' + (i + 1)">
+                    </button>
+                    }
+                </div>
+
+                <button type="button" class="flecha" (click)="siguiente()" aria-label="Imagen siguiente">
+                    <mat-icon>chevron_right</mat-icon>
+                </button>
+            </div>
+            }
+        </div>
+        <div class="detalle-vehiculo-main">
+            <h1>{{v.modeloNombre}}</h1>
+            @if (v.estado !== EstadoVehiculo.DISPONIBLE) {
+                <span class="estado-vehiculo" [class.vendido]="v.estado === EstadoVehiculo.VENDIDO">
+                    {{ etiquetaEstado[v.estado] }}
+                </span>
+            }
+            <h2>{{ v.precioVenta | currency }}</h2>
+            <div class="sub-items">
+                <ul>
+                    <li><mat-icon class="icon-primary">calendar_today</mat-icon>Año {{v.anio}}</li>
+                    <li><mat-icon class="icon-primary">local_gas_station</mat-icon> Combustible {{v.tipoCombustible}}</li>
+                    <li><mat-icon class="icon-primary">palette</mat-icon>Color {{v.color}}</li>
+                </ul>
+                <ul>
+                    <li><mat-icon class="icon-primary">speed</mat-icon>Kilometraje {{v.kilometraje}}</li>
+                    <li><mat-icon class="icon-primary">settings</mat-icon>Transmision {{v.tipoTransmision}}</li>
+                </ul>
+            </div>
+            <h3>Descripcion</h3>
+            <p>{{v.descripcion}}</p>
+            @if(logged()){
+                @if (solicitudEnviada()) {
+                    <button class="solicitar-turno" matButton="outlined" type="button">
+                        ¡Solicitud enviada! La agencia se va a comunicar con vos.
+                    </button>
+                } @else if (v.tieneTransaccionActiva) {
+                    <button class="solicitar-turno" matButton="outlined" type="button">
+                        Ya tenés una solicitud o transacción en curso sobre este vehículo.
+                    </button>
+                } @else if (v.tieneSolicitudPendiente) {
+                    <button class="solicitar-turno" matButton="outlined" type="button">
+                        Ya tenés una visita pendiente. Cuando la agencia la resuelva vas a poder pedir otra.
+                    </button>
+                } @else if (v.estado !== EstadoVehiculo.DISPONIBLE) {
+                } @else if (v.esPersonalAgencia) {
+                    <button class="solicitar-turno" matButton="outlined" type="button">
+                        Sos parte del personal de la agencia, no podés solicitar turno para un vehículo.
+                    </button>
+                } @else {
+                    <button class="solicitar-turno" matButton="filled" type="button"
+                        [disabled]="enviandoSolicitud()" (click)="solicitarTurno()">
+                        {{ enviandoSolicitud() ? 'Enviando...' : 'Solicitar turno' }}
+                    </button>
+                    @if (errorSolicitud(); as error) {
+                        <p class="solicitud-error">{{ error }}</p>
+                    }
+                }
+            }@else {
+                <button class="solicitar-turno" matButton="outlined">
+                    ¿Te interesa este vehículo? <a routerLink="/login">Iniciá sesión</a> o <a routerLink="/register">creá tu cuenta</a>.
+                </button>
+            }
+
+        </div>
+    </div>
+    }@else {
+    <h1>404 - No se encontro el vehiculo</h1>
+    }
+
+</div>

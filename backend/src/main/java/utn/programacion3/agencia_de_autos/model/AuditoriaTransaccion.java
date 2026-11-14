@@ -22,7 +22,6 @@ public class AuditoriaTransaccion {
     @Column(nullable = false)
     private Long transaccion_id;
 
-    @Column(nullable = false)
     private Long vendedor_id;
 
     @Builder.Default

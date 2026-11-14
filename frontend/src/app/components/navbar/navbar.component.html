@@ -1,0 +1,58 @@
+<mat-toolbar color="primary" class="navbar">
+  <a routerLink="/catalogo" class="navbar__brand">
+    <span class="navbar__brand-title">Agencia de Autos</span>
+  </a>
+
+  <span class="navbar__spacer"></span>
+
+  <nav class="navbar__links">
+    @if (!auth.isLoggedIn()) {
+      <a mat-button routerLink="/catalogo" routerLinkActive="navbar__link--active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        Catálogo
+      </a>
+      <a mat-button routerLink="/login" routerLinkActive="navbar__link--active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        Iniciar sesión
+      </a>
+      <a mat-stroked-button routerLink="/registro" routerLinkActive="navbar__link--active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        Registrarse
+      </a>
+    } @else if (auth.isAdmin()) {
+      <a mat-button routerLink="/menu/dashboard" routerLinkActive="navbar__link--active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        Menu
+      </a>
+      <a mat-button routerLink="/catalogo" routerLinkActive="navbar__link--active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        Catalogo
+      </a>
+      <a mat-button routerLink="/perfil" routerLinkActive="navbar__link--active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        Perfil
+      </a>
+      <button mat-stroked-button type="button" (click)="cerrarSesion()">
+        <mat-icon fontIcon="logout"></mat-icon>
+        Cerrar sesión
+      </button>
+    } @else {
+      <a mat-button routerLink="/menu" routerLinkActive="navbar__link--active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        Menu
+      </a>
+      <a mat-button routerLink="/perfil" routerLinkActive="navbar__link--active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        Perfil
+      </a>
+      <a mat-button routerLink="/tramites" routerLinkActive="navbar__link--active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        Trámites
+      </a>
+      <button mat-stroked-button type="button" (click)="cerrarSesion()">
+        <mat-icon fontIcon="logout"></mat-icon>
+        Cerrar sesión
+      </button>
+    }
+  </nav>
+</mat-toolbar>

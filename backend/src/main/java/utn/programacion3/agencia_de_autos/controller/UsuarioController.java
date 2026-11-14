@@ -8,7 +8,9 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import utn.programacion3.agencia_de_autos.dto.request.PerfilUpdateDTO;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
 import utn.programacion3.agencia_de_autos.service.UsuarioService;
@@ -41,6 +43,33 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioResponseDTO>> listar() {
         return ResponseEntity.ok(usuarioService.listarTodos());
+    }
+
+    @Operation(
+            summary = "Obtener el perfil del usuario autenticado",
+            description = "Retorna los datos del usuario actualmente logueado, identificado a partir de su token JWT. Disponible para cualquier rol."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Perfil obtenido exitosamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado")
+    })
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioResponseDTO> obtenerPerfil() {
+        return ResponseEntity.ok(usuarioService.obtenerPerfilActual());
+    }
+
+    @Operation(
+            summary = "Actualizar el perfil del usuario autenticado",
+            description = "Permite al usuario logueado modificar su nombre, apellido, email y, opcionalmente, su contraseña. El rol no puede modificarse."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Perfil actualizado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o email ya en uso por otro usuario"),
+            @ApiResponse(responseCode = "401", description = "No autenticado")
+    })
+    @PutMapping("/me")
+    public ResponseEntity<UsuarioResponseDTO> actualizarPerfil(@Valid @RequestBody PerfilUpdateDTO requestDTO) {
+        return ResponseEntity.ok(usuarioService.actualizarPerfilActual(requestDTO));
     }
 
     @Operation(

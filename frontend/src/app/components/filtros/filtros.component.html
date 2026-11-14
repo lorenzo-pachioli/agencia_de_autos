@@ -1,0 +1,72 @@
+<form [formGroup]="formFilters" (ngSubmit)="aplicar()">
+    <div class="campo">
+        <label for="marcaId">MARCA</label>
+        <mat-form-field>
+            <mat-select id="marcaId" formControlName="marcaId" [canSelectNullableOptions]="true">
+                <mat-option [value]="null">Todas las marcas</mat-option>
+                @for (m of marcas(); track m.id) {
+                <mat-option [value]="m.id">{{ m.nombre }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div class="campo">
+        <label for="modeloId">MODELO</label>
+        <mat-form-field>
+            <mat-select id="modeloId" formControlName="modeloId" [canSelectNullableOptions]="true">
+                <mat-option [value]="null">Todos los modelos</mat-option>
+                @for (m of modelosVisibles(); track m.id) {
+                <mat-option [value]="m.id">{{ m.nombre }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div class="campo">
+        <label for="combustible">COMBUSTIBLE</label>
+        <mat-form-field>
+            <mat-select id="combustible" formControlName="combustible" [canSelectNullableOptions]="true">
+                <mat-option [value]="null">Todos</mat-option>
+                @for (c of combustibles(); track $index) {
+                <mat-option [value]="c">{{ c }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div class="campo">
+        <label for="tipoTransmision">TRANSMISIÓN</label>
+        <mat-form-field>
+            <mat-select id="tipoTransmision" formControlName="tipoTransmision" [canSelectNullableOptions]="true">
+                <mat-option [value]="null">Todas</mat-option>
+                @for (t of transmisiones(); track $index) {
+                <mat-option [value]="t">{{ t }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div class="campo">
+        <label for="minPrecio">PRECIO MÍNIMO</label>
+        <mat-form-field>
+            <input matInput id="minPrecio" type="number" min="0" placeholder="$ 0" formControlName="minPrecio" />
+        </mat-form-field>
+    </div>
+
+    <div class="campo">
+        <label for="maxPrecio">PRECIO MÁXIMO</label>
+        <mat-form-field>
+            <input matInput id="maxPrecio" type="number" min="0" placeholder="Sin límite" formControlName="maxPrecio" />
+        </mat-form-field>
+    </div>
+
+    <div class="acciones">
+        <button mat-flat-button type="submit" class="btn-filtrar">
+            <mat-icon>search</mat-icon> Filtrar
+        </button>
+        <button mat-stroked-button type="button" class="btn-limpiar" aria-label="Limpiar filtros" (click)="limpiar()">
+            <mat-icon>close</mat-icon> Limpiar
+        </button>
+    </div>
+</form>

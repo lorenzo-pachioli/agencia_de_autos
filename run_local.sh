@@ -15,7 +15,7 @@ DB_DRIVER="org.h2.Driver"
 JPA_DIALECT="org.hibernate.dialect.H2Dialect"
 
 echo "[1/2] Iniciando Backend (H2 en memoria)..."
-(cd "$SCRIPT_DIR/backend" && mvn spring-boot:run -Dspring-boot.run.arguments="--spring.datasource.url=$DB_URL --spring.datasource.username=$DB_USERNAME --spring.datasource.password=$DB_PASSWORD --spring.datasource.driver-class-name=$DB_DRIVER --spring.jpa.database-platform=$JPA_DIALECT --spring.sql.init.mode=always --spring.jpa.defer-datasource-initialization=true") &
+(cd "$SCRIPT_DIR/backend" && ./mvnw spring-boot:run -Dspring-boot.run.arguments="--spring.datasource.url=$DB_URL --spring.datasource.username=$DB_USERNAME --spring.datasource.password=$DB_PASSWORD --spring.datasource.driver-class-name=$DB_DRIVER --spring.jpa.database-platform=$JPA_DIALECT --spring.sql.init.mode=always --spring.jpa.defer-datasource-initialization=true") &
 
 echo "[2/2] Iniciando Frontend (Angular en puerto 4200)..."
 (cd "$SCRIPT_DIR/frontend" && npm start) &

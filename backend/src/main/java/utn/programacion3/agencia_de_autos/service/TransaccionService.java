@@ -5,14 +5,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import utn.programacion3.agencia_de_autos.dto.request.AsignarVisitaRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.request.SolicitudTransaccionRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionBalanceResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionComisionResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.TransaccionResponseDTO;
+import utn.programacion3.agencia_de_autos.exception.NegocioException;
 import utn.programacion3.agencia_de_autos.exception.ResourceNotFoundException;
 import utn.programacion3.agencia_de_autos.exception.TransaccionNoModificableException;
 import utn.programacion3.agencia_de_autos.exception.VehiculoNoDisponibleException;
+import utn.programacion3.agencia_de_autos.mapper.SolicitudTransaccionMapper;
 import utn.programacion3.agencia_de_autos.mapper.TransaccionMapper;
 import utn.programacion3.agencia_de_autos.model.BalanceProyeccion;
 import utn.programacion3.agencia_de_autos.model.Transaccion;
@@ -34,6 +38,7 @@ public class TransaccionService {
 
     private final TransaccionRepository transaccionRepository;
     private final TransaccionMapper transaccionMapper;
+    private final SolicitudTransaccionMapper solicitudTransaccionMapper;
     private final UsuarioService usuarioService;
     private final VehiculoServiceImpl vehiculoService;
     private final AuditoriaTransaccionService auditoriaTransaccionService;
@@ -70,8 +75,53 @@ public class TransaccionService {
         vehiculoService.cambiarEstadoEntity(dto.getVehiculo_id(), EstadoVehiculo.RESERVADO);
         Transaccion transaccionGuardada = transaccionRepository.save(transaccion);
         auditoriaTransaccionService.registrarCreacion(transaccionGuardada);
+        cancelarOtrasSolicitudes(transaccionGuardada);
 
         return transaccionMapper.toResponseDTO(transaccionGuardada);
+    }
+
+    @Transactional
+    public TransaccionResponseDTO solicitar(SolicitudTransaccionRequestDTO dto, String emailCliente) {
+
+        Usuario cliente = usuarioService.buscarEntityPorEmail(emailCliente);
+        Vehiculo vehiculo = vehiculoService.obtenerVehiculoEntityPorId(dto.getVehiculo_id());
+
+        if (vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE)
+            throw new VehiculoNoDisponibleException("El vehiculo requerido no está disponible");
+
+        if (transaccionRepository.existsByClienteEmailAndEstadoTransaccion(emailCliente, EstadoTransaccion.SOLICITAR))
+            throw new NegocioException("Ya tenés una visita pendiente");
+
+        Transaccion solicitud = solicitudTransaccionMapper.toEntity(dto);
+        solicitud.setCliente(cliente);
+        solicitud.setVehiculo(vehiculo);
+
+        Transaccion solicitudGuardada = transaccionRepository.save(solicitud);
+        auditoriaTransaccionService.registrarCreacion(solicitudGuardada);
+
+        return transaccionMapper.toResponseDTO(solicitudGuardada);
+    }
+
+    @Transactional
+    public TransaccionResponseDTO asignar(Long id, AsignarVisitaRequestDTO dto, String emailVendedor) {
+
+        Transaccion transaccion = buscarEntityPorId(id);
+        Transaccion snapshotAnterior = crearSnapshot(transaccion);
+        Usuario vendedor = usuarioService.buscarEntityPorEmail(emailVendedor);
+
+        if (transaccion.getEstadoTransaccion() != EstadoTransaccion.SOLICITAR)
+            throw new TransaccionNoModificableException("Solo se pueden asignar transacciones en estado SOLICITAR");
+
+        if (transaccion.getVendedor() != null && !transaccion.getVendedor().getId().equals(vendedor.getId()))
+            throw new NegocioException("La solicitud ya está asignada a otro vendedor");
+
+        transaccion.setVendedor(vendedor);
+        if (dto.getFechaVisita() != null)
+            transaccion.setFecha_visita(dto.getFechaVisita());
+
+        auditoriaTransaccionService.registrarCambio(snapshotAnterior, transaccion);
+
+        return transaccionMapper.toResponseDTO(transaccionRepository.save(transaccion));
     }
 
     @Transactional
@@ -91,6 +141,22 @@ public class TransaccionService {
         transaccion.setCliente(cliente);
         transaccion.setVendedor(vendedor);
         transaccion.setVehiculo(vehiculo);
+
+        EstadoTransaccion nuevoEstado = dto.getEstadoTransaccion();
+
+        if (nuevoEstado != snapshotAnterior.getEstadoTransaccion()) {
+            if (snapshotAnterior.getEstadoTransaccion() == EstadoTransaccion.CANCELADO)
+                throw new TransaccionNoModificableException("No se puede cambiar el estado de una Transaccion en CANCELADO");
+            if (nuevoEstado == EstadoTransaccion.SOLICITAR)
+                throw new TransaccionNoModificableException("No se puede volver una Transaccion al estado SOLICITAR");
+
+            if (snapshotAnterior.getEstadoTransaccion() == EstadoTransaccion.SOLICITAR
+                    && nuevoEstado != EstadoTransaccion.CANCELADO
+                    && vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE)
+                throw new VehiculoNoDisponibleException("El vehiculo requerido ya no está disponible");
+
+            asignacionCambioDeEstado(transaccion, nuevoEstado);
+        }
 
         auditoriaTransaccionService.registrarCambio(snapshotAnterior, transaccion);
 
@@ -150,13 +216,28 @@ public class TransaccionService {
             transaccion.setComision_calculada(calcularComision(transaccion.getPrecio_final()));
 
         } else if (nuevoEstado == EstadoTransaccion.CANCELADO) {
-            vehiculoService.cambiarEstadoEntity(vehiculo_id, EstadoVehiculo.DISPONIBLE);
+            if (transaccion.getEstadoTransaccion() != EstadoTransaccion.SOLICITAR)
+                vehiculoService.cambiarEstadoEntity(vehiculo_id, EstadoVehiculo.DISPONIBLE);
 
         } else {
             vehiculoService.cambiarEstadoEntity(vehiculo_id, EstadoVehiculo.RESERVADO);
+            cancelarOtrasSolicitudes(transaccion);
         }
 
         transaccion.setEstadoTransaccion(nuevoEstado);
+    }
+
+    private void cancelarOtrasSolicitudes(Transaccion reservada) {
+        List<Transaccion> solicitudes = transaccionRepository.findByVehiculoIdAndEstadoTransaccionAndIdNot(
+                reservada.getVehiculo().getId(), EstadoTransaccion.SOLICITAR, reservada.getId());
+
+        for (Transaccion solicitud : solicitudes) {
+            Transaccion snapshotAnterior = crearSnapshot(solicitud);
+            solicitud.setEstadoTransaccion(EstadoTransaccion.CANCELADO);
+            auditoriaTransaccionService.registrarCambio(snapshotAnterior, solicitud);
+        }
+
+        transaccionRepository.saveAll(solicitudes);
     }
 
     public TransaccionComisionResponseDTO comisionPorVendedor(TransaccionFilterDTO filtros) {
