@@ -8,6 +8,7 @@ import utn.programacion3.agencia_de_autos.service.TransaccionService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -27,6 +28,8 @@ public class Transaccion {
     private LocalDate created_at = LocalDate.now();
 
     private LocalDate updated_at;
+
+    private LocalDateTime fecha_visita;
 
     private BigDecimal precio_final;
 

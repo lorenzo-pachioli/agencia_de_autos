@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import utn.programacion3.agencia_de_autos.dto.request.AsignarVisitaRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.request.SolicitudTransaccionRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.TransaccionRequestDTO;
@@ -104,6 +105,25 @@ public class TransaccionController {
             @Valid @RequestBody SolicitudTransaccionRequestDTO dto,
             Authentication authentication) {
         return ResponseEntity.status(HttpStatus.CREATED).body(transaccionService.solicitar(dto, authentication.getName()));
+    }
+
+    @Operation(
+            summary = "Asignarse una solicitud y agendar la visita",
+            description = "El vendedor autenticado queda asignado a una transacción en estado SOLICITAR. Si se envía fechaVisita, se agenda o reprograma la visita. No cambia el estado de la transacción ni del vehículo."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Solicitud asignada o visita agendada de forma exitosa"),
+            @ApiResponse(responseCode = "400", description = "La transacción no está en SOLICITAR, ya la tiene otro vendedor o la fecha no es futura"),
+            @ApiResponse(responseCode = "404", description = "La transacción especificada no existe"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado. Se requiere rol VENDEDOR")
+    })
+    @PreAuthorize("hasRole('VENDEDOR')")
+    @PatchMapping("/{id}/asignar")
+    public ResponseEntity<TransaccionResponseDTO> asignarSolicitud(
+            @PathVariable Long id,
+            @Valid @RequestBody AsignarVisitaRequestDTO dto,
+            Authentication authentication) {
+        return ResponseEntity.ok(transaccionService.asignar(id, dto, authentication.getName()));
     }
 
     @Operation(

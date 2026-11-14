@@ -18,6 +18,7 @@ public interface TransaccionMapper {
     @Mapping(target = "vehiculo", ignore = true)
     @Mapping(target = "cliente", ignore = true)
     @Mapping(target = "vendedor", ignore = true)
+    @Mapping(target = "fecha_visita", ignore = true)
     @Mapping(target = "estadoTransaccion", constant = "RESERVA")
     Transaccion toEntity(TransaccionRequestDTO dto);
 
@@ -36,6 +37,7 @@ public interface TransaccionMapper {
     @Mapping(target = "vehiculo", ignore = true)
     @Mapping(target = "cliente", ignore = true)
     @Mapping(target = "vendedor", ignore = true)
+    @Mapping(target = "fecha_visita", ignore = true)
     @Mapping(target = "estadoTransaccion", ignore = true)
     void updateEntityFromDto(TransaccionRequestDTO dto, @MappingTarget Transaccion transaccion);
 }

@@ -33,6 +33,7 @@ import java.util.List;
         "createdAt",
         "updatedAt",
         "tieneTransaccionActiva",
+        "tieneSolicitudPendiente",
         "esPersonalAgencia"
 })
 public class VehiculoResponseDTO {
@@ -68,8 +69,9 @@ public class VehiculoResponseDTO {
 
  private LocalDateTime updatedAt;
 
- // Solo se completan en el detalle (GET /vehiculos/{id}) segun el usuario autenticado
  private boolean tieneTransaccionActiva;
+
+ private boolean tieneSolicitudPendiente;
 
  private boolean esPersonalAgencia;
 }

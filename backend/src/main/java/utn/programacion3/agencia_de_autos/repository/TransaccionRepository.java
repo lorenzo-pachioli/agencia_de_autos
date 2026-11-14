@@ -10,6 +10,7 @@ import utn.programacion3.agencia_de_autos.model.Transaccion;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,6 +22,14 @@ public interface TransaccionRepository extends
             Long vehiculoId,
             String clienteEmail,
             EstadoTransaccion estadoTransaccion
+    );
+
+    boolean existsByClienteEmailAndEstadoTransaccion(String clienteEmail, EstadoTransaccion estadoTransaccion);
+
+    List<Transaccion> findByVehiculoIdAndEstadoTransaccionAndIdNot(
+            Long vehiculoId,
+            EstadoTransaccion estadoTransaccion,
+            Long id
     );
 
     @Query("SELECT " +

@@ -93,6 +93,10 @@ public class VehiculoServiceImpl implements VehiculoService {
                     transaccionRepository.existsByVehiculoIdAndClienteEmailAndEstadoTransaccionNot(
                             id, authentication.getName(), EstadoTransaccion.CANCELADO)
             );
+            dto.setTieneSolicitudPendiente(
+                    transaccionRepository.existsByClienteEmailAndEstadoTransaccion(
+                            authentication.getName(), EstadoTransaccion.SOLICITAR)
+            );
         }
         return dto;
     }
