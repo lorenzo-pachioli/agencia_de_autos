@@ -5,6 +5,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import utn.programacion3.agencia_de_autos.dto.request.ReporteGananciaVehiculoDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.response.VehiculoGestionResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoPublicResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
 import utn.programacion3.agencia_de_autos.model.Vehiculo;
@@ -22,6 +23,12 @@ public interface VehiculoMapper {
 
     @Mapping(target = "modeloNombre", source = "modelo.nombre")
     VehiculoPublicResponseDTO toPublicResponse(Vehiculo vehiculo);
+
+    @Mapping(target = "modeloId", source = "modelo.id")
+    @Mapping(target = "modeloNombre", source = "modelo.nombre")
+    @Mapping(target = "marcaId", source = "modelo.marca.id")
+    @Mapping(target = "marcaNombre", source = "modelo.marca.nombre")
+    VehiculoGestionResponseDTO toGestionResponse(Vehiculo vehiculo);
 
     @Mapping(target = "modelo", source = "modelo.nombre")
     @Mapping(

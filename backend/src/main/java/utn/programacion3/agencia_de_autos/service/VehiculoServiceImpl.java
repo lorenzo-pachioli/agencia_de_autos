@@ -12,9 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utn.programacion3.agencia_de_autos.dto.request.*;
 import utn.programacion3.agencia_de_autos.dto.response.ReporteGananciasResponseDTO;
+import utn.programacion3.agencia_de_autos.dto.response.VehiculoGestionResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoPublicResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
 import utn.programacion3.agencia_de_autos.exception.ModeloNoEncontradoException;
+import utn.programacion3.agencia_de_autos.exception.NegocioException;
 import utn.programacion3.agencia_de_autos.exception.PatenteDuplicadaException;
 import utn.programacion3.agencia_de_autos.exception.VehiculoNoEncontradoException;
 import utn.programacion3.agencia_de_autos.mapper.VehiculoMapper;
@@ -127,11 +129,17 @@ public class VehiculoServiceImpl implements VehiculoService {
         Vehiculo vehiculo = vehiculoRepository.findById(id)
                 .orElseThrow(VehiculoNoEncontradoException::new);
 
+        if (vehiculo.getEstado() == EstadoVehiculo.VENDIDO
+                && vehiculo.getPrecioAdquisicion().compareTo(request.getPrecioAdquisicion()) != 0) {
+            throw new NegocioException("No se puede modificar el precio de adquisición de un vehículo VENDIDO.");
+        }
+
         Modelo modelo = modeloRepository.findById(request.getModeloId())
                 .orElseThrow(ModeloNoEncontradoException::new);
 
         vehiculo.setPatente(request.getPatente());
         vehiculo.setAnio(request.getAnio());
+        vehiculo.setPrecioAdquisicion(request.getPrecioAdquisicion());
         vehiculo.setPrecioVenta(request.getPrecioVenta());
         vehiculo.setKilometraje(request.getKilometraje());
         vehiculo.setColor(request.getColor());
@@ -182,6 +190,14 @@ public class VehiculoServiceImpl implements VehiculoService {
                     );
                     return dto;
                 });
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VehiculoGestionResponseDTO> listarParaGestion(Pageable pageable) {
+
+        return vehiculoRepository.findAll(pageable)
+                .map(vehiculoMapper::toGestionResponse);
     }
 
     @Override

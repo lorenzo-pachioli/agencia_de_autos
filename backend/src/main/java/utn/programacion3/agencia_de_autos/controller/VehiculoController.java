@@ -20,6 +20,7 @@ import utn.programacion3.agencia_de_autos.dto.request.ReporteStockVehiculoDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoFilterDTO;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.ReporteGananciasResponseDTO;
+import utn.programacion3.agencia_de_autos.dto.response.VehiculoGestionResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
 import utn.programacion3.agencia_de_autos.service.VehiculoServiceImpl;
 
@@ -64,6 +65,20 @@ public class VehiculoController {
         return ResponseEntity.ok(
                 vehiculoService.buscarConFiltros(filtros, pageable)
         );
+    }
+
+    @Operation(summary = "Listar vehículos con datos de gestión (incluye precio de adquisición)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
+    @GetMapping("/gestion")
+    @PreAuthorize("hasAnyRole('VENDEDOR','ADMINISTRADOR')")
+    public Page<VehiculoGestionResponseDTO> listarParaGestion(
+            @PageableDefault(size = 10, sort = "id") Pageable pageable) {
+
+        return vehiculoService.listarParaGestion(pageable);
     }
 
     @Operation(summary = "Buscar un vehículo por id")

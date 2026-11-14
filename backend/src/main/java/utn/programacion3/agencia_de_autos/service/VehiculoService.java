@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.*;
 import utn.programacion3.agencia_de_autos.dto.response.ReporteGananciasResponseDTO;
+import utn.programacion3.agencia_de_autos.dto.response.VehiculoGestionResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoPublicResponseDTO;
 import utn.programacion3.agencia_de_autos.dto.response.VehiculoResponseDTO;
 import utn.programacion3.agencia_de_autos.model.Vehiculo;
@@ -31,6 +32,8 @@ public interface VehiculoService {
     Vehiculo cambiarEstadoEntity(Long id, EstadoVehiculo estado);
 
     Page<VehiculoResponseDTO> buscarConFiltros(VehiculoFilterDTO filtros, Pageable pageable);
+
+    Page<VehiculoGestionResponseDTO> listarParaGestion(Pageable pageable);
 
     void eliminarVehiculo(Long id);
 
