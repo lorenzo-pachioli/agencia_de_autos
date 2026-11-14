@@ -1,0 +1,15 @@
+.campos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 16px;
+}
+
+.ancho-completo {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 640px) {
+  .campos {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,94 @@
+<h2 mat-dialog-title>{{ esEdicion ? 'Editar vehículo' : 'Nuevo vehículo' }}</h2>
+
+<form class="dialog-form" [formGroup]="formulario" (ngSubmit)="confirmar()">
+
+  <mat-dialog-content class="campos">
+
+    <mat-form-field appearance="outline">
+      <mat-label>Patente</mat-label>
+      <input matInput formControlName="patente" maxlength="7" placeholder="AB123CD">
+      <mat-error>{{ mensajeError('patente') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Color</mat-label>
+      <input matInput formControlName="color">
+      <mat-error>{{ mensajeError('color') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Marca</mat-label>
+      <mat-select formControlName="marcaId">
+        @for (marca of data.marcas; track marca.id) {
+          <mat-option [value]="marca.id">{{ marca.nombre }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ mensajeError('marcaId') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Modelo</mat-label>
+      <mat-select formControlName="modeloId">
+        @for (modelo of modelosDeMarca(); track modelo.id) {
+          <mat-option [value]="modelo.id">{{ modelo.nombre }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ mensajeError('modeloId') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Año</mat-label>
+      <input matInput type="number" formControlName="anio">
+      <mat-error>{{ mensajeError('anio') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Kilometraje</mat-label>
+      <input matInput type="number" formControlName="kilometraje">
+      <mat-error>{{ mensajeError('kilometraje') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Precio de adquisición</mat-label>
+      <input matInput type="number" formControlName="precioAdquisicion">
+      @if (esVendido) { <mat-hint>No se puede modificar en un vehículo vendido</mat-hint> }
+      <mat-error>{{ mensajeError('precioAdquisicion') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Precio de venta</mat-label>
+      <input matInput type="number" formControlName="precioVenta">
+      <mat-error>{{ mensajeError('precioVenta') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Combustible</mat-label>
+      <mat-select formControlName="tipoCombustible">
+        @for (combustible of combustibles; track combustible) {
+          <mat-option [value]="combustible">{{ etiquetaCombustible[combustible] }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ mensajeError('tipoCombustible') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Transmisión</mat-label>
+      <mat-select formControlName="tipoTransmision">
+        @for (transmision of transmisiones; track transmision) {
+          <mat-option [value]="transmision">{{ etiquetaTransmision[transmision] }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ mensajeError('tipoTransmision') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="ancho-completo">
+      <mat-label>Descripción (opcional)</mat-label>
+      <textarea matInput rows="3" formControlName="descripcion"></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="button" matButton="outlined" class="button-outline" (click)="cerrar()">Volver</button>
+    <button matButton="filled" class="button-dark" type="submit">{{ esEdicion ? 'Guardar' : 'Cargar vehículo' }}</button>
+  </mat-dialog-actions>
+</form>

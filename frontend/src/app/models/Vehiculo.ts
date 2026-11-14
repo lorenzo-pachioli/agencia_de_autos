@@ -45,6 +45,40 @@ export enum TipoTransmision {
   AUTOMATICA = 'AUTOMATICA',
 }
 
+export const ETIQUETA_COMBUSTIBLE: Record<TipoCombustible, string> = {
+  [TipoCombustible.NAFTA]: 'Nafta',
+  [TipoCombustible.DIESEL]: 'Diesel',
+  [TipoCombustible.HIBRIDO]: 'Híbrido',
+  [TipoCombustible.ELECTRICO]: 'Eléctrico',
+};
+
+export const ETIQUETA_TRANSMISION: Record<TipoTransmision, string> = {
+  [TipoTransmision.MANUAL]: 'Manual',
+  [TipoTransmision.AUTOMATICA]: 'Automática',
+};
+
+export interface VehiculoRequest {
+  patente: string;
+  anio: number;
+  precioAdquisicion: number;
+  precioVenta: number;
+  modeloId: number;
+  kilometraje: number;
+  color: string;
+  descripcion: string;
+  estado: EstadoVehiculo;
+  tipoTransmision: TipoTransmision;
+  tipoCombustible: TipoCombustible;
+}
+
+export interface VehiculoGestion extends Omit<VehiculoRequest, 'descripcion'> {
+  id: number;
+  marcaId: number;
+  marcaNombre: string;
+  modeloNombre: string;
+  descripcion: string | null;
+}
+
 export interface FiltrosVehiculo {
   marcaId?: number;
   modeloId?: number;

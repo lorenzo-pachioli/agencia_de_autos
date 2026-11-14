@@ -1,0 +1,22 @@
+.mat-column-id {
+  width: 90px;
+}
+
+.mat-column-patente,
+.mat-column-precioVenta {
+  color: var(--mat-sys-on-surface);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.mat-column-anio {
+  width: 90px;
+}
+
+.mat-column-estado {
+  white-space: nowrap;
+}
+
+.mat-column-acciones {
+  width: 220px;
+}

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, Service } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { FiltrosVehiculo, Pagina, ReporteGananciasVehiculos, ReporteStockVehiculos, TipoCombustible, TipoTransmision, Vehiculo } from '../models/Vehiculo';
+import { FiltrosVehiculo, Pagina, ReporteGananciasVehiculos, ReporteStockVehiculos, TipoCombustible, TipoTransmision, Vehiculo, VehiculoGestion, VehiculoRequest } from '../models/Vehiculo';
 import { MARCAS_URL, MODELOS_URL, VEHICULOS_URL } from './api_config';
 import { Marca, Modelo } from '../models/Opciones';
 
@@ -28,6 +28,22 @@ export class VehiculoService {
         });
 
         return this.http.get<Pagina<Vehiculo>>(`${VEHICULOS_URL}/busqueda`, { params });
+    }
+
+    listarGestion(pagina: number, tamanio: number): Observable<Pagina<VehiculoGestion>> {
+        return this.http.get<Pagina<VehiculoGestion>>(`${VEHICULOS_URL}/gestion`, { params: { page: pagina, size: tamanio } });
+    }
+
+    crear(vehiculo: VehiculoRequest): Observable<VehiculoGestion> {
+        return this.http.post<VehiculoGestion>(VEHICULOS_URL, vehiculo);
+    }
+
+    actualizar(id: number, vehiculo: VehiculoRequest): Observable<VehiculoGestion> {
+        return this.http.put<VehiculoGestion>(`${VEHICULOS_URL}/${id}`, vehiculo);
+    }
+
+    eliminar(id: number): Observable<void> {
+        return this.http.delete<void>(`${VEHICULOS_URL}/${id}`);
     }
 
     getMarcas(): Observable<Marca[]> {

@@ -1,1 +1,77 @@
-<p>vehiculos works!</p>
+<main class="admin-page">
+  <header class="page-heading">
+    <div>
+      <h1>Vehículos</h1>
+      <p>Gestión del inventario de vehículos</p>
+    </div>
+    <button matButton="filled" class="button-dark new-button" type="button" (click)="abrirCrear()">
+      <span aria-hidden="true">＋</span>
+      Vehículo
+    </button>
+  </header>
+
+  @if (mensaje()) { <div class="notice">{{ mensaje() }}</div> }
+  @if (error()) { <div class="notice error-notice">{{ error() }}</div> }
+
+  <section class="table-card" aria-label="Listado de vehículos">
+
+    <div class="table-scroll">
+
+      <table mat-table [dataSource]="vehiculos()?.content ?? []">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let vehiculo">#{{ vehiculo.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="patente">
+          <th mat-header-cell *matHeaderCellDef>Patente</th>
+          <td mat-cell *matCellDef="let vehiculo">{{ vehiculo.patente }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="vehiculo">
+          <th mat-header-cell *matHeaderCellDef>Vehículo</th>
+          <td mat-cell *matCellDef="let vehiculo">{{ vehiculo.marcaNombre }} {{ vehiculo.modeloNombre }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="anio">
+          <th mat-header-cell *matHeaderCellDef>Año</th>
+          <td mat-cell *matCellDef="let vehiculo">{{ vehiculo.anio }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="precioVenta">
+          <th mat-header-cell *matHeaderCellDef>Precio de venta</th>
+          <td mat-cell *matCellDef="let vehiculo">$ {{ formatearPrecio(vehiculo.precioVenta) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let vehiculo">{{ etiquetaEstado(vehiculo) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let vehiculo">
+            <button matButton="outlined" class="button-outline" type="button" (click)="abrirEditar(vehiculo)">Editar</button>
+            @if (isAdmin()) {
+              <button matButton="filled" class="button-danger" type="button" (click)="abrirBorrar(vehiculo)">Borrar</button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+        <tr mat-row *matRowDef="let fila; columns: columnas"></tr>
+      </table>
+    </div>
+
+    @if (cargando()) {
+    <p class="table-status">Cargando vehículos…</p>
+    } @else if (!vehiculos()?.content?.length) {
+    <p class="table-status">No hay vehículos cargados.</p>
+    }
+
+    @if (vehiculos(); as pagina) {
+    <mat-paginator [length]="pagina.totalElements" [pageIndex]="pageIndex" [pageSize]="pageSize" [hidePageSize]="true"
+      (page)="cambiarPagina($event)" aria-label="Páginas de vehículos" />
+    }
+  </section>
+</main>
