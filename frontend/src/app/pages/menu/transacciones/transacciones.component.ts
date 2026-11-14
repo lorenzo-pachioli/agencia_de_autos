@@ -13,9 +13,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import {
+  AsignarVisita,
   CrearTransaccion,
   ETIQUETA_ESTADO,
   ETIQUETA_METODO_PAGO,
+  ETIQUETA_SOLICITUD,
   EstadoTransaccion,
   FiltrosTransaccion,
   MetodoPago,
@@ -30,15 +32,18 @@ import {
   AccionMontoDialogData,
 } from '../../../components/accion-monto-dialog/accion-monto-dialog.component';
 import {
-  AsignarSolicitudDialogComponent,
-  DatosAsignacion,
-} from '../../../components/asignar-solicitud-dialog/asignar-solicitud-dialog.component';
+  RegistrarReservaDialogComponent,
+  DatosReserva,
+} from '../../../components/registrar-reserva-dialog/registrar-reserva-dialog.component';
+import { AgendarVisitaDialogComponent } from '../../../components/agendar-visita-dialog/agendar-visita-dialog.component';
 
 type Modal = 'crear' | 'cancelar';
 
 const DURACION_MENSAJE_MS = 3500;
 
 const TAMANIO_DIALOGO = { width: '480px', maxWidth: '92vw' };
+
+const ASUNTO_CONTACTO = 'Visita a la agencia por el vehículo';
 
 const MSG = {
   camposObligatorios: 'Completá precio, vehículo, cliente y vendedor.',
@@ -48,6 +53,8 @@ const MSG = {
   senia: 'Seña registrada.',
   venta: 'Venta registrada.',
   asignada: 'Solicitud asignada a tu nombre.',
+  visitaAgendada: 'Visita agendada.',
+  reserva: 'Reserva registrada.',
   cancelada: 'Transacción cancelada.',
 };
 
@@ -170,13 +177,31 @@ export class TransaccionesComponent {
       });
   }
 
-  abrirAsignar(transaccion: Transaccion): void {
+  asignarme(transaccion: Transaccion): void {
+    this.ejecutar(this.transaccionService.asignar(transaccion.id, { fechaVisita: null }), MSG.asignada);
+  }
+
+  abrirAgendarVisita(transaccion: Transaccion): void {
+    this.error.set('');
+    this.dialog
+      .open<AgendarVisitaDialogComponent, Transaccion, AsignarVisita>(AgendarVisitaDialogComponent, {
+        ...TAMANIO_DIALOGO,
+        data: transaccion,
+      })
+      .afterClosed()
+      .subscribe(datos => {
+        if (!datos) return;
+        this.ejecutar(this.transaccionService.asignar(transaccion.id, datos), MSG.visitaAgendada);
+      });
+  }
+
+  abrirRegistrarReserva(transaccion: Transaccion): void {
     const vendedorId = this.vendedorId();
     if (!vendedorId) return;
 
     this.error.set('');
     this.dialog
-      .open<AsignarSolicitudDialogComponent, Transaccion, DatosAsignacion>(AsignarSolicitudDialogComponent, {
+      .open<RegistrarReservaDialogComponent, Transaccion, DatosReserva>(RegistrarReservaDialogComponent, {
         ...TAMANIO_DIALOGO,
         data: transaccion,
       })
@@ -190,7 +215,7 @@ export class TransaccionesComponent {
           cliente_id: transaccion.cliente_id,
           vendedor_id: vendedorId,
         });
-        this.ejecutar(solicitud, MSG.asignada);
+        this.ejecutar(solicitud, MSG.reserva);
       });
   }
 
@@ -266,7 +291,31 @@ export class TransaccionesComponent {
     };
   }
 
-  protected etiquetaDe(estado: EstadoTransaccion): string {
-    return ETIQUETA_ESTADO[estado];
+  protected etiquetaDe(transaccion: Transaccion): string {
+    if (transaccion.estadoTransaccion !== EstadoTransaccion.SOLICITAR) return ETIQUETA_ESTADO[transaccion.estadoTransaccion];
+    if (transaccion.fecha_visita) return `${ETIQUETA_SOLICITUD.visita} ${this.formatearFechaVisita(transaccion.fecha_visita)}`;
+    return transaccion.vendedor_id ? ETIQUETA_SOLICITUD.asignada : ETIQUETA_SOLICITUD.sinAsignar;
+  }
+
+  protected estaLibre(transaccion: Transaccion): boolean {
+    return transaccion.estadoTransaccion === EstadoTransaccion.SOLICITAR
+      && transaccion.vendedor_id === null
+      && this.vendedorId() !== null;
+  }
+
+  protected esMia(transaccion: Transaccion): boolean {
+    return transaccion.estadoTransaccion === EstadoTransaccion.SOLICITAR
+      && transaccion.vendedor_id !== null
+      && transaccion.vendedor_id === this.vendedorId();
+  }
+
+  protected contactoCliente(transaccion: Transaccion): string {
+    const asunto = encodeURIComponent(`${ASUNTO_CONTACTO} ${transaccion.patente}`);
+    return `mailto:${transaccion.cliente_email}?subject=${asunto}`;
+  }
+
+  private formatearFechaVisita(fecha: string): string {
+    return new Intl.DateTimeFormat('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+      .format(new Date(fecha));
   }
 }

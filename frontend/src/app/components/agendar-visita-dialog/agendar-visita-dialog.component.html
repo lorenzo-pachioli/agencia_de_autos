@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>{{ esReprogramacion ? 'Reprogramar visita' : 'Agendar visita' }}</h2>
+
+<form class="dialog-form" (ngSubmit)="confirmar()">
+  
+  <mat-dialog-content>
+
+    <p class="dialog-description">Solicitud #{{ transaccion.id }} · {{ transaccion.patente }} · {{ transaccion.cliente_email }}</p>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Día</mat-label>
+      <input matInput [matDatepicker]="pickerVisita" name="dia" [(ngModel)]="dia" [min]="hoy" required>
+      <mat-datepicker-toggle matIconSuffix [for]="pickerVisita" />
+      <mat-datepicker #pickerVisita />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Hora</mat-label>
+      <input matInput type="time" name="hora" [(ngModel)]="hora" required>
+    </mat-form-field>
+    @if (error()) { <p class="form-error">{{ error() }}</p> }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="button" matButton="outlined" class="button-outline" (click)="cerrar()">Volver</button>
+    <button matButton="filled" class="button-dark" type="submit">{{ esReprogramacion ? 'Reprogramar' : 'Agendar' }}</button>
+  </mat-dialog-actions>
+</form>

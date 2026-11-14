@@ -7,12 +7,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ETIQUETA_METODO_PAGO, EstadoTransaccion, MetodoPago, Transaccion } from '../../models/Transacciones';
 
-export type EstadoAsignacion = EstadoTransaccion.RESERVA | EstadoTransaccion.SENIADO;
+export type EstadoReserva = EstadoTransaccion.RESERVA | EstadoTransaccion.SENIADO;
 
-export interface DatosAsignacion {
+export interface DatosReserva {
   metodoPago: MetodoPago;
   precio_final: number;
-  estadoTransaccion: EstadoAsignacion;
+  estadoTransaccion: EstadoReserva;
 }
 
 const MSG = {
@@ -20,13 +20,13 @@ const MSG = {
 };
 
 @Component({
-  selector: 'app-asignar-solicitud-dialog',
+  selector: 'app-registrar-reserva-dialog',
   imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButton],
-  templateUrl: './asignar-solicitud-dialog.component.html',
+  templateUrl: './registrar-reserva-dialog.component.html',
 })
-export class AsignarSolicitudDialogComponent {
+export class RegistrarReservaDialogComponent {
   protected readonly transaccion = inject<Transaccion>(MAT_DIALOG_DATA);
-  private readonly dialogRef = inject<MatDialogRef<AsignarSolicitudDialogComponent, DatosAsignacion>>(MatDialogRef);
+  private readonly dialogRef = inject<MatDialogRef<RegistrarReservaDialogComponent, DatosReserva>>(MatDialogRef);
 
   protected readonly EstadoTransaccion = EstadoTransaccion;
   protected readonly metodosPago = Object.values(MetodoPago);
@@ -35,7 +35,7 @@ export class AsignarSolicitudDialogComponent {
   protected metodoPago: MetodoPago = this.transaccion.metodoPago ?? MetodoPago.EFECTIVO;
   protected precio: number | null = this.transaccion.precio_final;
 
-  protected confirmar(estadoTransaccion: EstadoAsignacion): void {
+  protected confirmar(estadoTransaccion: EstadoReserva): void {
     if (!this.precio || this.precio <= 0) {
       this.error.set(MSG.precioInvalido);
       return;

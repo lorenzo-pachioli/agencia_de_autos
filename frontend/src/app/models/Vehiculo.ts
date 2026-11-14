@@ -15,6 +15,7 @@ export interface Vehiculo {
   createdAt: string;
   updatedAt: string;
   tieneTransaccionActiva?: boolean;
+  tieneSolicitudPendiente?: boolean;
   esPersonalAgencia?: boolean;
 }
 

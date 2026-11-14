@@ -29,6 +29,12 @@ export const ETIQUETA_METODO_PAGO: Record<MetodoPago, string> = {
   [MetodoPago.CUOTA_BANCARIZADA]: 'Cuota bancarizada',
 };
 
+export const ETIQUETA_SOLICITUD = {
+  sinAsignar: 'Sin asignar',
+  asignada: 'Asignada',
+  visita: 'Visita',
+};
+
 export const SIN_OBSERVACIONES = 'Sin observaciones';
 
 export interface Transaccion {
@@ -41,8 +47,9 @@ export interface Transaccion {
     patente: string;
     cliente_id: number;
     cliente_email: string;
-    vendedor_id: number;
-    vendedor_email: string;
+    vendedor_id: number | null;
+    vendedor_email: string | null;
+    fecha_visita: string | null;
 }
 
 export interface FiltrosTransaccion {
@@ -64,6 +71,10 @@ export interface SolicitarTransaccion {
     observaciones?: string;
     metodoPago?: MetodoPago;
     vehiculo_id: number;
+}
+
+export interface AsignarVisita {
+    fechaVisita: string | null;
 }
 
 export interface ActualizarTransaccion extends CrearTransaccion {

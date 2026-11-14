@@ -1,7 +1,7 @@
-<h2 mat-dialog-title>Asignarme visita</h2>
+<h2 mat-dialog-title>Registrar reserva</h2>
 <form class="dialog-form" (ngSubmit)="confirmar(EstadoTransaccion.RESERVA)">
   <mat-dialog-content>
-    <p class="dialog-description">Solicitud #{{ transaccion.id }} · {{ transaccion.patente }}. Al confirmar quedás como vendedor y la transacción pasa a reserva o seña.</p>
+    <p class="dialog-description">Solicitud #{{ transaccion.id }} · {{ transaccion.patente }}. Al confirmar la transacción pasa a reserva o seña.</p>
     <mat-form-field appearance="outline">
       <mat-label>Método de pago</mat-label>
       <mat-select name="metodoPago" [(ngModel)]="metodoPago" required>
