@@ -30,6 +30,8 @@ export class AuthService {
 
   readonly isAdmin = computed(() => this.rol() === ROL.ADMINISTRADOR);
 
+  readonly isVendedor = computed(() => this.rol() === ROL.VENDEDOR);
+
   login(request: LoginRequest) {
     return this.authApi.login(request).pipe(
       tap((response) => {

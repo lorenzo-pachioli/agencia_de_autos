@@ -8,6 +8,7 @@ import utn.programacion3.agencia_de_autos.service.TransaccionService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -28,14 +29,14 @@ public class Transaccion {
 
     private LocalDate updated_at;
 
-    @Column(nullable = false)
+    private LocalDateTime fecha_visita;
+
     private BigDecimal precio_final;
 
     @Builder.Default
     private BigDecimal comision_calculada = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private MetodoPago metodoPago;
 
     @Enumerated(EnumType.STRING)
@@ -50,7 +51,7 @@ public class Transaccion {
     @JoinColumn(name = "cliente_id")
     private Usuario cliente;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "vendedor_id")
     private Usuario vendedor;
 

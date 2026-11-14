@@ -35,6 +35,10 @@ public class VehiculoFilterDTO {
             allowableValues = {"DISPONIBLE", "RESERVADO", "VENDIDO", "BAJA"})
     private EstadoVehiculo estado;
 
+    @Schema(description = "Si es true, la búsqueda también incluye los vehículos VENDIDO (por defecto se excluyen)",
+            example = "false", defaultValue = "false")
+    private boolean incluirVendidos = false;
+
     @Schema(description = "Color del vehículo a filtrar", example = "Rojo")
     private String color;
 

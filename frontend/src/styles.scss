@@ -331,3 +331,21 @@ mat-paginator.mat-mdc-paginator {
   --mat-button-outlined-label-text-color: var(--app-text-body);
   --mat-button-outlined-label-text-weight: 500;
 }
+
+.dialog-form mat-form-field {
+  width: 100%;
+}
+
+.dialog-form mat-dialog-actions {
+  gap: 10px;
+}
+
+.dialog-description {
+  margin: 0 0 16px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.form-error {
+  margin: 0;
+  color: var(--mat-sys-error);
+}

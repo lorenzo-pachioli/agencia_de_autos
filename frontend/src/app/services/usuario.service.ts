@@ -13,6 +13,10 @@ export class UsuarioService {
     return this.http.get<Usuario[]>(this.apiUrl);
   }
 
+  getMe(): Observable<Usuario> {
+    return this.http.get<Usuario>(`${this.apiUrl}/me`);
+  }
+
   getById(id: number): Observable<Usuario> {
     return this.http.get<Usuario>(`${this.apiUrl}/${id}`);
   }

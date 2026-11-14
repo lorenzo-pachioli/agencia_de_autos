@@ -31,7 +31,10 @@ import java.util.List;
         "imagenPrincipalUrl",
         "imagenes",
         "createdAt",
-        "updatedAt"
+        "updatedAt",
+        "tieneTransaccionActiva",
+        "tieneSolicitudPendiente",
+        "esPersonalAgencia"
 })
 public class VehiculoResponseDTO {
 
@@ -65,4 +68,10 @@ public class VehiculoResponseDTO {
  private LocalDateTime createdAt;
 
  private LocalDateTime updatedAt;
+
+ private boolean tieneTransaccionActiva;
+
+ private boolean tieneSolicitudPendiente;
+
+ private boolean esPersonalAgencia;
 }

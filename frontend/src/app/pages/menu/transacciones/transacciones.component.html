@@ -61,17 +61,26 @@
 
         <ng-container matColumnDef="estado">
           <th mat-header-cell *matHeaderCellDef>Estado</th>
-          <td mat-cell *matCellDef="let t">{{ etiquetaDe(t.estadoTransaccion) }}</td>
+          <td mat-cell *matCellDef="let t">{{ etiquetaDe(t) }}</td>
         </ng-container>
 
         <ng-container matColumnDef="precio">
           <th mat-header-cell *matHeaderCellDef>Precio</th>
-          <td mat-cell *matCellDef="let t">$ {{ formatearPrecio(t.precio_final) }}</td>
+          <td mat-cell *matCellDef="let t">{{ t.precio_final != null ? '$ ' + formatearPrecio(t.precio_final) : '—' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="acciones">
           <th mat-header-cell *matHeaderCellDef>Acciones</th>
           <td mat-cell *matCellDef="let t">
+            @if (estaLibre(t)) {
+            <button matButton="outlined" class="button-outline" type="button" (click)="asignarme(t)">Asignarme</button>
+            <button matButton="filled" class="button-danger" type="button" (click)="cancelar(t)">Cancelar</button>
+            }
+            @if (esMia(t)) {
+            <button matButton="outlined" class="button-outline" type="button" (click)="abrirAgendarVisita(t)">{{ t.fecha_visita ? 'Reprogramar' : 'Agendar visita' }}</button>
+            <button matButton="filled" class="button-dark" type="button" (click)="abrirRegistrarReserva(t)">Registrar reserva</button>
+            <button matButton="filled" class="button-danger" type="button" (click)="cancelar(t)">Cancelar</button>
+            }
             @if (t.estadoTransaccion === EstadoTransaccion.RESERVA) {
             <button matButton="outlined" class="button-outline" type="button" (click)="abrirAccion('senia', t)">Señar</button>
             }
@@ -150,22 +159,6 @@
     <mat-dialog-actions align="end">
       <button type="button" matButton="outlined" class="button-outline" (click)="cerrarModal()">Volver</button>
       <button matButton="filled" class="button-danger" type="submit">Cancelar transacción</button>
-    </mat-dialog-actions>
-  </form>
-  } @else {
-  <h2 mat-dialog-title>{{ modal === 'senia' ? 'Registrar seña' : 'Confirmar venta' }}</h2>
-  <form class="dialog-form" (ngSubmit)="confirmarAccion()">
-    <mat-dialog-content>
-      <p class="dialog-description">Transacción #{{ transaccionSeleccionada?.id }} · {{ transaccionSeleccionada?.patente }}</p>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ modal === 'senia' ? 'Monto de la seña' : 'Precio final de venta' }}</mat-label>
-        <input matInput type="number" min="1" name="monto" [(ngModel)]="montoAccion" required>
-      </mat-form-field>
-      @if (error()) { <p class="form-error">{{ error() }}</p> }
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button type="button" matButton="outlined" class="button-outline" (click)="cerrarModal()">Volver</button>
-      <button matButton="filled" class="button-dark" type="submit">{{ modal === 'senia' ? 'Registrar seña' : 'Vender' }}</button>
     </mat-dialog-actions>
   </form>
   }

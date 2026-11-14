@@ -2,6 +2,7 @@ package utn.programacion3.agencia_de_autos.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import utn.programacion3.agencia_de_autos.dto.request.*;
 import utn.programacion3.agencia_de_autos.dto.response.ReporteGananciasResponseDTO;
@@ -21,7 +22,7 @@ public interface VehiculoService {
 
     Vehiculo obtenerVehiculoEntityPorId(Long id);
 
-    VehiculoResponseDTO obtenerVehiculoPorId(Long id);
+    VehiculoResponseDTO obtenerVehiculoPorId(Long id, Authentication authentication);
 
     VehiculoResponseDTO actualizarVehiculo(Long id, VehiculoRequestDTO request);
 

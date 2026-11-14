@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import utn.programacion3.agencia_de_autos.dto.request.CambiarEstadoVehiculoDTO;
 import utn.programacion3.agencia_de_autos.dto.request.ReporteStockVehiculoDTO;
@@ -72,8 +73,9 @@ public class VehiculoController {
     })
     @GetMapping("/{id}")
     public VehiculoResponseDTO buscarPorIdVehiculo(
-            @PathVariable Long id) {
-        return vehiculoService.obtenerVehiculoPorId(id);
+            @PathVariable Long id,
+            Authentication authentication) {
+        return vehiculoService.obtenerVehiculoPorId(id, authentication);
     }
 
     @Operation(summary = "Actualizar un vehículo")
