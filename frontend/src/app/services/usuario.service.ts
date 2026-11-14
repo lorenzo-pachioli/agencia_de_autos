@@ -21,11 +21,6 @@ export class UsuarioService {
     return this.http.get<Usuario>(`${this.apiUrl}/${id}`);
   }
 
-  // Perfil del usuario autenticado (identificado por el JWT en el backend)
-  getMe(): Observable<Usuario> {
-    return this.http.get<Usuario>(`${this.apiUrl}/me`);
-  }
-
   updateMe(perfil: PerfilUpdateRequest): Observable<Usuario> {
     return this.http.put<Usuario>(`${this.apiUrl}/me`, perfil);
   }
