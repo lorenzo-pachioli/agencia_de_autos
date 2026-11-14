@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import type { Observable } from 'rxjs';
-import type { PerfilUpdateRequest, Usuario, UsuarioRequest } from '../models/Usuario';
+import type { PerfilUpdateRequest, ROL, Usuario, UsuarioRequest } from '../models/Usuario';
 
 // El token lo agrega authInterceptor; el backend identifica al usuario con el JWT
 @Service()
@@ -17,7 +17,6 @@ export class UsuarioService {
     return this.http.get<Usuario>(`${this.apiUrl}/${id}`);
   }
 
-  // Perfil del usuario autenticado (identificado por el JWT en el backend)
   getMe(): Observable<Usuario> {
     return this.http.get<Usuario>(`${this.apiUrl}/me`);
   }
@@ -36,5 +35,9 @@ export class UsuarioService {
 
   crearVendedor(usuario: UsuarioRequest): Observable<Usuario> {
     return this.http.post<Usuario>(`${this.apiUrl}/vendedores`, usuario);
+  }
+
+  cambiarRol(id: number, rolUsuario: ROL): Observable<Usuario>{
+    return this.http.patch<Usuario>(`${this.apiUrl}/${id}/rol`, {rolUsuario})
   }
 }

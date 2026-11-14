@@ -5,6 +5,7 @@ import utn.programacion3.agencia_de_autos.dto.request.PerfilUpdateDTO;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
 import utn.programacion3.agencia_de_autos.model.Usuario;
+import utn.programacion3.agencia_de_autos.model.enums.Rol;
 
 import java.util.List;
 
@@ -26,6 +27,8 @@ public interface UsuarioService {
     UsuarioResponseDTO actualizarPerfilActual(PerfilUpdateDTO requestDTO);
 
     UsuarioResponseDTO darDeBaja(Long id);
+
+    UsuarioResponseDTO cambiarRol(Long id, Rol nuevoRol);
 
     UsuarioResponseDTO registrarVendedor(UsuarioRequestDTO registroDto);
 

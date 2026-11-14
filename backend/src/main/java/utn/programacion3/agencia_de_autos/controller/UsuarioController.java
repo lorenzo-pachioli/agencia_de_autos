@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utn.programacion3.agencia_de_autos.dto.request.PerfilUpdateDTO;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
+import utn.programacion3.agencia_de_autos.dto.request.CambiarRolRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
 import utn.programacion3.agencia_de_autos.service.UsuarioService;
 
@@ -99,6 +100,14 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioResponseDTO> cambiarEstado(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.darDeBaja(id));
+    }
+    @PatchMapping ("/{id}/rol")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<UsuarioResponseDTO> cambiarRol(
+        @PathVariable Long id,
+        @Valid @RequestBody CambiarRolRequestDTO dto
+    ) {
+        return ResponseEntity.ok(usuarioService.cambiarRol(id,dto.getRolUsuario()));
     }
 
     @PostMapping("/vendedores")

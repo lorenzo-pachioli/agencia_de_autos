@@ -168,6 +168,18 @@ public class UsuarioServiceImpl implements UsuarioService{
 
     @Override
     @Transactional
+    public UsuarioResponseDTO cambiarRol(Long id, Rol nuevoRol) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con el ID: " + id));
+
+        usuario.setRolUsuario(nuevoRol);
+        Usuario guardado = usuarioRepository.save(usuario);
+
+        return usuarioMapper.toResponseDTO(guardado);
+    }
+
+    @Override
+    @Transactional
     public UsuarioResponseDTO registrarVendedor(UsuarioRequestDTO dto) {
 
         if (usuarioRepository.findByEmail(dto.getEmail().trim()).isPresent()) {
