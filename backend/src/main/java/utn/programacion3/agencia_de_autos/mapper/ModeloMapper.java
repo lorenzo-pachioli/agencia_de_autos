@@ -11,6 +11,7 @@ import utn.programacion3.agencia_de_autos.model.Marca;
 public interface ModeloMapper {
 
     @Mapping(target = "marca", source = "marca.nombre")
+    @Mapping(target = "marcaId", source = "marca.id")
     ModeloResponseDTO toResponse(Modelo modelo);
 
     @Mapping(target = "id", ignore = true)

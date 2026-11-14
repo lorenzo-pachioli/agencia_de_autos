@@ -71,6 +71,11 @@ public class ModeloService {
 
         modelo.setNombre(request.getNombre());
         modelo.setMarca(marca);
+        modelo.setAnio(request.getAnio());
+        modelo.setTipoModelo(request.getTipoModelo());
+        if (request.getActivo() != null) {
+            modelo.setActivo(request.getActivo());
+        }
 
         Modelo modeloActualizado = modeloRepository.save(modelo);
 

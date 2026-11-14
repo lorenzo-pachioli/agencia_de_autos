@@ -16,6 +16,8 @@ public class ModeloResponseDTO {
 
     private String marca;
 
+    private Long marcaId;
+
     private Integer anio;
 
     private TipoModelo tipoModelo;
