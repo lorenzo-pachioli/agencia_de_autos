@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import utn.programacion3.agencia_de_autos.dto.request.PerfilUpdateDTO;
 import utn.programacion3.agencia_de_autos.dto.request.UsuarioRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.UsuarioResponseDTO;
 import utn.programacion3.agencia_de_autos.service.UsuarioService;
@@ -45,16 +46,30 @@ public class UsuarioController {
     }
 
     @Operation(
-            summary = "Obtener el usuario logueado",
-            description = "Devuelve los datos del usuario autenticado, identificado por el email de la sesión (JWT)."
+            summary = "Obtener el perfil del usuario autenticado",
+            description = "Retorna los datos del usuario actualmente logueado, identificado a partir de su token JWT. Disponible para cualquier rol."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuario obtenido exitosamente"),
-            @ApiResponse(responseCode = "401", description = "No hay una sesión válida")
+            @ApiResponse(responseCode = "200", description = "Perfil obtenido exitosamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado")
     })
     @GetMapping("/me")
-    public ResponseEntity<UsuarioResponseDTO> usuarioActual(Authentication authentication) {
-        return ResponseEntity.ok(usuarioService.buscarPorEmail(authentication.getName()));
+    public ResponseEntity<UsuarioResponseDTO> obtenerPerfil() {
+        return ResponseEntity.ok(usuarioService.obtenerPerfilActual());
+    }
+
+    @Operation(
+            summary = "Actualizar el perfil del usuario autenticado",
+            description = "Permite al usuario logueado modificar su nombre, apellido, email y, opcionalmente, su contraseña. El rol no puede modificarse."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Perfil actualizado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o email ya en uso por otro usuario"),
+            @ApiResponse(responseCode = "401", description = "No autenticado")
+    })
+    @PutMapping("/me")
+    public ResponseEntity<UsuarioResponseDTO> actualizarPerfil(@Valid @RequestBody PerfilUpdateDTO requestDTO) {
+        return ResponseEntity.ok(usuarioService.actualizarPerfilActual(requestDTO));
     }
 
     @Operation(

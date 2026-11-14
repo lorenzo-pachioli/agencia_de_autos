@@ -2,34 +2,38 @@
   <mat-sidenav class="dashboard-sidebar" mode="side" opened>
     <div class="dashboard-sidebar__heading">Administración</div>
     <mat-nav-list>
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="dashboard-link--active"
+      <a mat-list-item routerLink="/menu/dashboard" routerLinkActive="dashboard-link--active"
         [routerLinkActiveOptions]="{ exact: true }">
         <mat-icon matListItemIcon>dashboard</mat-icon>
         <span matListItemTitle>Dashboard</span>
       </a>
-      <a mat-list-item routerLink="/dashboard/vehiculos" routerLinkActive="dashboard-link--active">
+      <a mat-list-item routerLink="/menu/vehiculos" routerLinkActive="dashboard-link--active">
         <mat-icon matListItemIcon>directions_car</mat-icon>
         <span matListItemTitle>Vehículos</span>
       </a>
-      <a mat-list-item routerLink="/dashboard/imagenes" routerLinkActive="dashboard-link--active">
+      <a mat-list-item routerLink="/menu/imagenes" routerLinkActive="dashboard-link--active">
         <mat-icon matListItemIcon>images</mat-icon>
         <span matListItemTitle>Imagenes</span>
       </a>
-      <a mat-list-item routerLink="/dashboard/marcas" routerLinkActive="dashboard-link--active">
+      <a mat-list-item routerLink="/menu/marcas" routerLinkActive="dashboard-link--active">
         <mat-icon matListItemIcon>sell</mat-icon>
         <span matListItemTitle>Marcas</span>
       </a>
-      <a mat-list-item routerLink="/dashboard/modelos" routerLinkActive="dashboard-link--active">
+      <a mat-list-item routerLink="/menu/modelos" routerLinkActive="dashboard-link--active">
         <mat-icon matListItemIcon>category</mat-icon>
         <span matListItemTitle>Modelos</span>
       </a>
-      <a mat-list-item routerLink="/dashboard/usuarios" routerLinkActive="dashboard-link--active">
+      <a mat-list-item routerLink="/menu/usuarios" routerLinkActive="dashboard-link--active">
         <mat-icon matListItemIcon>group</mat-icon>
         <span matListItemTitle>Usuarios</span>
       </a>
-      <a mat-list-item routerLink="/dashboard/transacciones" routerLinkActive="dashboard-link--active">
+      <a mat-list-item routerLink="/menu/transacciones" routerLinkActive="dashboard-link--active">
         <mat-icon matListItemIcon>receipt_long</mat-icon>
         <span matListItemTitle>Transacciones</span>
+      </a>
+      <a mat-list-item routerLink="/dashboard/perfil" routerLinkActive="dashboard-link--active">
+        <mat-icon matListItemIcon>person</mat-icon>
+        <span matListItemTitle>Mi perfil</span>
       </a>
     </mat-nav-list>
   </mat-sidenav>

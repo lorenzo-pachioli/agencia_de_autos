@@ -14,7 +14,7 @@ set DB_DRIVER=org.h2.Driver
 set JPA_DIALECT=org.hibernate.dialect.H2Dialect
 
 echo [1/2] Iniciando Backend Spring Boot (H2 en memoria)...
-start "Agencia Autos - Backend Local" cmd /k "cd /d "%~dp0backend" && mvn spring-boot:run -Dspring-boot.run.arguments="--spring.datasource.url=%DB_URL% --spring.datasource.username=%DB_USERNAME% --spring.datasource.password=%DB_PASSWORD% --spring.datasource.driver-class-name=%DB_DRIVER% --spring.jpa.database-platform=%JPA_DIALECT% --spring.sql.init.mode=always --spring.jpa.defer-datasource-initialization=true""
+start "Agencia Autos - Backend Local" cmd /k "cd /d "%~dp0backend" && mvnw.cmd spring-boot:run -Dspring-boot.run.arguments="--spring.datasource.url=%DB_URL% --spring.datasource.username=%DB_USERNAME% --spring.datasource.password=%DB_PASSWORD% --spring.datasource.driver-class-name=%DB_DRIVER% --spring.jpa.database-platform=%JPA_DIALECT% --spring.sql.init.mode=always --spring.jpa.defer-datasource-initialization=true""
 
 echo [2/2] Iniciando Frontend Angular (Puerto 4200)...
 start "Agencia Autos - Frontend" cmd /k "cd /d "%~dp0frontend" && npm start"

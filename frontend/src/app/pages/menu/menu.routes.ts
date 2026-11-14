@@ -7,8 +7,7 @@ export const routes: Routes = [
       import('./menu.component').then((m) => m.MenuComponent),
     children: [
       {
-        path: '',
-        pathMatch: 'full',
+        path: 'dashboard',
         loadComponent: () =>
           import('./dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
@@ -31,6 +30,11 @@ export const routes: Routes = [
         path: 'usuarios',
         loadComponent: () =>
           import('./usuarios/usuarios.component').then((m) => m.UsuariosComponent),
+      },
+      {
+        path: 'perfil',
+        loadComponent: () =>
+          import('./perfil/perfil.component').then((m) => m.PerfilComponent),
       },
       {
         path: 'vehiculos',
