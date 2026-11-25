@@ -24,11 +24,7 @@
           <span class="navbar__label">Registrarse</span>
         </a>
       } @else if (auth.isAdmin() || auth.isVendedor()) {
-        <a mat-tab-link routerLink="/menu/dashboard" routerLinkActive #menu="routerLinkActive"
-          [active]="menu.isActive" aria-label="Menú">
-          <mat-icon class="navbar__icon" fontIcon="menu"></mat-icon>
-          <span class="navbar__label">Menú</span>
-        </a>
+        
         <a mat-tab-link routerLink="/catalogo" routerLinkActive #catalogo="routerLinkActive"
           [routerLinkActiveOptions]="{ exact: true }" [active]="catalogo.isActive" aria-label="Catálogo">
           <mat-icon class="navbar__icon" fontIcon="directions_car"></mat-icon>
@@ -38,6 +34,11 @@
           [routerLinkActiveOptions]="{ exact: true }" [active]="perfil.isActive" aria-label="Perfil">
           <mat-icon class="navbar__icon" fontIcon="person"></mat-icon>
           <span class="navbar__label">Perfil</span>
+        </a>
+        <a mat-tab-link routerLink="/menu/dashboard" routerLinkActive #menu="routerLinkActive"
+          [active]="menu.isActive" aria-label="Menú">
+          <mat-icon class="navbar__icon" fontIcon="menu"></mat-icon>
+          <span class="navbar__label">Menú</span>
         </a>
       } @else {
         <a mat-tab-link routerLink="/catalogo" routerLinkActive #catalogo="routerLinkActive"
