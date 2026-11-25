@@ -390,6 +390,7 @@ public class TransaccionService {
                 .id(transaccion.getId())
                 .estadoTransaccion(transaccion.getEstadoTransaccion())
                 .precio_final(transaccion.getPrecio_final())
+                .metodoPago(transaccion.getMetodoPago())
                 .vendedor(transaccion.getVendedor())
                 .cliente(transaccion.getCliente())
                 .vehiculo(transaccion.getVehiculo())
