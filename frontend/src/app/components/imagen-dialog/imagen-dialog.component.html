@@ -10,10 +10,11 @@
       <div class="vista-previa sin-imagen">Sin imagen seleccionada</div>
     }
 
-    <input #selectorArchivo type="file" accept="image/png,image/jpeg,image/webp" hidden (change)="seleccionarArchivo($event)">
+    <input #selectorArchivo type="file" [accept]="tiposPermitidos" hidden (change)="seleccionarArchivo($event)">
     <button matButton="outlined" class="button-outline" type="button" (click)="selectorArchivo.click()">
       {{ url() ? 'Cambiar imagen' : 'Elegir imagen' }}
     </button>
+    <p class="formatos">JPG, PNG o WEBP, hasta {{ tamanioMaximoMb }} MB.</p>
 
     <mat-slide-toggle name="esPrincipal" [(ngModel)]="esPrincipal">Imagen principal</mat-slide-toggle>
 

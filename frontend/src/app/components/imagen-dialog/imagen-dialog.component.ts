@@ -17,10 +17,25 @@ const TAMANIO_MAXIMO_MB = 2;
 
 const TAMANIO_MAXIMO_BYTES = TAMANIO_MAXIMO_MB * 1024 * 1024;
 
+/** Mismos formatos que acepta el backend. */
+const TIPOS_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'];
+
 const MSG = {
   imagenObligatoria: 'Elegí una imagen.',
+  formatoNoPermitido: 'Solo se permiten imágenes JPG, PNG o WEBP.',
   imagenMuyGrande: `La imagen no puede superar los ${TAMANIO_MAXIMO_MB} MB.`,
 };
+
+/** El tipo del archivo sale de su extensión, así que además se comprueba que se pueda abrir. */
+async function esImagenPermitida(archivo: File): Promise<boolean> {
+  if (!TIPOS_PERMITIDOS.includes(archivo.type)) return false;
+  try {
+    (await createImageBitmap(archivo)).close();
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 @Component({
   selector: 'app-imagen-dialog',
@@ -34,12 +49,22 @@ export class ImagenDialogComponent {
 
   protected readonly envio = new EnvioDeModal<ImagenRequest>(this.dialogRef);
   protected readonly esEdicion = this.data.imagen !== null;
+  protected readonly tiposPermitidos = TIPOS_PERMITIDOS.join(',');
+  protected readonly tamanioMaximoMb = TAMANIO_MAXIMO_MB;
   protected readonly url = signal(this.data.imagen?.url ?? '');
   protected esPrincipal = this.data.imagen?.esPrincipal ?? false;
 
-  protected seleccionarArchivo(evento: Event): void {
-    const archivo = (evento.target as HTMLInputElement).files?.[0];
+  protected async seleccionarArchivo(evento: Event): Promise<void> {
+    const selector = evento.target as HTMLInputElement;
+    const archivo = selector.files?.[0];
+    // Se vacía para que volver a elegir el mismo archivo dispare el evento otra vez
+    selector.value = '';
     if (!archivo) return;
+
+    if (!(await esImagenPermitida(archivo))) {
+      this.envio.error.set(MSG.formatoNoPermitido);
+      return;
+    }
 
     if (archivo.size > TAMANIO_MAXIMO_BYTES) {
       this.envio.error.set(MSG.imagenMuyGrande);

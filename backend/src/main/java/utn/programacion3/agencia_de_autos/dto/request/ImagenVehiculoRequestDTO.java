@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import utn.programacion3.agencia_de_autos.validation.ImagenValida;
 
 @Getter
 @Setter
@@ -12,8 +13,9 @@ import lombok.*;
 @AllArgsConstructor
 public class ImagenVehiculoRequestDTO {
 
-    @Schema(description = "Imagen del vehículo codificada como data URI base64", example = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ...")
+    @Schema(description = "Imagen JPG, PNG o WEBP del vehículo codificada como data URI base64", example = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ...")
     @NotBlank(message = "La imagen es obligatoria")
+    @ImagenValida
     private String url;
 
     @Schema(description = "Identificador único del vehículo al que pertenece la imagen", example = "7", minimum = "1")
