@@ -1,8 +1,13 @@
 package utn.programacion3.agencia_de_autos.repository;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import utn.programacion3.agencia_de_autos.model.Modelo;
 
 @Repository
 public interface ModeloRepository extends JpaRepository<Modelo, Long> {
+
+    List<Modelo> findByEliminadoFalse();
+
+    boolean existsByMarcaIdAndEliminadoFalse(Long marcaId);
 }

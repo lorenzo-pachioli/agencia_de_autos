@@ -1,4 +1,5 @@
 package utn.programacion3.agencia_de_autos.model;
+import org.hibernate.annotations.ColumnDefault;
 import jakarta.persistence.*;
 import lombok.*;
 import utn.programacion3.agencia_de_autos.model.enums.TipoModelo;
@@ -32,6 +33,12 @@ public class Modelo {
     @Column(nullable = false)
     @Builder.Default
     private Boolean activo = true;
+
+    /** Borrado lógico. "activo" es otra cosa: lo cambia el usuario y sigue visible. */
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    @Builder.Default
+    private Boolean eliminado = false;
 
     // Relación: muchos modelos pertenecen a una marca
     @ManyToOne

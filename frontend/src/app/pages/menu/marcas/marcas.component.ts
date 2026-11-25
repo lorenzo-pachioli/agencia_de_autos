@@ -17,7 +17,7 @@ const TAMANIO_DIALOGO = { width: '480px', maxWidth: '92vw' };
 
 const MSG = {
   errorCarga: 'No se pudieron cargar las marcas.',
-  errorEliminar: 'No se pudo eliminar la marca. Verificá que no tenga modelos asociados.',
+  errorEliminar: 'No se pudo eliminar la marca.',
   creada: 'Marca creada.',
   actualizada: 'Marca actualizada.',
   eliminada: 'Marca eliminada.',
@@ -93,7 +93,7 @@ export class MarcasComponent {
         ...TAMANIO_DIALOGO,
         data: {
           titulo: 'Eliminar marca',
-          mensaje: `¿Seguro que querés eliminar la marca ${marca.nombre}? Esta acción no se puede deshacer.`,
+          mensaje: `¿Seguro que querés eliminar la marca ${marca.nombre}? Va a dejar de mostrarse en la agencia.`,
           accion: 'Eliminar',
           ejecutar: () => this.marcaService.eliminar(marca.id),
           errorPorDefecto: MSG.errorEliminar,

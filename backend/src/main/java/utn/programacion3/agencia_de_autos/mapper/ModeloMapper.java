@@ -17,5 +17,6 @@ public interface ModeloMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "marca", ignore = true)
     @Mapping(target = "vehiculos", ignore = true)
+    @Mapping(target = "eliminado", ignore = true)
     Modelo toEntity(ModeloRequestDTO dto);
 }

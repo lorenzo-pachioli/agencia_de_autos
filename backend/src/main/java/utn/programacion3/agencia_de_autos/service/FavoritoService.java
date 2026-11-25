@@ -31,6 +31,7 @@ public class FavoritoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         Vehiculo vehiculo = vehiculoRepository.findById(vehiculoId)
+                .filter(v -> v.getEstado() != EstadoVehiculo.BAJA)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehículo no encontrado"));
 
         if (vehiculo.getEstado() == EstadoVehiculo.VENDIDO) {
@@ -81,6 +82,7 @@ public class FavoritoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         return usuario.getFavoritos().stream()
+                .filter(favorito -> favorito.getVehiculo().getEstado() != EstadoVehiculo.BAJA)
                 .map(favoritoMapper::toResponse)
                 .toList();
     }

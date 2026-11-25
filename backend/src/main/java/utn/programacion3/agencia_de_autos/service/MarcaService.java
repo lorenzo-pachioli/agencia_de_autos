@@ -1,5 +1,7 @@
 package utn.programacion3.agencia_de_autos.service;
 
+import utn.programacion3.agencia_de_autos.exception.ResourceNotFoundException;
+import utn.programacion3.agencia_de_autos.repository.ModeloRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,18 +20,21 @@ public class MarcaService {
 
     private final MarcaRepository marcaRepository;
     private final MarcaMapper marcaMapper;
+    private final ModeloRepository modeloRepository;
 
     // Crear una nueva marca
+    @Transactional
     public MarcaResponseDTO crearMarca(MarcaRequestDTO request) {
 
-        if (marcaRepository.existsByNombre(request.getNombre())) {
+        Marca existente = marcaRepository.findByNombre(request.getNombre()).orElse(null);
+        if (existente != null && !existente.getEliminado()) {
             throw new NegocioException("La marca ya existe");
         }
 
-        Marca marca = marcaMapper.toEntity(request);
-        if(request.getActivo() == null){
-            marca.setActivo(true);
-        }
+        // Si el nombre es de una marca eliminada, se recupera esa en lugar de crear otra
+        Marca marca = existente != null ? existente : marcaMapper.toEntity(request);
+        marca.setEliminado(false);
+        marca.setActivo(request.getActivo() == null || request.getActivo());
 
         Marca marcaGuardada = marcaRepository.save(marca);
 
@@ -40,7 +45,7 @@ public class MarcaService {
     @Transactional(readOnly = true)
     public List<MarcaResponseDTO> listarMarcas() {
 
-        return marcaRepository.findAll()
+        return marcaRepository.findByEliminadoFalse()
                 .stream()
                 .map(marcaMapper::toResponse)
                 .toList();
@@ -50,17 +55,22 @@ public class MarcaService {
     @Transactional(readOnly = true)
     public MarcaResponseDTO obtenerMarcaPorId(Long id) {
 
-        Marca marca = marcaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
-
-        return marcaMapper.toResponse(marca);
+        return marcaMapper.toResponse(buscarVigente(id));
     }
 
     // Actualizar marca
+    @Transactional
     public MarcaResponseDTO actualizarMarca(Long id, MarcaRequestDTO request) {
 
-        Marca marca = marcaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
+        Marca marca = buscarVigente(id);
+
+        marcaRepository.findByNombre(request.getNombre())
+                .filter(otra -> !otra.getId().equals(id))
+                .ifPresent(otra -> {
+                    throw new NegocioException(otra.getEliminado()
+                            ? "Ese nombre es de una marca eliminada. Creala de nuevo para recuperarla."
+                            : "La marca ya existe");
+                });
 
         marca.setNombre(request.getNombre());
         if(request.getActivo() != null){
@@ -72,12 +82,25 @@ public class MarcaService {
         return marcaMapper.toResponse(marcaActualizada);
     }
 
-    // Eliminar marca
+    // Eliminar marca (borrado lógico)
+    @Transactional
     public void eliminarMarca(Long id) {
 
-        Marca marca = marcaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
+        Marca marca = buscarVigente(id);
 
-        marcaRepository.delete(marca);
+        if (modeloRepository.existsByMarcaIdAndEliminadoFalse(id)) {
+            throw new NegocioException("No se puede eliminar la marca porque tiene modelos. Eliminalos primero.");
+        }
+
+        marca.setEliminado(true);
+        marcaRepository.save(marca);
     }
+
+    /** Una marca eliminada se trata como inexistente. */
+    private Marca buscarVigente(Long id) {
+        return marcaRepository.findById(id)
+                .filter(marca -> !marca.getEliminado())
+                .orElseThrow(() -> new ResourceNotFoundException("Marca no encontrada"));
+    }
+
 }

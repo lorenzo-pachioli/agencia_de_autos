@@ -81,7 +81,8 @@ public class ModeloController {
         return modeloService.actualizarModelo(id, request);
     }
 
-    @Operation(summary = "Eliminar un modelo")
+    @Operation(summary = "Eliminar un modelo",
+            description = "Borrado lógico. Solo si no tiene vehículos sin eliminar.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Modelo eliminado correctamente"),
             @ApiResponse(responseCode = "401", description = "No autorizado"),

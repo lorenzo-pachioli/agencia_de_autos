@@ -58,6 +58,19 @@ public class Transaccion {
     @JoinColumn(name = "vendedor_id")
     private Usuario vendedor;
 
+    /** Foto de los datos actuales, para comparar en la auditoría antes de modificarlos. */
+    public Transaccion copia() {
+        return Transaccion.builder()
+                .id(id)
+                .estadoTransaccion(estadoTransaccion)
+                .precio_final(precio_final)
+                .metodoPago(metodoPago)
+                .vendedor(vendedor)
+                .cliente(cliente)
+                .vehiculo(vehiculo)
+                .build();
+    }
+
     @PrePersist
     public void onCreate(){
         if (this.observaciones == null){

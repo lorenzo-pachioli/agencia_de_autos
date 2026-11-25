@@ -1,5 +1,6 @@
 package utn.programacion3.agencia_de_autos.repository;
 
+import java.util.Collection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -25,6 +26,10 @@ public interface TransaccionRepository extends
     );
 
     boolean existsByClienteEmailAndEstadoTransaccion(String clienteEmail, EstadoTransaccion estadoTransaccion);
+
+    boolean existsByVehiculoIdAndEstadoTransaccionIn(Long vehiculoId, Collection<EstadoTransaccion> estados);
+
+    List<Transaccion> findByVehiculoIdAndEstadoTransaccion(Long vehiculoId, EstadoTransaccion estadoTransaccion);
 
     List<Transaccion> findByClienteEmailOrderByIdDesc(String clienteEmail);
 

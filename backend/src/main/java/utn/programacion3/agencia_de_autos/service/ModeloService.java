@@ -1,5 +1,9 @@
 package utn.programacion3.agencia_de_autos.service;
 
+import utn.programacion3.agencia_de_autos.exception.ResourceNotFoundException;
+import utn.programacion3.agencia_de_autos.exception.NegocioException;
+import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
+import utn.programacion3.agencia_de_autos.repository.VehiculoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +24,12 @@ public class ModeloService {
     private final ModeloRepository modeloRepository;
     private final MarcaRepository marcaRepository;
     private final ModeloMapper modeloMapper;
+    private final VehiculoRepository vehiculoRepository;
 
     // Crear un nuevo modelo
     public ModeloResponseDTO crearModelo(ModeloRequestDTO request) {
 
-        Marca marca = marcaRepository.findById(request.getMarcaId())
-                .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
+        Marca marca = buscarMarcaVigente(request.getMarcaId());
 
         Modelo modelo = modeloMapper.toEntity(request);
 
@@ -44,7 +48,7 @@ public class ModeloService {
     @Transactional(readOnly = true)
     public List<ModeloResponseDTO> listarModelos() {
 
-        return modeloRepository.findAll()
+        return modeloRepository.findByEliminadoFalse()
                 .stream()
                 .map(modeloMapper::toResponse)
                 .toList();
@@ -54,20 +58,15 @@ public class ModeloService {
     @Transactional(readOnly = true)
     public ModeloResponseDTO obtenerModeloPorId(Long id) {
 
-        Modelo modelo = modeloRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Modelo no encontrado"));
-
-        return modeloMapper.toResponse(modelo);
+        return modeloMapper.toResponse(buscarVigente(id));
     }
 
     // Actualizar modelo
     public ModeloResponseDTO actualizarModelo(Long id, ModeloRequestDTO request) {
 
-        Modelo modelo = modeloRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Modelo no encontrado"));
+        Modelo modelo = buscarVigente(id);
 
-        Marca marca = marcaRepository.findById(request.getMarcaId())
-                .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
+        Marca marca = buscarMarcaVigente(request.getMarcaId());
 
         modelo.setNombre(request.getNombre());
         modelo.setMarca(marca);
@@ -82,12 +81,32 @@ public class ModeloService {
         return modeloMapper.toResponse(modeloActualizado);
     }
 
-    // Eliminar modelo
+    // Eliminar modelo (borrado lógico). Los vehículos dados de baja no lo impiden.
+    @Transactional
     public void eliminarModelo(Long id) {
 
-        Modelo modelo = modeloRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Modelo no encontrado"));
+        Modelo modelo = buscarVigente(id);
 
-        modeloRepository.delete(modelo);
+        if (vehiculoRepository.existsByModeloIdAndEstadoNot(id, EstadoVehiculo.BAJA)) {
+            throw new NegocioException("No se puede eliminar el modelo porque tiene vehículos sin eliminar.");
+        }
+
+        modelo.setEliminado(true);
+        modeloRepository.save(modelo);
     }
+
+    /** Un modelo eliminado se trata como inexistente. */
+    private Modelo buscarVigente(Long id) {
+        return modeloRepository.findById(id)
+                .filter(modelo -> !modelo.getEliminado())
+                .orElseThrow(() -> new ResourceNotFoundException("Modelo no encontrado"));
+    }
+
+    // 400 y no 404: el error tiene que verse en el formulario que eligió la marca
+    private Marca buscarMarcaVigente(Long id) {
+        return marcaRepository.findById(id)
+                .filter(marca -> !marca.getEliminado())
+                .orElseThrow(() -> new NegocioException("La marca seleccionada no existe."));
+    }
+
 }

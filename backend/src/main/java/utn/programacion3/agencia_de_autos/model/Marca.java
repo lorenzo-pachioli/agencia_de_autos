@@ -1,4 +1,5 @@
 package utn.programacion3.agencia_de_autos.model;
+import org.hibernate.annotations.ColumnDefault;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,6 +26,12 @@ public class Marca {
     @Column(nullable = false)
     @Builder.Default
     private Boolean activo = true;
+
+    /** Borrado lógico. "activo" es otra cosa: lo cambia el usuario y sigue visible. */
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    @Builder.Default
+    private Boolean eliminado = false;
 
     // Relación: una marca puede tener muchos modelos
     @OneToMany(mappedBy = "marca")

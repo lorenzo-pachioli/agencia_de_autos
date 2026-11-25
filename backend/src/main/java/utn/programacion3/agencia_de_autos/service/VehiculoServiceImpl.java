@@ -1,5 +1,6 @@
 package utn.programacion3.agencia_de_autos.service;
 
+import utn.programacion3.agencia_de_autos.model.Transaccion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,16 +45,15 @@ public class VehiculoServiceImpl implements VehiculoService {
     private final VehiculoMapper vehiculoMapper;
     private final ImagenVehiculoService imagenVehiculoService;
     private final TransaccionRepository transaccionRepository;
+    private final AuditoriaTransaccionService auditoriaTransaccionService;
 
     @Override
     public VehiculoResponseDTO crearVehiculo(VehiculoRequestDTO request) {
 
-        if (vehiculoRepository.existsByPatente(request.getPatente())) {
-            throw new PatenteDuplicadaException();
-        }
+        rechazarEstadoBaja(request.getEstado());
+        validarPatenteLibre(request.getPatente());
 
-        Modelo modelo = modeloRepository.findById(request.getModeloId())
-                .orElseThrow(ModeloNoEncontradoException::new);
+        Modelo modelo = buscarModeloVigente(request.getModeloId());
 
         Vehiculo vehiculo = vehiculoMapper.toEntity(request);
 
@@ -74,8 +74,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Override
     @Transactional(readOnly = true)
     public VehiculoResponseDTO obtenerVehiculoPorId(Long id, Authentication authentication){
-        Vehiculo vehiculo = vehiculoRepository.findById(id)
-                .orElseThrow(VehiculoNoEncontradoException::new);
+        Vehiculo vehiculo = buscarVigente(id);
         VehiculoResponseDTO dto = vehiculoMapper.toResponse(vehiculo);
         dto.setImagenes(imagenVehiculoService.obtenerTodasLasUrls(id));
         dto.setImagenPrincipalUrl(
@@ -107,7 +106,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Transactional(readOnly = true)
     public List<VehiculoPublicResponseDTO> obtenerVehiculosPublicos() {
 
-        return vehiculoRepository.findAll()
+        return vehiculoRepository.findByEstadoNot(EstadoVehiculo.BAJA)
                 .stream()
                 .map(vehiculoMapper::toPublicResponse)
                 .toList();
@@ -117,7 +116,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Transactional(readOnly = true)
     public List<VehiculoResponseDTO> obtenerVehiculosInternos() {
 
-        return vehiculoRepository.findAll()
+        return vehiculoRepository.findByEstadoNot(EstadoVehiculo.BAJA)
                 .stream()
                 .map(vehiculoMapper::toResponse)
                 .toList();
@@ -126,21 +125,19 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Override
     public VehiculoResponseDTO actualizarVehiculo(Long id, VehiculoRequestDTO request) {
 
-        Vehiculo vehiculo = vehiculoRepository.findById(id)
-                .orElseThrow(VehiculoNoEncontradoException::new);
+        Vehiculo vehiculo = buscarVigente(id);
+        rechazarEstadoBaja(request.getEstado());
 
         if (vehiculo.getEstado() == EstadoVehiculo.VENDIDO
                 && vehiculo.getPrecioAdquisicion().compareTo(request.getPrecioAdquisicion()) != 0) {
             throw new NegocioException("No se puede modificar el precio de adquisición de un vehículo VENDIDO.");
         }
 
-        if (!vehiculo.getPatente().equals(request.getPatente())
-                && vehiculoRepository.existsByPatente(request.getPatente())) {
-            throw new PatenteDuplicadaException();
+        if (!vehiculo.getPatente().equals(request.getPatente())) {
+            validarPatenteLibre(request.getPatente());
         }
 
-        Modelo modelo = modeloRepository.findById(request.getModeloId())
-                .orElseThrow(ModeloNoEncontradoException::new);
+        Modelo modelo = buscarModeloVigente(request.getModeloId());
 
         vehiculo.setPatente(request.getPatente());
         vehiculo.setAnio(request.getAnio());
@@ -162,8 +159,8 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Override
     public VehiculoResponseDTO cambiarEstado(Long id, CambiarEstadoVehiculoDTO request) {
 
-        Vehiculo vehiculo = vehiculoRepository.findById(id)
-                .orElseThrow(VehiculoNoEncontradoException::new);
+        Vehiculo vehiculo = buscarVigente(id);
+        rechazarEstadoBaja(request.getEstado());
 
         vehiculo.setEstado(request.getEstado());
 
@@ -201,7 +198,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Transactional(readOnly = true)
     public Page<VehiculoGestionResponseDTO> listarParaGestion(Pageable pageable) {
 
-        return vehiculoRepository.findAll(pageable)
+        return vehiculoRepository.findByEstadoNot(EstadoVehiculo.BAJA, pageable)
                 .map(vehiculoMapper::toGestionResponse);
     }
 
@@ -267,7 +264,7 @@ public class VehiculoServiceImpl implements VehiculoService {
                 Sort.by("createdAt").descending()
         );
 
-        return vehiculoRepository.findAll(pageable)
+        return vehiculoRepository.findByEstadoNot(EstadoVehiculo.BAJA, pageable)
                 .stream()
                 .map(vehiculoMapper::toResponse)
                 .toList();
@@ -275,14 +272,65 @@ public class VehiculoServiceImpl implements VehiculoService {
 
 
 
+    /**
+     * Borrado lógico: el vehículo pasa a BAJA y deja de mostrarse, pero se conservan
+     * sus imágenes, transacciones y favoritos.
+     */
     @Override
+    @Transactional
     public void eliminarVehiculo(Long id) {
 
-        Vehiculo vehiculo = vehiculoRepository.findById(id)
-                .orElseThrow(VehiculoNoEncontradoException::new);
+        Vehiculo vehiculo = buscarVigente(id);
 
-        vehiculoRepository.delete(vehiculo);
+        if (vehiculo.getEstado() == EstadoVehiculo.VENDIDO) {
+            throw new NegocioException("No se puede eliminar un vehículo vendido.");
+        }
+        if (vehiculo.getEstado() == EstadoVehiculo.RESERVADO
+                || transaccionRepository.existsByVehiculoIdAndEstadoTransaccionIn(
+                        id, List.of(EstadoTransaccion.RESERVA, EstadoTransaccion.SENIADO))) {
+            throw new NegocioException("No se puede eliminar un vehículo con una reserva o seña en curso.");
+        }
+
+        cancelarSolicitudesPendientes(id);
+        vehiculo.setEstado(EstadoVehiculo.BAJA);
+        vehiculoRepository.save(vehiculo);
     }
 
+    /** Un vehículo dado de baja se trata como inexistente. */
+    private Vehiculo buscarVigente(Long id) {
+        return vehiculoRepository.findById(id)
+                .filter(vehiculo -> vehiculo.getEstado() != EstadoVehiculo.BAJA)
+                .orElseThrow(VehiculoNoEncontradoException::new);
+    }
+
+    private Modelo buscarModeloVigente(Long modeloId) {
+        return modeloRepository.findById(modeloId)
+                .filter(modelo -> !modelo.getEliminado())
+                .orElseThrow(ModeloNoEncontradoException::new);
+    }
+
+    private void rechazarEstadoBaja(EstadoVehiculo estado) {
+        if (estado == EstadoVehiculo.BAJA) {
+            throw new NegocioException("Para dar de baja un vehículo hay que eliminarlo.");
+        }
+    }
+
+    private void validarPatenteLibre(String patente) {
+        vehiculoRepository.findByPatente(patente).ifPresent(existente -> {
+            if (existente.getEstado() == EstadoVehiculo.BAJA) {
+                throw new NegocioException("La patente pertenece a un vehículo eliminado.");
+            }
+            throw new PatenteDuplicadaException();
+        });
+    }
+
+    private void cancelarSolicitudesPendientes(Long vehiculoId) {
+        for (Transaccion solicitud : transaccionRepository.findByVehiculoIdAndEstadoTransaccion(
+                vehiculoId, EstadoTransaccion.SOLICITAR)) {
+            Transaccion anterior = solicitud.copia();
+            solicitud.setEstadoTransaccion(EstadoTransaccion.CANCELADO);
+            auditoriaTransaccionService.registrarCambio(anterior, solicitud);
+        }
+    }
 
 }

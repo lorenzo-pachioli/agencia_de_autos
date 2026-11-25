@@ -81,7 +81,8 @@ public class MarcaController {
         return marcaService.actualizarMarca(id, request);
     }
 
-    @Operation(summary = "Eliminar una marca")
+    @Operation(summary = "Eliminar una marca",
+            description = "Borrado lógico. Solo si no tiene modelos sin eliminar.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Marca eliminada correctamente"),
             @ApiResponse(responseCode = "401", description = "No autorizado"),

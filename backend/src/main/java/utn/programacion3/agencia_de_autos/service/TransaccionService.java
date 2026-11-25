@@ -422,14 +422,7 @@ public class TransaccionService {
     }
 
     private Transaccion crearSnapshot(Transaccion transaccion){
-        return Transaccion.builder()
-                .id(transaccion.getId())
-                .estadoTransaccion(transaccion.getEstadoTransaccion())
-                .precio_final(transaccion.getPrecio_final())
-                .metodoPago(transaccion.getMetodoPago())
-                .vendedor(transaccion.getVendedor())
-                .cliente(transaccion.getCliente())
-                .vehiculo(transaccion.getVehiculo())
-                .build();
+        return transaccion.copia();
     }
+
 }

@@ -27,7 +27,7 @@ const TAMANIO_DIALOGO_VEHICULO = { width: '720px', maxWidth: '92vw' };
 const MSG = {
   errorCarga: 'No se pudieron cargar los vehículos.',
   errorCargaOpciones: 'No se pudieron cargar las marcas y modelos.',
-  errorEliminar: 'No se pudo eliminar el vehículo. Verificá que no tenga transacciones o imágenes asociadas.',
+  errorEliminar: 'No se pudo eliminar el vehículo.',
   creado: 'Vehículo cargado.',
   actualizado: 'Vehículo actualizado.',
   eliminado: 'Vehículo eliminado.',
@@ -133,7 +133,7 @@ export class VehiculosComponent {
         ...TAMANIO_DIALOGO,
         data: {
           titulo: 'Eliminar vehículo',
-          mensaje: `¿Seguro que querés eliminar el vehículo ${vehiculo.patente}? Esta acción no se puede deshacer.`,
+          mensaje: `¿Seguro que querés eliminar el vehículo ${vehiculo.patente}? Va a dejar de mostrarse y se van a cancelar sus solicitudes de visita pendientes. Su historial se conserva.`,
           accion: 'Eliminar',
           ejecutar: () => this.vehiculoService.eliminar(vehiculo.id),
           errorPorDefecto: MSG.errorEliminar,

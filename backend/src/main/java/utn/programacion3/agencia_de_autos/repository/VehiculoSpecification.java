@@ -49,6 +49,9 @@ public class VehiculoSpecification {
                 );
             }
 
+            // Los dados de baja no aparecen en ninguna búsqueda
+            predicates.add(cb.notEqual(root.get("estado"), EstadoVehiculo.BAJA));
+
             if (!filtros.isIncluirVendidos()) {
                 predicates.add(
                         cb.notEqual(

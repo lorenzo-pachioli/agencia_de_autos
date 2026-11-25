@@ -19,7 +19,7 @@ const TAMANIO_DIALOGO = { width: '480px', maxWidth: '92vw' };
 const MSG = {
   errorCarga: 'No se pudieron cargar los modelos.',
   errorCargaMarcas: 'No se pudieron cargar las marcas.',
-  errorEliminar: 'No se pudo eliminar el modelo. Verificá que no tenga vehículos asociados.',
+  errorEliminar: 'No se pudo eliminar el modelo.',
   creado: 'Modelo creado.',
   actualizado: 'Modelo actualizado.',
   eliminado: 'Modelo eliminado.',
@@ -101,7 +101,7 @@ export class ModelosComponent {
         ...TAMANIO_DIALOGO,
         data: {
           titulo: 'Eliminar modelo',
-          mensaje: `¿Seguro que querés eliminar el modelo ${modelo.marca} ${modelo.nombre}? Esta acción no se puede deshacer.`,
+          mensaje: `¿Seguro que querés eliminar el modelo ${modelo.marca} ${modelo.nombre}? Va a dejar de mostrarse en la agencia.`,
           accion: 'Eliminar',
           ejecutar: () => this.modeloService.eliminar(modelo.id),
           errorPorDefecto: MSG.errorEliminar,
