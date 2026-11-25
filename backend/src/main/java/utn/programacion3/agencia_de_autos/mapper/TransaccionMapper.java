@@ -19,9 +19,12 @@ public interface TransaccionMapper {
     @Mapping(target = "cliente", ignore = true)
     @Mapping(target = "vendedor", ignore = true)
     @Mapping(target = "fecha_visita", ignore = true)
-    @Mapping(target = "estadoTransaccion", constant = "RESERVA")
+    @Mapping(target = "precio_final", ignore = true)
+    @Mapping(target = "monto_entregado", ignore = true)
+    @Mapping(target = "estadoTransaccion", ignore = true)
     Transaccion toEntity(TransaccionRequestDTO dto);
 
+    @Mapping(target = "precio_venta", source = "vehiculo.precioVenta")
     @Mapping(target = "vehiculo_id", source = "vehiculo.id")
     @Mapping(target = "cliente_id", source = "cliente.id")
     @Mapping(target = "vendedor_id", source = "vendedor.id")
@@ -41,6 +44,8 @@ public interface TransaccionMapper {
     @Mapping(target = "cliente", ignore = true)
     @Mapping(target = "vendedor", ignore = true)
     @Mapping(target = "fecha_visita", ignore = true)
+    @Mapping(target = "precio_final", ignore = true)
+    @Mapping(target = "monto_entregado", ignore = true)
     @Mapping(target = "estadoTransaccion", ignore = true)
     void updateEntityFromDto(TransaccionRequestDTO dto, @MappingTarget Transaccion transaccion);
 }

@@ -42,14 +42,8 @@ export class TransaccionService {
     return this.http.patch<Transaccion>(`${TRANSACCIONES_URL}/${id}/asignar`, datos);
   }
 
-  senar(id: number, precioSenia: number): Observable<Transaccion> {
-    const params = new HttpParams().set('precioSenia', precioSenia);
-    return this.http.patch<Transaccion>(`${TRANSACCIONES_URL}/${id}/seniar`, null, { params });
-  }
-
-  vender(id: number, precioFinal: number): Observable<Transaccion> {
-    const params = new HttpParams().set('precioFinal', precioFinal);
-    return this.http.patch<Transaccion>(`${TRANSACCIONES_URL}/${id}/vender`, null, { params });
+  vender(id: number): Observable<Transaccion> {
+    return this.http.patch<Transaccion>(`${TRANSACCIONES_URL}/${id}/vender`, null);
   }
 
   cancelar(id: number): Observable<Transaccion> {

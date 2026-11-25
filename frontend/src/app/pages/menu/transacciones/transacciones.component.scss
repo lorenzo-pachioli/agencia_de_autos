@@ -24,7 +24,9 @@
   min-width: 110px;
 }
 
-.mat-column-precio {
+.mat-column-precio,
+.mat-column-entregado,
+.mat-column-saldo {
   white-space: nowrap;
 }
 
@@ -44,7 +46,48 @@
   min-width: 310px;
 }
 
+.heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.senia-button {
+  --mat-button-outlined-container-height: 46px;
+  --mat-button-outlined-container-shape: 12px;
+}
+
+.vehiculo-info {
+  margin: -12px 0 16px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.vehiculo-aviso {
+  margin: -8px 0 16px;
+}
+
+.resumen-venta {
+  margin: 0 0 12px;
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 8px;
+    border-bottom: 1px solid var(--app-border-soft);
+  }
+
+  dt { color: var(--mat-sys-on-surface-variant); }
+  dd { margin: 0; font-weight: 600; }
+
+  .resumen-venta__saldo {
+    border-bottom: 0;
+    font-size: 1rem;
+  }
+}
+
 @media (max-width: 760px) {
   .table-card { margin-top: 12px; }
-  .mat-mdc-table { min-width: 1060px; }
+  .mat-mdc-table { min-width: 1300px; }
 }

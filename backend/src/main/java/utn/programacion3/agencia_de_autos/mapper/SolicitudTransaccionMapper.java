@@ -12,6 +12,7 @@ public interface SolicitudTransaccionMapper {
     @Mapping(target = "created_at", ignore = true)
     @Mapping(target = "updated_at", ignore = true)
     @Mapping(target = "precio_final", ignore = true)
+    @Mapping(target = "monto_entregado", ignore = true)
     @Mapping(target = "comision_calculada", ignore = true)
     @Mapping(target = "vehiculo", ignore = true)
     @Mapping(target = "cliente", ignore = true)

@@ -41,6 +41,8 @@ export interface Transaccion {
     id: number;
     observaciones: string | null;
     precio_final: number | null;
+    monto_entregado: number | null;
+    precio_venta: number;
     metodoPago: MetodoPago | null;
     estadoTransaccion: EstadoTransaccion;
     vehiculo_id: number;
@@ -61,9 +63,16 @@ export interface FiltrosTransaccion {
     fechaHasta?: string;
 }
 
-export interface CrearTransaccion {
+export type TipoOperacion = EstadoTransaccion.RESERVA | EstadoTransaccion.SENIADO | EstadoTransaccion.VENDIDO;
+
+export interface DatosOperacion {
+    estadoTransaccion: TipoOperacion;
+    /** Solo se informa en una reserva; en la seña y la venta lo calcula el backend. */
+    monto_entregado: number | null;
+}
+
+export interface CrearTransaccion extends DatosOperacion {
     observaciones?: string;
-    precio_final: number;
     metodoPago: MetodoPago;
     vehiculo_id: number;
     cliente_id: number;
@@ -80,9 +89,7 @@ export interface AsignarVisita {
     fechaVisita: string | null;
 }
 
-export interface ActualizarTransaccion extends CrearTransaccion {
-    estadoTransaccion: EstadoTransaccion;
-}
+export type ActualizarTransaccion = CrearTransaccion;
 
 export interface BalanceTransacciones {
     precios_final_total: number;

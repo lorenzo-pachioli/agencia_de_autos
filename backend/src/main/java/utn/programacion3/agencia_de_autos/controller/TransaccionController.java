@@ -91,7 +91,7 @@ public class TransaccionController {
 
     @Operation(
             summary = "Registrar una nueva transacción",
-            description = "Permite iniciar el flujo de una operación comercial en la agencia (por ejemplo, una venta o reserva)."
+            description = "Registra una reserva, una seña o una venta. El precio se toma del vehículo; monto_entregado solo se informa en las reservas."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Transacción registrada y creada de forma exitosa"),
@@ -169,59 +169,39 @@ public class TransaccionController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VENDEDOR')")
     @PatchMapping("/{id}/cancelar")
     public ResponseEntity<TransaccionResponseDTO> cancelarTransaccionPorid(@PathVariable Long id) {
-        return ResponseEntity.ok(transaccionService.cambiarEstado(id, EstadoTransaccion.CANCELADO, null));
+        return ResponseEntity.ok(transaccionService.cambiarEstado(id, EstadoTransaccion.CANCELADO));
     }
 
     @Operation(
             summary = "Marcar transacción como vendida",
-            description = "Finaliza el flujo de la operación comercial estableciendo el estado en VENDIDO y fijando el monto del precio final."
+            description = "Completa el pago de una reserva o seña: pasa a VENDIDO y el monto entregado queda igual al precio final."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Estado modificado a VENDIDO exitosamente"),
-            @ApiResponse(responseCode = "400", description = "El parámetro del precio final no es válido o está ausente"),
+            @ApiResponse(responseCode = "400", description = "La transacción no es una reserva ni una seña"),
             @ApiResponse(responseCode = "404", description = "La transacción especificada no existe"),
             @ApiResponse(responseCode = "403", description = "Acceso denegado. Se requiere rol ADMINISTRADOR o VENDEDOR")
     })
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VENDEDOR')")
     @PatchMapping("/{id}/vender")
-    public ResponseEntity<TransaccionResponseDTO> venderTransaccionPorid(
-            @PathVariable Long id,
-            @RequestParam BigDecimal precioFinal) {
-        return ResponseEntity.ok(transaccionService.cambiarEstado(id, EstadoTransaccion.VENDIDO, precioFinal));
-    }
-
-    @Operation(
-            summary = "Registrar seña de transacción",
-            description = "Asigna el estado de SEÑADO a la operación comercial y asienta el monto económico entregado en concepto de seña."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Transacción señada de manera exitosa"),
-            @ApiResponse(responseCode = "400", description = "El valor monetario de la seña no es válido"),
-            @ApiResponse(responseCode = "404", description = "La transacción especificada no existe"),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado. Se requiere rol ADMINISTRADOR o VENDEDOR")
-    })
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VENDEDOR')")
-    @PatchMapping("/{id}/seniar")
-    public ResponseEntity<TransaccionResponseDTO> seniarTransaccionPorid(
-            @PathVariable Long id,
-            @RequestParam BigDecimal precioSenia) {
-        return ResponseEntity.ok(transaccionService.cambiarEstado(id, EstadoTransaccion.SENIADO, precioSenia));
+    public ResponseEntity<TransaccionResponseDTO> venderTransaccionPorid(@PathVariable Long id) {
+        return ResponseEntity.ok(transaccionService.cambiarEstado(id, EstadoTransaccion.VENDIDO));
     }
 
     @Operation(
             summary = "Cambiar estado de forma genérica",
-            description = "Permite la alteración directa y manual del estado de una transacción mediante parámetros genéricos."
+            description = "Solo admite VENDIDO o CANCELADO. Las reservas y señas requieren registrar el monto."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cambio de estado realizado correctamente"),
-            @ApiResponse(responseCode = "400", description = "El estado enviado no coincide con los valores permitidos del Enum"),
+            @ApiResponse(responseCode = "400", description = "El estado enviado no está permitido"),
             @ApiResponse(responseCode = "404", description = "La transacción especificada no existe"),
             @ApiResponse(responseCode = "403", description = "Acceso denegado. Se requiere rol ADMINISTRADOR o VENDEDOR")
     })
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VENDEDOR')")
     @PatchMapping("/{id}/estado")
     public ResponseEntity<TransaccionResponseDTO> cambiarEstadoTransaccion(@PathVariable Long id, @Valid @RequestParam EstadoTransaccion estado) {
-        return ResponseEntity.ok(transaccionService.cambiarEstado(id, estado, null));
+        return ResponseEntity.ok(transaccionService.cambiarEstado(id, estado));
     }
     @Operation(
             summary = "Calcular comisiones de un vendedor",

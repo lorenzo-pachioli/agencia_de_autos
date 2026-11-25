@@ -19,6 +19,10 @@ public class TransaccionResponseDTO {
 
     private BigDecimal precio_final;
 
+    private BigDecimal monto_entregado;
+
+    private BigDecimal precio_venta;
+
     private MetodoPago metodoPago;
 
     private EstadoTransaccion estadoTransaccion;

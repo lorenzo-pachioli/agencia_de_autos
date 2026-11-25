@@ -33,6 +33,9 @@ public class Transaccion {
 
     private BigDecimal precio_final;
 
+    /** Lo que el cliente ya pagó: la reserva, la seña o el total si está vendida. */
+    private BigDecimal monto_entregado;
+
     @Builder.Default
     private BigDecimal comision_calculada = BigDecimal.ZERO;
 

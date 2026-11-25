@@ -17,10 +17,10 @@ public class TransaccionRequestDTO {
     @NotBlank(groups = {Groups.Actualizar.class}, message = "Las observaciones no puede estar vacias")
     private String observaciones;
 
-    @Schema(description = "Precio final acordado en la transacción", example = "11500000.00", minimum = "0.01")
-    @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El precio final no puede estar vacio")
-    @DecimalMin(value = "0.01", message = "El precio final debe ser mayor a 0")
-    private BigDecimal precio_final;
+    @Schema(description = "Monto entregado por el cliente. Solo se informa en una RESERVA; en la seña y la venta lo calcula el sistema",
+            example = "1000000.00", minimum = "0.01")
+    @DecimalMin(value = "0.01", groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El monto entregado debe ser mayor a 0")
+    private BigDecimal monto_entregado;
 
     @Schema(description = "Método de pago utilizado en la transacción", example = "EFECTIVO",
             allowableValues = {"EFECTIVO", "TRANSFERENCIA", "PLAN_AHORRO", "CUOTA_BANCARIZADA"})
@@ -29,7 +29,7 @@ public class TransaccionRequestDTO {
 
     @Schema(description = "Estado actual de la transacción", example = "RESERVA",
             allowableValues = {"RESERVA", "SENIADO", "VENDIDO", "CANCELADO"})
-    @NotNull(groups = {Groups.Actualizar.class}, message = "El estadoTransaccion no puede estar vacio")
+    @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El estadoTransaccion no puede estar vacio")
     private EstadoTransaccion estadoTransaccion;
 
     @Schema(description = "Identificador único del vehículo asociado a la transacción", example = "7", minimum = "1")

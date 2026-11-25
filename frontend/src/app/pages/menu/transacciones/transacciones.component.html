@@ -4,8 +4,14 @@
       <h1>Transacciones</h1>
       <p>Gestión comercial — reservas y ventas</p>
     </div>
-    <button matButton="filled" class="button-dark new-button" type="button" (click)="abrirCrear()"><span aria-hidden="true">＋</span>
-      Nueva transacción</button>
+    <div class="heading-actions">
+      @if (esAdmin()) {
+      <button matButton="outlined" class="button-outline senia-button" type="button" (click)="abrirPorcentajeSenia()">
+        Seña: {{ configuracion() ? configuracion()!.porcentaje_senia + '%' : '—' }} · Editar</button>
+      }
+      <button matButton="filled" class="button-dark new-button" type="button" (click)="abrirCrear()"><span aria-hidden="true">＋</span>
+        Nueva transacción</button>
+    </div>
   </header>
 
   <nav class="status-filters" aria-label="Filtrar por estado">
@@ -66,7 +72,17 @@
 
         <ng-container matColumnDef="precio">
           <th mat-header-cell *matHeaderCellDef>Precio</th>
-          <td mat-cell *matCellDef="let t">{{ t.precio_final != null ? '$ ' + formatearPrecio(t.precio_final) : '—' }}</td>
+          <td mat-cell *matCellDef="let t">{{ formatearImporte(t.precio_final) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="entregado">
+          <th mat-header-cell *matHeaderCellDef>Entregado</th>
+          <td mat-cell *matCellDef="let t">{{ formatearImporte(t.monto_entregado) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="saldo">
+          <th mat-header-cell *matHeaderCellDef>Saldo</th>
+          <td mat-cell *matCellDef="let t">{{ formatearImporte(saldoDe(t)) }}</td>
         </ng-container>
 
         <ng-container matColumnDef="acciones">
@@ -78,15 +94,12 @@
             }
             @if (esMia(t)) {
             <button matButton="outlined" class="button-outline" type="button" (click)="abrirAgendarVisita(t)">{{ t.fecha_visita ? 'Reprogramar' : 'Agendar visita' }}</button>
-            <button matButton="filled" class="button-dark" type="button" (click)="abrirRegistrarReserva(t)">Registrar reserva</button>
+            <button matButton="filled" class="button-dark" type="button" (click)="abrirRegistrarReserva(t)">Registrar operación</button>
             <button matButton="filled" class="button-danger" type="button" (click)="cancelar(t)">Cancelar</button>
-            }
-            @if (t.estadoTransaccion === EstadoTransaccion.RESERVA) {
-            <button matButton="outlined" class="button-outline" type="button" (click)="abrirAccion('senia', t)">Señar</button>
             }
             @if (t.estadoTransaccion === EstadoTransaccion.RESERVA || t.estadoTransaccion === EstadoTransaccion.SENIADO)
             {
-            <button matButton="filled" class="button-dark" type="button" (click)="abrirAccion('venta', t)">Vender</button>
+            <button matButton="filled" class="button-dark" type="button" (click)="abrirVenta(t)">Vender</button>
             <button matButton="filled" class="button-danger" type="button" (click)="cancelar(t)">Cancelar</button>
             }
           </td>
@@ -115,11 +128,17 @@
   <h2 mat-dialog-title>Nueva transacción</h2>
   <form class="dialog-form" (ngSubmit)="crear()">
     <mat-dialog-content>
-      <p class="dialog-description">Ingresá los datos de la reserva para iniciar la operación.</p>
+      <p class="dialog-description">Registrá una reserva, una seña o una venta. El precio se toma del vehículo.</p>
       <mat-form-field appearance="outline">
         <mat-label>Vehículo (ID)</mat-label>
-        <input matInput type="number" min="1" name="vehiculo" [(ngModel)]="formulario.vehiculo_id" required>
+        <input matInput type="number" min="1" name="vehiculo" [(ngModel)]="formulario.vehiculo_id"
+          (ngModelChange)="buscarVehiculo($event)" required>
       </mat-form-field>
+      @if (vehiculo(); as v) {
+      <p class="vehiculo-info">{{ v.modeloNombre }} · {{ v.patente }}</p>
+      @if (v.estado !== EstadoVehiculo.DISPONIBLE) { <p class="form-error vehiculo-aviso">El vehículo no está disponible.</p> }
+      }
+      @if (vehiculoNoEncontrado()) { <p class="form-error vehiculo-aviso">No se encontró un vehículo con ese ID.</p> }
       <mat-form-field appearance="outline">
         <mat-label>Cliente (ID)</mat-label>
         <input matInput type="number" min="1" name="cliente" [(ngModel)]="formulario.cliente_id" required>
@@ -128,14 +147,16 @@
         <mat-label>Vendedor (ID)</mat-label>
         <input matInput type="number" min="1" name="vendedor" [(ngModel)]="formulario.vendedor_id" required>
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Precio acordado</mat-label>
-        <input matInput type="number" min="1" name="precio" [(ngModel)]="formulario.precio_final" required>
-      </mat-form-field>
+      @if (vehiculo(); as v) {
+      @if (v.estado === EstadoVehiculo.DISPONIBLE && configuracion()) {
+      <app-campos-operacion [precio]="v.precioVenta" [configuracion]="configuracion()!"
+        [(tipo)]="formulario.estadoTransaccion" [(montoReserva)]="formulario.monto_entregado" />
+      }
+      }
       <mat-form-field appearance="outline">
         <mat-label>Método de pago</mat-label>
         <mat-select name="metodoPago" [(ngModel)]="formulario.metodoPago">
-          @for (m of metodosPago(); track m) { <mat-option [value]="m">{{ m }}</mat-option> }
+          @for (m of metodosPago(); track m) { <mat-option [value]="m">{{ etiquetaMetodoPago[m] }}</mat-option> }
         </mat-select>
       </mat-form-field>
       <mat-form-field appearance="outline">
@@ -146,7 +167,52 @@
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button type="button" matButton="outlined" class="button-outline" (click)="cerrarModal()">Volver</button>
-      <button matButton="filled" class="button-dark" type="submit">Crear reserva</button>
+      <button matButton="filled" class="button-dark" type="submit">Crear transacción</button>
+    </mat-dialog-actions>
+  </form>
+  } @else if (modal === 'vender') {
+  <h2 mat-dialog-title>Confirmar venta</h2>
+  <form class="dialog-form" (ngSubmit)="confirmarVenta()">
+    <mat-dialog-content>
+      <p class="dialog-description">Transacción #{{ transaccionSeleccionada?.id }} · {{ transaccionSeleccionada?.patente }}. Confirmá que se pagó el saldo pendiente.</p>
+      <dl class="resumen-venta">
+        <div>
+          <dt>Precio total</dt>
+          <dd>{{ formatearImporte(transaccionSeleccionada?.precio_final) }}</dd>
+        </div>
+        <div>
+          <dt>Ya entregado</dt>
+          <dd>{{ formatearImporte(transaccionSeleccionada?.monto_entregado) }}</dd>
+        </div>
+        <div class="resumen-venta__saldo">
+          <dt>Saldo a pagar</dt>
+          <dd>{{ formatearImporte(saldoDe(transaccionSeleccionada!)) }}</dd>
+        </div>
+      </dl>
+      @if (error()) { <p class="form-error">{{ error() }}</p> }
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button type="button" matButton="outlined" class="button-outline" (click)="cerrarModal()">Volver</button>
+      <button matButton="filled" class="button-dark" type="submit">Vender</button>
+    </mat-dialog-actions>
+  </form>
+  } @else if (modal === 'senia') {
+  <h2 mat-dialog-title>Porcentaje de seña</h2>
+  <form class="dialog-form" (ngSubmit)="guardarPorcentajeSenia()">
+    <mat-dialog-content>
+      <p class="dialog-description">Se aplica a las señas que se registren desde ahora. Las ya cargadas no cambian.</p>
+      <mat-form-field appearance="outline">
+        <mat-label>Seña sobre el precio del vehículo</mat-label>
+        <input matInput type="number" name="porcentaje" step="0.01" [min]="rangoSenia.minimo" [max]="rangoSenia.maximo"
+          [(ngModel)]="porcentajeSenia" required>
+        <span matTextSuffix>%</span>
+        <mat-hint>Entre {{ rangoSenia.minimo }}% y {{ rangoSenia.maximo }}%</mat-hint>
+      </mat-form-field>
+      @if (error()) { <p class="form-error">{{ error() }}</p> }
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button type="button" matButton="outlined" class="button-outline" (click)="cerrarModal()">Volver</button>
+      <button matButton="filled" class="button-dark" type="submit">Guardar</button>
     </mat-dialog-actions>
   </form>
   } @else if (modal === 'cancelar') {
