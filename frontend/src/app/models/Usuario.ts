@@ -1,10 +1,12 @@
 export interface Usuario {
   id: number;
-  nombre: string;
-  apellido: string;
+  // null mientras el cliente cargado por la agencia no se registra
+  nombre: string | null;
+  apellido: string | null;
   email: string;
   rolUsuario: ROL;
   activo: boolean;
+  registrado: boolean;
   alta: string;
 }
 

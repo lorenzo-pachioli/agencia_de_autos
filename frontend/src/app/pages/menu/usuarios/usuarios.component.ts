@@ -47,7 +47,7 @@ export class UsuariosComponent {
           lista?.map((u) => (u.id === actualizado.id ? actualizado : u)) ?? lista,
         );
         this.marcarGuardando(usuario.id, false);
-        this.snackBar.open(`Rol de ${usuario.nombre} actualizado`, 'Cerrar', {
+        this.snackBar.open(`Rol de ${usuario.nombre ?? usuario.email} actualizado`, 'Cerrar', {
           duration: 3000,
           panelClass: 'snack-success',
         });
@@ -81,7 +81,7 @@ export class UsuariosComponent {
           lista?.map((u) => (u.id === actualizado.id ? actualizado : u)) ?? lista,
         );
         this.marcarGuardando(usuario.id, false);
-        this.snackBar.open(`${usuario.nombre} ${nuevoEstado ? 'activado' : 'desactivado'}`, 'Cerrar', {
+        this.snackBar.open(`${usuario.nombre ?? usuario.email} ${nuevoEstado ? 'activado' : 'desactivado'}`, 'Cerrar', {
           duration: 3000,
           panelClass: 'snack-success',
         });

@@ -1,0 +1,16 @@
+<mat-form-field appearance="outline">
+  <mat-label>{{ etiqueta() }}</mat-label>
+  <input matInput [formControl]="control" [matAutocomplete]="lista" [errorStateMatcher]="estadoDeError" (focus)="alEnfocar()">
+  <mat-error>{{ error() }}</mat-error>
+</mat-form-field>
+
+<mat-autocomplete #lista="matAutocomplete" [displayWith]="mostrar">
+  @for (opcion of opciones(); track $index) {
+  <mat-option [value]="opcion">{{ describir()(opcion) }}</mat-option>
+  }
+  @if (estado() === 'fallo') {
+  <mat-option disabled>No se pudo buscar. Intentá de nuevo.</mat-option>
+  } @else if (!opciones().length) {
+  <mat-option disabled>{{ estado() === 'buscando' ? 'Buscando…' : 'No hay resultados.' }}</mat-option>
+  }
+</mat-autocomplete>

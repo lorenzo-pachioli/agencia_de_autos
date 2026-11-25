@@ -1,19 +1,23 @@
 <h2 mat-dialog-title>Registrar operación</h2>
-<form class="dialog-form" (ngSubmit)="confirmar()">
+<form class="dialog-form" (ngSubmit)="confirmar()" novalidate>
   <mat-dialog-content>
     <p class="dialog-description">Solicitud #{{ data.transaccion.id }} · {{ data.transaccion.patente }}. Elegí si es una reserva, una seña o una venta.</p>
     <app-campos-operacion [precio]="data.transaccion.precio_venta" [configuracion]="data.configuracion" [(tipo)]="tipo"
-      [(montoReserva)]="montoReserva" />
+      [(montoReserva)]="montoReserva" [exigirMonto]="intentoEnviar()" />
     <mat-form-field appearance="outline">
       <mat-label>Método de pago</mat-label>
       <mat-select name="metodoPago" [(ngModel)]="metodoPago" required>
         @for (m of metodosPago; track m) { <mat-option [value]="m">{{ etiquetaMetodoPago[m] }}</mat-option> }
       </mat-select>
     </mat-form-field>
-    @if (error()) { <p class="form-error">{{ error() }}</p> }
   </mat-dialog-content>
+
+  @if (envio.error()) { <p class="form-error modal-error" role="alert">{{ envio.error() }}</p> }
+
   <mat-dialog-actions align="end">
-    <button type="button" matButton="outlined" class="button-outline" (click)="cerrar()">Volver</button>
-    <button matButton="filled" class="button-dark" type="submit">Registrar {{ etiquetaTipo[tipo()].toLowerCase() }}</button>
+    <button type="button" matButton="outlined" class="button-outline" [disabled]="envio.enviando()" (click)="cerrar()">Volver</button>
+    <button matButton="filled" class="button-dark" type="submit" [disabled]="envio.enviando()">
+      {{ envio.enviando() ? 'Guardando…' : 'Registrar ' + etiquetaTipo[tipo()].toLowerCase() }}
+    </button>
   </mat-dialog-actions>
 </form>

@@ -1,5 +1,7 @@
 package utn.programacion3.agencia_de_autos.service;
 
+import org.springframework.data.domain.PageRequest;
+import java.util.Locale;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +27,8 @@ import java.util.stream.Collectors;
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
+    private static final int MAXIMO_RESULTADOS_BUSQUEDA = 20;
+
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
     private final PasswordEncoder passwordEncoder;
@@ -41,14 +45,22 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     public UsuarioResponseDTO registrarUsuario(UsuarioRequestDTO requestDTO) {
 
-        if (usuarioRepository.findByEmail(requestDTO.getEmail()).isPresent()) {
+        Usuario usuario = usuarioRepository.findFirstByEmailIgnoreCase(requestDTO.getEmail()).orElse(null);
+
+        if (usuario == null) {
+            usuario = usuarioMapper.toEntity(requestDTO);
+            usuario.setActivo(true);
+            usuario.setRolUsuario(Rol.USUARIO);
+        } else if (!usuario.isRegistrado() && usuario.getRolUsuario() == Rol.USUARIO) {
+            // Cliente cargado por la agencia: completa su cuenta y conserva sus trámites.
+            // Solo se permite con rol USUARIO, para no entregar un rol de la agencia.
+            usuario.setNombre(requestDTO.getNombre());
+            usuario.setApellido(requestDTO.getApellido());
+            usuario.setEmail(requestDTO.getEmail());
+        } else {
             throw new EmailAlreadyExistsException("El email " + requestDTO.getEmail() + " ya se encuentra registrado.");
         }
-
-        Usuario usuario = usuarioMapper.toEntity(requestDTO);
         usuario.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
-        usuario.setActivo(true);
-        usuario.setRolUsuario(Rol.USUARIO);
 
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
 
@@ -69,6 +81,33 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.findByRolUsuario(Rol.VENDEDOR).stream()
                 .map(usuarioMapper::toResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UsuarioResponseDTO> buscarClientes(String texto) {
+        return usuarioRepository.buscarActivosPorRol(
+                        Rol.USUARIO,
+                        texto.trim().toLowerCase(Locale.ROOT),
+                        PageRequest.of(0, MAXIMO_RESULTADOS_BUSQUEDA))
+                .stream()
+                .map(usuarioMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public Usuario obtenerOCrearCliente(String email) {
+        String emailLimpio = email.trim().toLowerCase(Locale.ROOT);
+
+        return usuarioRepository.findFirstByEmailIgnoreCase(emailLimpio)
+                .orElseGet(() -> {
+                    Usuario cliente = new Usuario();
+                    cliente.setEmail(emailLimpio);
+                    cliente.setRolUsuario(Rol.USUARIO);
+                    cliente.setActivo(true);
+                    return usuarioRepository.save(cliente);
+                });
     }
 
     @Override
@@ -109,7 +148,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         this.esPropioOAdmin(usuarioExistente);
 
         // Validar si intenta cambiar el email por uno que ya pertenece a OTRO usuario
-        usuarioRepository.findByEmail(requestDTO.getEmail())
+        usuarioRepository.findFirstByEmailIgnoreCase(requestDTO.getEmail())
                 .ifPresent(u -> {
                     if (!u.getId().equals(id)) {
                         throw new EmailAlreadyExistsException("El email ya esta en uso por otro usuario.");
@@ -137,7 +176,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuarioActual = obtenerUsuarioAutenticado();
 
         // Validar si intenta cambiar el email por uno que ya pertenece a OTRO usuario
-        usuarioRepository.findByEmail(requestDTO.getEmail())
+        usuarioRepository.findFirstByEmailIgnoreCase(requestDTO.getEmail())
                 .ifPresent(u -> {
                     if (!u.getId().equals(usuarioActual.getId())) {
                         throw new EmailAlreadyExistsException("El email ya esta en uso por otro usuario.");
@@ -203,6 +242,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con el ID: " + id));
 
+        if (!usuario.isRegistrado()) {
+            throw new NegocioException("No se puede cambiar el rol de un cliente que todavía no se registró.");
+        }
+
         usuario.setRolUsuario(nuevoRol);
         Usuario guardado = usuarioRepository.save(usuario);
 
@@ -213,7 +256,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     public UsuarioResponseDTO registrarVendedor(UsuarioRequestDTO dto) {
 
-        if (usuarioRepository.findByEmail(dto.getEmail().trim()).isPresent()) {
+        if (usuarioRepository.findFirstByEmailIgnoreCase(dto.getEmail().trim()).isPresent()) {
             throw new EmailAlreadyExistsException("El email ya se encuentra registrado en el sistema.");
         }
 

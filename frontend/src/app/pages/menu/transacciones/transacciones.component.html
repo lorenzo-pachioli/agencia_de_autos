@@ -124,53 +124,7 @@
 </main>
 
 <ng-template #dialogo>
-  @if (modal === 'crear') {
-  <h2 mat-dialog-title>Nueva transacción</h2>
-  <form class="dialog-form" (ngSubmit)="crear()">
-    <mat-dialog-content>
-      <p class="dialog-description">Registrá una reserva, una seña o una venta. El precio se toma del vehículo.</p>
-      <mat-form-field appearance="outline">
-        <mat-label>Vehículo (ID)</mat-label>
-        <input matInput type="number" min="1" name="vehiculo" [(ngModel)]="formulario.vehiculo_id"
-          (ngModelChange)="buscarVehiculo($event)" required>
-      </mat-form-field>
-      @if (vehiculo(); as v) {
-      <p class="vehiculo-info">{{ v.modeloNombre }} · {{ v.patente }}</p>
-      @if (v.estado !== EstadoVehiculo.DISPONIBLE) { <p class="form-error vehiculo-aviso">El vehículo no está disponible.</p> }
-      }
-      @if (vehiculoNoEncontrado()) { <p class="form-error vehiculo-aviso">No se encontró un vehículo con ese ID.</p> }
-      <mat-form-field appearance="outline">
-        <mat-label>Cliente (ID)</mat-label>
-        <input matInput type="number" min="1" name="cliente" [(ngModel)]="formulario.cliente_id" required>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Vendedor (ID)</mat-label>
-        <input matInput type="number" min="1" name="vendedor" [(ngModel)]="formulario.vendedor_id" required>
-      </mat-form-field>
-      @if (vehiculo(); as v) {
-      @if (v.estado === EstadoVehiculo.DISPONIBLE && configuracion()) {
-      <app-campos-operacion [precio]="v.precioVenta" [configuracion]="configuracion()!"
-        [(tipo)]="formulario.estadoTransaccion" [(montoReserva)]="formulario.monto_entregado" />
-      }
-      }
-      <mat-form-field appearance="outline">
-        <mat-label>Método de pago</mat-label>
-        <mat-select name="metodoPago" [(ngModel)]="formulario.metodoPago">
-          @for (m of metodosPago(); track m) { <mat-option [value]="m">{{ etiquetaMetodoPago[m] }}</mat-option> }
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Observaciones</mat-label>
-        <textarea matInput name="observaciones" [(ngModel)]="formulario.observaciones" rows="3"></textarea>
-      </mat-form-field>
-      @if (error()) { <p class="form-error">{{ error() }}</p> }
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button type="button" matButton="outlined" class="button-outline" (click)="cerrarModal()">Volver</button>
-      <button matButton="filled" class="button-dark" type="submit">Crear transacción</button>
-    </mat-dialog-actions>
-  </form>
-  } @else if (modal === 'vender') {
+  @if (modal === 'vender') {
   <h2 mat-dialog-title>Confirmar venta</h2>
   <form class="dialog-form" (ngSubmit)="confirmarVenta()">
     <mat-dialog-content>
@@ -189,11 +143,11 @@
           <dd>{{ formatearImporte(saldoDe(transaccionSeleccionada!)) }}</dd>
         </div>
       </dl>
-      @if (error()) { <p class="form-error">{{ error() }}</p> }
     </mat-dialog-content>
+    @if (error()) { <p class="form-error modal-error" role="alert">{{ error() }}</p> }
     <mat-dialog-actions align="end">
-      <button type="button" matButton="outlined" class="button-outline" (click)="cerrarModal()">Volver</button>
-      <button matButton="filled" class="button-dark" type="submit">Vender</button>
+      <button type="button" matButton="outlined" class="button-outline" [disabled]="enviando()" (click)="cerrarModal()">Volver</button>
+      <button matButton="filled" class="button-dark" type="submit" [disabled]="enviando()">Vender</button>
     </mat-dialog-actions>
   </form>
   } @else if (modal === 'senia') {
@@ -208,11 +162,11 @@
         <span matTextSuffix>%</span>
         <mat-hint>Entre {{ rangoSenia.minimo }}% y {{ rangoSenia.maximo }}%</mat-hint>
       </mat-form-field>
-      @if (error()) { <p class="form-error">{{ error() }}</p> }
     </mat-dialog-content>
+    @if (error()) { <p class="form-error modal-error" role="alert">{{ error() }}</p> }
     <mat-dialog-actions align="end">
-      <button type="button" matButton="outlined" class="button-outline" (click)="cerrarModal()">Volver</button>
-      <button matButton="filled" class="button-dark" type="submit">Guardar</button>
+      <button type="button" matButton="outlined" class="button-outline" [disabled]="enviando()" (click)="cerrarModal()">Volver</button>
+      <button matButton="filled" class="button-dark" type="submit" [disabled]="enviando()">Guardar</button>
     </mat-dialog-actions>
   </form>
   } @else if (modal === 'cancelar') {
@@ -220,11 +174,11 @@
   <form class="dialog-form" (ngSubmit)="confirmarCancelacion()">
     <mat-dialog-content>
       <p class="dialog-description">¿Seguro que querés cancelar la transacción #{{ transaccionSeleccionada?.id }} · {{ transaccionSeleccionada?.patente }}? Esta acción no se puede deshacer.</p>
-      @if (error()) { <p class="form-error">{{ error() }}</p> }
     </mat-dialog-content>
+    @if (error()) { <p class="form-error modal-error" role="alert">{{ error() }}</p> }
     <mat-dialog-actions align="end">
-      <button type="button" matButton="outlined" class="button-outline" (click)="cerrarModal()">Volver</button>
-      <button matButton="filled" class="button-danger" type="submit">Cancelar transacción</button>
+      <button type="button" matButton="outlined" class="button-outline" [disabled]="enviando()" (click)="cerrarModal()">Volver</button>
+      <button matButton="filled" class="button-danger" type="submit" [disabled]="enviando()">Cancelar transacción</button>
     </mat-dialog-actions>
   </form>
   }

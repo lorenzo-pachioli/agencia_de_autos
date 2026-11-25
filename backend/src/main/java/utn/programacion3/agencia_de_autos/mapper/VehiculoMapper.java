@@ -15,6 +15,7 @@ import utn.programacion3.agencia_de_autos.model.Vehiculo;
 public interface VehiculoMapper {
 
     @Mapping(target = "modeloNombre", source = "modelo.nombre")
+    @Mapping(target = "marcaNombre", source = "modelo.marca.nombre")
     @Mapping(target = "imagenPrincipalUrl", ignore = true)
     @Mapping(target = "imagenes", ignore = true)
     @Mapping(target = "tieneTransaccionActiva", ignore = true)

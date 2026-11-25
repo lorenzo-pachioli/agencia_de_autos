@@ -28,6 +28,8 @@ public class UsuarioResponseDTO {
     @Schema(description = "Estado de la cuenta (false indica que el usuario fue dado de baja de forma lógica)", example = "true")
     private boolean activo;
 
+    private boolean registrado;
+
     @Schema(description = "Fecha en la que el usuario se registro en el sistema", example = "2026-05-22")
     private LocalDate alta;
 

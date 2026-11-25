@@ -1,28 +1,24 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, TemplateRef, inject, signal, viewChild } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { Observable, Subject, catchError, debounceTime, of, switchMap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { TransaccionService } from '../../../services/transaccion.service';
-import { EstadoVehiculo, Pagina, Vehiculo } from '../../../models/Vehiculo';
+import { Pagina } from '../../../models/Vehiculo';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import {
   AsignarVisita,
   CrearTransaccion,
   ETIQUETA_ESTADO,
-  ETIQUETA_METODO_PAGO,
   ETIQUETA_SOLICITUD,
   EstadoTransaccion,
   FiltrosTransaccion,
-  MetodoPago,
   SIN_OBSERVACIONES,
   TipoOperacion,
   Transaccion,
@@ -30,35 +26,37 @@ import {
 import { MatButton } from '@angular/material/button';
 import { AuthService } from '../../../services/auth.service';
 import { UsuarioService } from '../../../services/usuario.service';
-import { VehiculoService } from '../../../services/vehiculo-service.service';
 import { ConfiguracionService } from '../../../services/configuracion.service';
 import { Configuracion, RANGO_PORCENTAJE_SENIA } from '../../../models/Configuracion';
-import { datosOperacion, errorMontoReserva, formatearMonto } from '../../../models/Operacion';
-import type { ApiError } from '../../../models/ApiError';
+import { formatearMonto } from '../../../models/Operacion';
+import { Usuario } from '../../../models/Usuario';
+import { mensajeDeError } from '../../../utils/modales';
 import {
   RegistrarReservaDialogComponent,
   RegistrarReservaData,
   DatosReserva,
 } from '../../../components/registrar-reserva-dialog/registrar-reserva-dialog.component';
-import { AgendarVisitaDialogComponent } from '../../../components/agendar-visita-dialog/agendar-visita-dialog.component';
-import { CamposOperacionComponent } from '../../../components/campos-operacion/campos-operacion.component';
+import {
+  AgendarVisitaData,
+  AgendarVisitaDialogComponent,
+} from '../../../components/agendar-visita-dialog/agendar-visita-dialog.component';
+import {
+  NuevaTransaccionData,
+  NuevaTransaccionDialogComponent,
+} from '../../../components/nueva-transaccion-dialog/nueva-transaccion-dialog.component';
 
-type Modal = 'crear' | 'cancelar' | 'vender' | 'senia';
+type Modal = 'cancelar' | 'vender' | 'senia';
 
 const DURACION_MENSAJE_MS = 3500;
-const ESPERA_BUSQUEDA_VEHICULO_MS = 300;
 
 const TAMANIO_DIALOGO = { width: '480px', maxWidth: '92vw' };
 
 const ASUNTO_CONTACTO = 'Visita a la agencia por el vehículo';
 
 const MSG = {
-  camposObligatorios: 'Completá vehículo, cliente y vendedor.',
-  vehiculoInvalido: 'Ingresá el ID de un vehículo disponible.',
   porcentajeInvalido: `Ingresá un porcentaje entre ${RANGO_PORCENTAJE_SENIA.minimo} y ${RANGO_PORCENTAJE_SENIA.maximo}.`,
   errorCarga: 'No se pudieron cargar las transacciones.',
   errorConfiguracion: 'No se pudo consultar el porcentaje de seña. Intentá nuevamente.',
-  errorOperacion: 'No se pudo completar la operación. Revisá los datos e intentá nuevamente.',
   venta: 'Venta registrada.',
   asignada: 'Solicitud asignada a tu nombre.',
   visitaAgendada: 'Visita agendada.',
@@ -82,10 +80,8 @@ const MENSAJE_REGISTRO: Record<TipoOperacion, string> = {
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
     MatDatepickerModule,
     MatButton,
-    CamposOperacionComponent,
   ],
   providers: [{ provide: MAT_DATE_LOCALE, useValue: 'es-AR' }, provideNativeDateAdapter()],
   templateUrl: './transacciones.component.html',
@@ -96,20 +92,16 @@ export class TransaccionesComponent {
   private readonly dialog = inject(MatDialog);
   private readonly auth = inject(AuthService);
   private readonly usuarioService = inject(UsuarioService);
-  private readonly vehiculoService = inject(VehiculoService);
   private readonly configuracionService = inject(ConfiguracionService);
   private readonly plantillaDialogo = viewChild.required<TemplateRef<unknown>>('dialogo');
-  private readonly vehiculoBuscado = new Subject<number>();
   private dialogRef: MatDialogRef<unknown> | null = null;
+  private usuarioVendedor: Usuario | null = null;
 
   protected readonly EstadoTransaccion = EstadoTransaccion;
-  protected readonly EstadoVehiculo = EstadoVehiculo;
   protected readonly etiquetaEstado = ETIQUETA_ESTADO;
-  protected readonly etiquetaMetodoPago = ETIQUETA_METODO_PAGO;
   protected readonly rangoSenia = RANGO_PORCENTAJE_SENIA;
   protected readonly esAdmin = this.auth.isAdmin;
   protected readonly estados = signal<EstadoTransaccion[]>(Object.values(EstadoTransaccion));
-  protected readonly metodosPago = signal<MetodoPago[]>(Object.values(MetodoPago));
   protected readonly columnas = [
     'id', 'vehiculo', 'cliente', 'vendedor', 'estado', 'precio', 'entregado', 'saldo', 'acciones',
   ];
@@ -121,8 +113,7 @@ export class TransaccionesComponent {
   readonly estadoActivo = signal<EstadoTransaccion | null>(null);
   readonly vendedorId = signal<number | null>(null);
   readonly configuracion = signal<Configuracion | null>(null);
-  readonly vehiculo = signal<Vehiculo | null>(null);
-  readonly vehiculoNoEncontrado = signal(false);
+  readonly enviando = signal(false);
 
   readonly pageSize = 10;
   pageIndex = 0;
@@ -130,18 +121,19 @@ export class TransaccionesComponent {
   fechaHasta: Date | null = null;
   modal: Modal | null = null;
   transaccionSeleccionada: Transaccion | null = null;
-  formulario: CrearTransaccion = this.formularioVacio();
   porcentajeSenia: number | null = null;
 
   constructor() {
     this.cargar();
     if (this.auth.isVendedor()) {
-      this.usuarioService.getMe().subscribe(usuario => this.vendedorId.set(usuario.id));
+      this.usuarioService.getMe().subscribe(usuario => {
+        this.usuarioVendedor = usuario;
+        this.vendedorId.set(usuario.id);
+      });
     }
     if (this.auth.isAdmin()) {
       this.conConfiguracion(() => {});
     }
-    this.escucharBusquedaVehiculo();
   }
 
   cargar(): void {
@@ -187,17 +179,23 @@ export class TransaccionesComponent {
   }
 
   abrirCrear(): void {
-    this.conConfiguracion(() => {
-      this.formulario = this.formularioVacio();
-      this.buscarVehiculo(null);
-      this.abrirModal('crear');
+    this.conConfiguracion(configuracion => {
+      this.dialog
+        .open<NuevaTransaccionDialogComponent, NuevaTransaccionData, CrearTransaccion>(NuevaTransaccionDialogComponent, {
+          ...TAMANIO_DIALOGO,
+          // Sin enfocar el primer campo, para que la lista de vehículos no se abra sola
+          autoFocus: 'dialog',
+          data: {
+            configuracion,
+            vendedor: this.usuarioVendedor,
+            guardar: transaccion => this.transaccionService.crear(transaccion),
+          },
+        })
+        .afterClosed()
+        .subscribe(creada => {
+          if (creada) this.confirmarExito(MENSAJE_REGISTRO[creada.estadoTransaccion]);
+        });
     });
-  }
-
-  buscarVehiculo(id: number | null): void {
-    this.vehiculo.set(null);
-    this.vehiculoNoEncontrado.set(false);
-    this.vehiculoBuscado.next(id ?? 0);
   }
 
   abrirPorcentajeSenia(): void {
@@ -238,14 +236,13 @@ export class TransaccionesComponent {
   abrirAgendarVisita(transaccion: Transaccion): void {
     this.error.set('');
     this.dialog
-      .open<AgendarVisitaDialogComponent, Transaccion, AsignarVisita>(AgendarVisitaDialogComponent, {
+      .open<AgendarVisitaDialogComponent, AgendarVisitaData, AsignarVisita>(AgendarVisitaDialogComponent, {
         ...TAMANIO_DIALOGO,
-        data: transaccion,
+        data: { transaccion, guardar: datos => this.transaccionService.asignar(transaccion.id, datos) },
       })
       .afterClosed()
       .subscribe(datos => {
-        if (!datos) return;
-        this.ejecutar(this.transaccionService.asignar(transaccion.id, datos), MSG.visitaAgendada);
+        if (datos) this.confirmarExito(MSG.visitaAgendada);
       });
   }
 
@@ -257,48 +254,23 @@ export class TransaccionesComponent {
       this.dialog
         .open<RegistrarReservaDialogComponent, RegistrarReservaData, DatosReserva>(RegistrarReservaDialogComponent, {
           ...TAMANIO_DIALOGO,
-          data: { transaccion, configuracion },
+          data: {
+            transaccion,
+            configuracion,
+            guardar: datos => this.transaccionService.actualizar(transaccion.id, {
+              ...datos,
+              observaciones: transaccion.observaciones || SIN_OBSERVACIONES,
+              vehiculo_id: transaccion.vehiculo_id,
+              cliente_id: transaccion.cliente_id,
+              vendedor_id: vendedorId,
+            }),
+          },
         })
         .afterClosed()
         .subscribe(datos => {
-          if (!datos) return;
-          const solicitud = this.transaccionService.actualizar(transaccion.id, {
-            ...datos,
-            observaciones: transaccion.observaciones || SIN_OBSERVACIONES,
-            vehiculo_id: transaccion.vehiculo_id,
-            cliente_id: transaccion.cliente_id,
-            vendedor_id: vendedorId,
-          });
-          this.ejecutar(solicitud, MENSAJE_REGISTRO[datos.estadoTransaccion]);
+          if (datos) this.confirmarExito(MENSAJE_REGISTRO[datos.estadoTransaccion]);
         });
     });
-  }
-
-  crear(): void {
-    const { vehiculo_id, cliente_id, vendedor_id, estadoTransaccion, monto_entregado } = this.formulario;
-    if (!vehiculo_id || !cliente_id || !vendedor_id) {
-      this.error.set(MSG.camposObligatorios);
-      return;
-    }
-
-    const vehiculo = this.vehiculo();
-    const configuracion = this.configuracion();
-    if (!configuracion || vehiculo?.id !== vehiculo_id || vehiculo.estado !== EstadoVehiculo.DISPONIBLE) {
-      this.error.set(MSG.vehiculoInvalido);
-      return;
-    }
-
-    const errorMonto = errorMontoReserva(estadoTransaccion, vehiculo.precioVenta, configuracion, monto_entregado);
-    if (errorMonto) {
-      this.error.set(errorMonto);
-      return;
-    }
-
-    const solicitud = this.transaccionService.crear({
-      ...this.formulario,
-      ...datosOperacion(estadoTransaccion, monto_entregado),
-    });
-    this.ejecutar(solicitud, MENSAJE_REGISTRO[estadoTransaccion]);
   }
 
   cancelar(transaccion: Transaccion): void {
@@ -340,6 +312,7 @@ export class TransaccionesComponent {
 
   /** Consulta el porcentaje vigente antes de seguir, por si el administrador lo cambió. */
   private conConfiguracion(accion: (configuracion: Configuracion) => void): void {
+    this.error.set('');
     this.configuracionService.obtener().subscribe({
       next: configuracion => {
         this.configuracion.set(configuracion);
@@ -349,64 +322,39 @@ export class TransaccionesComponent {
     });
   }
 
-  private escucharBusquedaVehiculo(): void {
-    this.vehiculoBuscado
-      .pipe(
-        debounceTime(ESPERA_BUSQUEDA_VEHICULO_MS),
-        switchMap(id => {
-          if (id <= 0) return of(null);
-          return this.vehiculoService.obtenerPorId(String(id)).pipe(
-            catchError(() => {
-              this.vehiculoNoEncontrado.set(true);
-              return of(null);
-            }),
-          );
-        }),
-        takeUntilDestroyed(),
-      )
-      .subscribe(vehiculo => this.vehiculo.set(vehiculo));
-  }
-
   private recargarDesdeInicio(): void {
     this.pageIndex = 0;
     this.cargar();
   }
 
+  /** Envía una acción de la tabla o de un modal propio; el error se muestra donde se inició. */
   private ejecutar<T>(solicitud: Observable<T>, exito: string, alCompletar?: (resultado: T) => void): void {
+    if (this.enviando()) return;
     this.error.set('');
+    this.marcarEnviando(true);
     solicitud.subscribe({
       next: resultado => {
+        this.marcarEnviando(false);
         alCompletar?.(resultado);
         this.cerrarModal();
-        this.mostrarMensaje(exito);
-        this.cargar();
+        this.confirmarExito(exito);
       },
-      error: (respuesta: HttpErrorResponse) => this.error.set(this.mensajeDeError(respuesta)),
+      error: (respuesta: HttpErrorResponse) => {
+        this.marcarEnviando(false);
+        this.error.set(mensajeDeError(respuesta));
+      },
     });
   }
 
-  private mensajeDeError(respuesta: HttpErrorResponse): string {
-    const detalle = respuesta.error as Partial<ApiError> | null;
-    const validaciones = Object.values(detalle?.validationErrors ?? {});
-    if (validaciones.length) return validaciones.join(' ');
-    return detalle?.message || MSG.errorOperacion;
+  private marcarEnviando(enviando: boolean): void {
+    this.enviando.set(enviando);
+    if (this.dialogRef) this.dialogRef.disableClose = enviando;
   }
 
-  private mostrarMensaje(texto: string): void {
+  private confirmarExito(texto: string): void {
     this.mensaje.set(texto);
     setTimeout(() => this.mensaje.set(''), DURACION_MENSAJE_MS);
-  }
-
-  private formularioVacio(): CrearTransaccion {
-    return {
-      estadoTransaccion: EstadoTransaccion.RESERVA,
-      monto_entregado: null,
-      metodoPago: MetodoPago.EFECTIVO,
-      vehiculo_id: 0,
-      cliente_id: 0,
-      vendedor_id: 0,
-      observaciones: '',
-    };
+    this.cargar();
   }
 
   protected etiquetaDe(transaccion: Transaccion): string {

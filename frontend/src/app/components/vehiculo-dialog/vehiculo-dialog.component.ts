@@ -16,11 +16,14 @@ import {
   VehiculoGestion,
   VehiculoRequest,
 } from '../../models/Vehiculo';
+import { Observable } from 'rxjs';
+import { ERROR_CAMPOS, EnvioDeModal } from '../../utils/modales';
 
 export interface VehiculoDialogData {
   vehiculo: VehiculoGestion | null;
   marcas: Marca[];
   modelos: Modelo[];
+  guardar: (vehiculo: VehiculoRequest) => Observable<unknown>;
 }
 
 // Patente argentina: vieja (ABC123) o Mercosur (AB123CD)
@@ -47,6 +50,7 @@ export class VehiculoDialogComponent {
   private readonly dialogRef = inject<MatDialogRef<VehiculoDialogComponent, VehiculoRequest>>(MatDialogRef);
   private readonly fb = inject(NonNullableFormBuilder);
 
+  protected readonly envio = new EnvioDeModal<VehiculoRequest>(this.dialogRef);
   private readonly vehiculo = this.data.vehiculo;
 
   protected readonly esEdicion = this.vehiculo !== null;
@@ -94,11 +98,12 @@ export class VehiculoDialogComponent {
   protected confirmar(): void {
     if (this.formulario.invalid) {
       this.formulario.markAllAsTouched();
+      this.envio.error.set(ERROR_CAMPOS);
       return;
     }
 
     const valores = this.formulario.getRawValue();
-    this.dialogRef.close({
+    const vehiculo: VehiculoRequest = {
       patente: valores.patente.trim().toUpperCase(),
       anio: valores.anio!,
       precioAdquisicion: valores.precioAdquisicion!,
@@ -110,7 +115,8 @@ export class VehiculoDialogComponent {
       estado: this.vehiculo?.estado ?? EstadoVehiculo.DISPONIBLE,
       tipoTransmision: valores.tipoTransmision!,
       tipoCombustible: valores.tipoCombustible!,
-    });
+    };
+    this.envio.enviar(this.data.guardar(vehiculo), vehiculo);
   }
 
   protected cerrar(): void {

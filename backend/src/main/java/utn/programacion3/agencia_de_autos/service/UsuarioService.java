@@ -18,6 +18,10 @@ public interface UsuarioService {
 
     List<UsuarioResponseDTO> listarVendedores();
 
+    List<UsuarioResponseDTO> buscarClientes(String texto);
+
+    Usuario obtenerOCrearCliente(String email);
+
     UsuarioResponseDTO buscarPorId(Long id);
 
     Usuario buscarEntityPorId(Long id);

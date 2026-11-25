@@ -134,6 +134,11 @@ public class VehiculoServiceImpl implements VehiculoService {
             throw new NegocioException("No se puede modificar el precio de adquisición de un vehículo VENDIDO.");
         }
 
+        if (!vehiculo.getPatente().equals(request.getPatente())
+                && vehiculoRepository.existsByPatente(request.getPatente())) {
+            throw new PatenteDuplicadaException();
+        }
+
         Modelo modelo = modeloRepository.findById(request.getModeloId())
                 .orElseThrow(ModeloNoEncontradoException::new);
 

@@ -75,7 +75,9 @@ export interface CrearTransaccion extends DatosOperacion {
     observaciones?: string;
     metodoPago: MetodoPago;
     vehiculo_id: number;
-    cliente_id: number;
+    /** Cliente ya cargado. Si no existe se envía cliente_email. */
+    cliente_id?: number;
+    cliente_email?: string;
     vendedor_id: number;
 }
 
@@ -89,7 +91,7 @@ export interface AsignarVisita {
     fechaVisita: string | null;
 }
 
-export type ActualizarTransaccion = CrearTransaccion;
+export type ActualizarTransaccion = CrearTransaccion & { cliente_id: number };
 
 export interface BalanceTransacciones {
     precios_final_total: number;

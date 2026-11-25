@@ -87,8 +87,10 @@
     </mat-form-field>
   </mat-dialog-content>
 
+  @if (envio.error()) { <p class="form-error modal-error" role="alert">{{ envio.error() }}</p> }
+
   <mat-dialog-actions align="end">
-    <button type="button" matButton="outlined" class="button-outline" (click)="cerrar()">Volver</button>
-    <button matButton="filled" class="button-dark" type="submit">{{ esEdicion ? 'Guardar' : 'Cargar vehículo' }}</button>
+    <button type="button" matButton="outlined" class="button-outline" [disabled]="envio.enviando()" (click)="cerrar()">Volver</button>
+    <button matButton="filled" class="button-dark" type="submit" [disabled]="envio.enviando()">{{ esEdicion ? 'Guardar' : 'Cargar vehículo' }}</button>
   </mat-dialog-actions>
 </form>

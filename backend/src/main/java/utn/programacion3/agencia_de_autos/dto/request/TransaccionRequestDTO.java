@@ -1,5 +1,6 @@
 package utn.programacion3.agencia_de_autos.dto.request;
 
+import jakarta.validation.constraints.Email;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -36,9 +37,13 @@ public class TransaccionRequestDTO {
     @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El vehiculo_id no puede estar vacio")
     private Long vehiculo_id;
 
-    @Schema(description = "Identificador único del cliente que realiza la transacción", example = "12", minimum = "1")
-    @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El cliente_id no puede estar vacio")
+    @Schema(description = "Identificador del cliente. Al crear se puede omitir y enviar cliente_email", example = "12", minimum = "1")
+    @NotNull(groups = {Groups.Actualizar.class}, message = "El cliente_id no puede estar vacio")
     private Long cliente_id;
+
+    @Schema(description = "Solo al crear: email de un cliente que todavía no está cargado", example = "cliente@correo.com")
+    @Email(groups = {Groups.Crear.class}, message = "El email del cliente no es válido")
+    private String cliente_email;
 
     @Schema(description = "Identificador único del vendedor que gestiona la transacción", example = "5", minimum = "1")
     @NotNull(groups = {Groups.Crear.class, Groups.Actualizar.class}, message = "El vendedor_id no puede estar vacio")

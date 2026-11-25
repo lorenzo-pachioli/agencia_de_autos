@@ -17,6 +17,10 @@ export class UsuarioService {
     return this.http.get<Usuario[]>(`${this.apiUrl}/vendedores`);
   }
 
+  buscarClientes(texto: string): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.apiUrl}/clientes`, { params: { texto } });
+  }
+
   getMe(): Observable<Usuario> {
     return this.http.get<Usuario>(`${this.apiUrl}/me`);
   }

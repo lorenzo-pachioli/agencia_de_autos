@@ -19,6 +19,7 @@ import java.util.List;
 @JsonPropertyOrder({
         "id",
         "patente",
+        "marcaNombre",
         "modeloNombre",
         "anio",
         "precioVenta",
@@ -41,6 +42,8 @@ public class VehiculoResponseDTO {
  private Long id;
 
  private String patente;
+
+ private String marcaNombre;
 
  private String modeloNombre;
 

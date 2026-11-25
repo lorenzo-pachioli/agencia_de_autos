@@ -2,12 +2,11 @@ import { Component, inject, signal } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
-import { Observable } from 'rxjs';
 import {
   ConfirmarDialogComponent,
   ConfirmarDialogData,
 } from '../../../components/confirmar-dialog/confirmar-dialog.component';
-import { MarcaDialogComponent } from '../../../components/marca-dialog/marca-dialog.component';
+import { MarcaDialogComponent, MarcaDialogData } from '../../../components/marca-dialog/marca-dialog.component';
 import { Marca, MarcaRequest } from '../../../models/Opciones';
 import { AuthService } from '../../../services/auth.service';
 import { MarcaService } from '../../../services/marca.service';
@@ -18,7 +17,6 @@ const TAMANIO_DIALOGO = { width: '480px', maxWidth: '92vw' };
 
 const MSG = {
   errorCarga: 'No se pudieron cargar las marcas.',
-  errorOperacion: 'No se pudo completar la operación. Revisá los datos e intentá nuevamente.',
   errorEliminar: 'No se pudo eliminar la marca. Verificá que no tenga modelos asociados.',
   creada: 'Marca creada.',
   actualizada: 'Marca actualizada.',
@@ -65,28 +63,26 @@ export class MarcasComponent {
   abrirCrear(): void {
     this.error.set('');
     this.dialog
-      .open<MarcaDialogComponent, Marca | null, MarcaRequest>(MarcaDialogComponent, {
+      .open<MarcaDialogComponent, MarcaDialogData, MarcaRequest>(MarcaDialogComponent, {
         ...TAMANIO_DIALOGO,
-        data: null,
+        data: { marca: null, guardar: datos => this.marcaService.crear(datos) },
       })
       .afterClosed()
       .subscribe(datos => {
-        if (!datos) return;
-        this.ejecutar(this.marcaService.crear(datos), MSG.creada);
+        if (datos) this.confirmarExito(MSG.creada);
       });
   }
 
   abrirEditar(marca: Marca): void {
     this.error.set('');
     this.dialog
-      .open<MarcaDialogComponent, Marca | null, MarcaRequest>(MarcaDialogComponent, {
+      .open<MarcaDialogComponent, MarcaDialogData, MarcaRequest>(MarcaDialogComponent, {
         ...TAMANIO_DIALOGO,
-        data: marca,
+        data: { marca, guardar: datos => this.marcaService.actualizar(marca.id, datos) },
       })
       .afterClosed()
       .subscribe(datos => {
-        if (!datos) return;
-        this.ejecutar(this.marcaService.actualizar(marca.id, datos), MSG.actualizada);
+        if (datos) this.confirmarExito(MSG.actualizada);
       });
   }
 
@@ -99,23 +95,19 @@ export class MarcasComponent {
           titulo: 'Eliminar marca',
           mensaje: `¿Seguro que querés eliminar la marca ${marca.nombre}? Esta acción no se puede deshacer.`,
           accion: 'Eliminar',
+          ejecutar: () => this.marcaService.eliminar(marca.id),
+          errorPorDefecto: MSG.errorEliminar,
         },
       })
       .afterClosed()
       .subscribe(confirmado => {
-        if (!confirmado) return;
-        this.ejecutar(this.marcaService.eliminar(marca.id), MSG.eliminada, MSG.errorEliminar);
+        if (confirmado) this.confirmarExito(MSG.eliminada);
       });
   }
 
-  private ejecutar(solicitud: Observable<unknown>, exito: string, fallo = MSG.errorOperacion): void {
-    solicitud.subscribe({
-      next: () => {
-        this.mostrarMensaje(exito);
-        this.cargar();
-      },
-      error: () => this.error.set(fallo),
-    });
+  private confirmarExito(texto: string): void {
+    this.mostrarMensaje(texto);
+    this.cargar();
   }
 
   private mostrarMensaje(texto: string): void {

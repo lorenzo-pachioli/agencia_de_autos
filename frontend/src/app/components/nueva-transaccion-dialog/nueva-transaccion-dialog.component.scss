@@ -1,0 +1,11 @@
+mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.accion-cliente {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-bottom: 12px;
+}

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
@@ -6,7 +6,14 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { Observable } from 'rxjs';
 import { AsignarVisita, Transaccion } from '../../models/Transacciones';
+import { EnvioDeModal } from '../../utils/modales';
+
+export interface AgendarVisitaData {
+  transaccion: Transaccion;
+  guardar: (datos: AsignarVisita) => Observable<unknown>;
+}
 
 const MSG = {
   fechaIncompleta: 'Elegí el día y la hora de la visita.',
@@ -20,18 +27,19 @@ const MSG = {
   templateUrl: './agendar-visita-dialog.component.html',
 })
 export class AgendarVisitaDialogComponent {
-  protected readonly transaccion = inject<Transaccion>(MAT_DIALOG_DATA);
+  private readonly data = inject<AgendarVisitaData>(MAT_DIALOG_DATA);
   private readonly dialogRef = inject<MatDialogRef<AgendarVisitaDialogComponent, AsignarVisita>>(MatDialogRef);
 
+  protected readonly envio = new EnvioDeModal<AsignarVisita>(this.dialogRef);
+  protected readonly transaccion = this.data.transaccion;
   protected readonly hoy = new Date();
   protected readonly esReprogramacion = this.transaccion.fecha_visita !== null;
-  protected readonly error = signal('');
   protected dia: Date | null = this.transaccion.fecha_visita ? new Date(this.transaccion.fecha_visita) : null;
   protected hora = this.transaccion.fecha_visita?.slice(11, 16) ?? '';
 
   protected confirmar(): void {
     if (!this.dia || !this.hora) {
-      this.error.set(MSG.fechaIncompleta);
+      this.envio.error.set(MSG.fechaIncompleta);
       return;
     }
 
@@ -40,10 +48,11 @@ export class AgendarVisitaDialogComponent {
     fecha.setHours(horas, minutos, 0, 0);
 
     if (fecha <= new Date()) {
-      this.error.set(MSG.fechaPasada);
+      this.envio.error.set(MSG.fechaPasada);
       return;
     }
-    this.dialogRef.close({ fechaVisita: this.formatearFechaHora(fecha) });
+    const datos: AsignarVisita = { fechaVisita: this.formatearFechaHora(fecha) };
+    this.envio.enviar(this.data.guardar(datos), datos);
   }
 
   protected cerrar(): void {

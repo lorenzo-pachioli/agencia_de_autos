@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utn.programacion3.agencia_de_autos.dto.request.MarcaRequestDTO;
 import utn.programacion3.agencia_de_autos.dto.response.MarcaResponseDTO;
+import utn.programacion3.agencia_de_autos.exception.NegocioException;
 import utn.programacion3.agencia_de_autos.mapper.MarcaMapper;
 import utn.programacion3.agencia_de_autos.model.Marca;
 import utn.programacion3.agencia_de_autos.repository.MarcaRepository;
@@ -22,7 +23,7 @@ public class MarcaService {
     public MarcaResponseDTO crearMarca(MarcaRequestDTO request) {
 
         if (marcaRepository.existsByNombre(request.getNombre())) {
-            throw new RuntimeException("La marca ya existe");
+            throw new NegocioException("La marca ya existe");
         }
 
         Marca marca = marcaMapper.toEntity(request);

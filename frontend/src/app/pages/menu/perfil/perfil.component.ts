@@ -87,8 +87,8 @@ export class PerfilComponent {
       next: (usuario) => {
         this.usuario.set(usuario);
         this.form.patchValue({
-          nombre: usuario.nombre,
-          apellido: usuario.apellido,
+          nombre: usuario.nombre ?? '',
+          apellido: usuario.apellido ?? '',
           email: usuario.email,
         });
         this.cargandoPerfil.set(false);

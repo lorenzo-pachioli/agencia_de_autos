@@ -4,7 +4,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
-import { Observable } from 'rxjs';
 import {
   ConfirmarDialogComponent,
   ConfirmarDialogData,
@@ -24,7 +23,6 @@ const CANTIDAD_MAXIMA_VEHICULOS = 1000;
 const MSG = {
   errorCarga: 'No se pudieron cargar las imágenes.',
   errorCargaVehiculos: 'No se pudieron cargar los vehículos.',
-  errorOperacion: 'No se pudo completar la operación. Revisá los datos e intentá nuevamente.',
   errorEliminar: 'No se pudo eliminar la imagen.',
   creada: 'Imagen cargada.',
   actualizada: 'Imagen actualizada.',
@@ -89,12 +87,11 @@ export class ImagenesComponent {
     this.dialog
       .open<ImagenDialogComponent, ImagenDialogData, ImagenRequest>(ImagenDialogComponent, {
         ...TAMANIO_DIALOGO,
-        data: { imagen: null, vehiculoId },
+        data: { imagen: null, vehiculoId, guardar: datos => this.imagenService.crear(datos) },
       })
       .afterClosed()
       .subscribe(datos => {
-        if (!datos) return;
-        this.ejecutar(this.imagenService.crear(datos), MSG.creada);
+        if (datos) this.confirmarExito(MSG.creada);
       });
   }
 
@@ -106,12 +103,11 @@ export class ImagenesComponent {
     this.dialog
       .open<ImagenDialogComponent, ImagenDialogData, ImagenRequest>(ImagenDialogComponent, {
         ...TAMANIO_DIALOGO,
-        data: { imagen, vehiculoId },
+        data: { imagen, vehiculoId, guardar: datos => this.imagenService.actualizar(imagen.id, datos) },
       })
       .afterClosed()
       .subscribe(datos => {
-        if (!datos) return;
-        this.ejecutar(this.imagenService.actualizar(imagen.id, datos), MSG.actualizada);
+        if (datos) this.confirmarExito(MSG.actualizada);
       });
   }
 
@@ -124,23 +120,19 @@ export class ImagenesComponent {
           titulo: 'Eliminar imagen',
           mensaje: `¿Seguro que querés eliminar la imagen #${imagen.id} del vehículo ${imagen.patenteVehiculo}? Esta acción no se puede deshacer.`,
           accion: 'Eliminar',
+          ejecutar: () => this.imagenService.eliminar(imagen.id),
+          errorPorDefecto: MSG.errorEliminar,
         },
       })
       .afterClosed()
       .subscribe(confirmado => {
-        if (!confirmado) return;
-        this.ejecutar(this.imagenService.eliminar(imagen.id), MSG.eliminada, MSG.errorEliminar);
+        if (confirmado) this.confirmarExito(MSG.eliminada);
       });
   }
 
-  private ejecutar(solicitud: Observable<unknown>, exito: string, fallo = MSG.errorOperacion): void {
-    solicitud.subscribe({
-      next: () => {
-        this.mostrarMensaje(exito);
-        this.cargar();
-      },
-      error: () => this.error.set(fallo),
-    });
+  private confirmarExito(texto: string): void {
+    this.mostrarMensaje(texto);
+    this.cargar();
   }
 
   private mostrarMensaje(texto: string): void {

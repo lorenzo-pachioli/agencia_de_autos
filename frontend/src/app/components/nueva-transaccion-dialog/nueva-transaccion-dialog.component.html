@@ -1,0 +1,57 @@
+<h2 mat-dialog-title>Nueva transacción</h2>
+<form class="dialog-form" (ngSubmit)="confirmar()" novalidate>
+  <mat-dialog-content>
+    <p class="dialog-description">Registrá una reserva, una seña o una venta.</p>
+
+    <app-buscador etiqueta="Vehículo (marca, modelo o patente)" [buscar]="buscarVehiculos" [describir]="describirVehiculo"
+      [(seleccionado)]="vehiculo" [error]="errorVehiculo()" />
+
+    <app-buscador etiqueta="Cliente (nombre o email)" [buscar]="buscarClientes" [describir]="describirUsuario"
+      [seleccionado]="cliente()" (seleccionadoChange)="elegirCliente($event)" (escrito)="recordarTextoCliente($event)"
+      [error]="errorCliente()" />
+
+    @if (clienteNuevo()) {
+    <mat-form-field appearance="outline">
+      <mat-label>Email del cliente nuevo</mat-label>
+      <input matInput type="email" name="emailCliente" [ngModel]="emailCliente()" (ngModelChange)="emailCliente.set($event)"
+        [errorStateMatcher]="estadoEmail">
+      <mat-hint>Cuando se registre con este email va a ver su trámite.</mat-hint>
+      <mat-error>{{ errorEmail() }}</mat-error>
+    </mat-form-field>
+    <button matButton type="button" class="accion-cliente" (click)="clienteNuevo.set(false)">No crear cliente</button>
+    } @else if (!cliente()) {
+    <button matButton type="button" class="accion-cliente" (click)="crearCliente()">¿No existe? Crear cliente</button>
+    }
+
+    <app-buscador etiqueta="Vendedor" [buscar]="buscarVendedores" [describir]="describirUsuario"
+      [(seleccionado)]="vendedor" [error]="errorVendedor()" />
+
+    @if (vehiculo(); as v) {
+    <app-campos-operacion [precio]="v.precioVenta" [configuracion]="data.configuracion" [(tipo)]="tipo"
+      [(montoReserva)]="montoReserva" [exigirMonto]="intentoEnviar()" />
+    } @else {
+    <p class="dialog-description">Elegí un vehículo para ver el precio.</p>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Método de pago</mat-label>
+      <mat-select name="metodoPago" [(ngModel)]="metodoPago">
+        @for (m of metodosPago; track m) { <mat-option [value]="m">{{ etiquetaMetodoPago[m] }}</mat-option> }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Observaciones</mat-label>
+      <textarea matInput name="observaciones" [(ngModel)]="observaciones" rows="3"></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  @if (envio.error()) { <p class="form-error modal-error" role="alert">{{ envio.error() }}</p> }
+
+  <mat-dialog-actions align="end">
+    <button type="button" matButton="outlined" class="button-outline" [disabled]="envio.enviando()" (click)="cerrar()">Volver</button>
+    <button matButton="filled" class="button-dark" type="submit" [disabled]="envio.enviando()">
+      {{ envio.enviando() ? 'Guardando…' : 'Crear transacción' }}
+    </button>
+  </mat-dialog-actions>
+</form>

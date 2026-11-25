@@ -17,11 +17,12 @@
       <mat-label>Hora</mat-label>
       <input matInput type="time" name="hora" [(ngModel)]="hora" required>
     </mat-form-field>
-    @if (error()) { <p class="form-error">{{ error() }}</p> }
   </mat-dialog-content>
 
+  @if (envio.error()) { <p class="form-error modal-error" role="alert">{{ envio.error() }}</p> }
+
   <mat-dialog-actions align="end">
-    <button type="button" matButton="outlined" class="button-outline" (click)="cerrar()">Volver</button>
-    <button matButton="filled" class="button-dark" type="submit">{{ esReprogramacion ? 'Reprogramar' : 'Agendar' }}</button>
+    <button type="button" matButton="outlined" class="button-outline" [disabled]="envio.enviando()" (click)="cerrar()">Volver</button>
+    <button matButton="filled" class="button-dark" type="submit" [disabled]="envio.enviando()">{{ esReprogramacion ? 'Reprogramar' : 'Agendar' }}</button>
   </mat-dialog-actions>
 </form>

@@ -13,17 +13,19 @@
 
 @if (tipo() === EstadoTransaccion.RESERVA) {
 <mat-form-field appearance="outline" floatLabel="always">
-  <mat-label>Monto de la reserva</mat-label>
+  <mat-label>Precio acordado</mat-label>
   <span matTextPrefix>$&nbsp;</span>
-  <input matInput type="number" min="1" name="monto" [max]="montoMaximo()" [ngModel]="montoReserva()"
-    (ngModelChange)="montoReserva.set($event)">
-  <mat-hint>Máximo $&nbsp;{{ formatearMonto(montoMaximo()) }} ({{ configuracion().porcentaje_maximo_reserva }}% del precio)</mat-hint>
+  <input matInput type="number" min="1" name="monto" [ngModel]="montoReserva()" (ngModelChange)="montoReserva.set($event)"
+    [errorStateMatcher]="estadoDeError">
+  <mat-hint>Reserva: hasta $&nbsp;{{ formatearMonto(montoMaximo()) }} ({{ configuracion().porcentaje_maximo_reserva }}% del precio)</mat-hint>
+  <mat-error>{{ errorMonto() }}</mat-error>
 </mat-form-field>
 } @else {
 <mat-form-field appearance="outline">
-  <mat-label>{{ tipo() === EstadoTransaccion.SENIADO ? 'Seña (' + configuracion().porcentaje_senia + '% del precio)' : 'Pago total' }}</mat-label>
+  <mat-label>Precio acordado</mat-label>
   <span matTextPrefix>$&nbsp;</span>
   <input matInput name="montoCalculado" [value]="formatearMonto(monto())" readonly tabindex="-1">
+  <mat-hint>{{ tipo() === EstadoTransaccion.SENIADO ? 'Seña: ' + configuracion().porcentaje_senia + '% del precio' : 'Venta: pago total' }}</mat-hint>
 </mat-form-field>
 }
 

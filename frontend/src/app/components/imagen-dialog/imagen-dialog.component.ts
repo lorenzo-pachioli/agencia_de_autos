@@ -1,5 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { EnvioDeModal } from '../../utils/modales';
 import { MatButton } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -8,6 +10,7 @@ import { Imagen, ImagenRequest } from '../../models/Imagen';
 export interface ImagenDialogData {
   imagen: Imagen | null;
   vehiculoId: number;
+  guardar: (imagen: ImagenRequest) => Observable<unknown>;
 }
 
 const TAMANIO_MAXIMO_MB = 2;
@@ -29,8 +32,8 @@ export class ImagenDialogComponent {
   protected readonly data = inject<ImagenDialogData>(MAT_DIALOG_DATA);
   private readonly dialogRef = inject<MatDialogRef<ImagenDialogComponent, ImagenRequest>>(MatDialogRef);
 
+  protected readonly envio = new EnvioDeModal<ImagenRequest>(this.dialogRef);
   protected readonly esEdicion = this.data.imagen !== null;
-  protected readonly error = signal('');
   protected readonly url = signal(this.data.imagen?.url ?? '');
   protected esPrincipal = this.data.imagen?.esPrincipal ?? false;
 
@@ -39,11 +42,11 @@ export class ImagenDialogComponent {
     if (!archivo) return;
 
     if (archivo.size > TAMANIO_MAXIMO_BYTES) {
-      this.error.set(MSG.imagenMuyGrande);
+      this.envio.error.set(MSG.imagenMuyGrande);
       return;
     }
 
-    this.error.set('');
+    this.envio.error.set('');
     const lector = new FileReader();
     lector.onload = () => this.url.set(lector.result as string);
     lector.readAsDataURL(archivo);
@@ -51,15 +54,16 @@ export class ImagenDialogComponent {
 
   protected confirmar(): void {
     if (!this.url()) {
-      this.error.set(MSG.imagenObligatoria);
+      this.envio.error.set(MSG.imagenObligatoria);
       return;
     }
 
-    this.dialogRef.close({
+    const imagen: ImagenRequest = {
       url: this.url(),
       esPrincipal: this.esPrincipal,
       vehiculoId: this.data.vehiculoId,
-    });
+    };
+    this.envio.enviar(this.data.guardar(imagen), imagen);
   }
 
   protected cerrar(): void {

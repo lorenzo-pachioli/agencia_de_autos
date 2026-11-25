@@ -2,7 +2,6 @@ import { Component, inject, signal } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
-import { Observable } from 'rxjs';
 import {
   ConfirmarDialogComponent,
   ConfirmarDialogData,
@@ -20,7 +19,6 @@ const TAMANIO_DIALOGO = { width: '480px', maxWidth: '92vw' };
 const MSG = {
   errorCarga: 'No se pudieron cargar los modelos.',
   errorCargaMarcas: 'No se pudieron cargar las marcas.',
-  errorOperacion: 'No se pudo completar la operación. Revisá los datos e intentá nuevamente.',
   errorEliminar: 'No se pudo eliminar el modelo. Verificá que no tenga vehículos asociados.',
   creado: 'Modelo creado.',
   actualizado: 'Modelo actualizado.',
@@ -75,12 +73,11 @@ export class ModelosComponent {
     this.dialog
       .open<ModeloDialogComponent, ModeloDialogData, ModeloRequest>(ModeloDialogComponent, {
         ...TAMANIO_DIALOGO,
-        data: { modelo: null, marcas: this.marcas() },
+        data: { modelo: null, marcas: this.marcas(), guardar: datos => this.modeloService.crear(datos) },
       })
       .afterClosed()
       .subscribe(datos => {
-        if (!datos) return;
-        this.ejecutar(this.modeloService.crear(datos), MSG.creado);
+        if (datos) this.confirmarExito(MSG.creado);
       });
   }
 
@@ -89,12 +86,11 @@ export class ModelosComponent {
     this.dialog
       .open<ModeloDialogComponent, ModeloDialogData, ModeloRequest>(ModeloDialogComponent, {
         ...TAMANIO_DIALOGO,
-        data: { modelo, marcas: this.marcas() },
+        data: { modelo, marcas: this.marcas(), guardar: datos => this.modeloService.actualizar(modelo.id, datos) },
       })
       .afterClosed()
       .subscribe(datos => {
-        if (!datos) return;
-        this.ejecutar(this.modeloService.actualizar(modelo.id, datos), MSG.actualizado);
+        if (datos) this.confirmarExito(MSG.actualizado);
       });
   }
 
@@ -107,12 +103,13 @@ export class ModelosComponent {
           titulo: 'Eliminar modelo',
           mensaje: `¿Seguro que querés eliminar el modelo ${modelo.marca} ${modelo.nombre}? Esta acción no se puede deshacer.`,
           accion: 'Eliminar',
+          ejecutar: () => this.modeloService.eliminar(modelo.id),
+          errorPorDefecto: MSG.errorEliminar,
         },
       })
       .afterClosed()
       .subscribe(confirmado => {
-        if (!confirmado) return;
-        this.ejecutar(this.modeloService.eliminar(modelo.id), MSG.eliminado, MSG.errorEliminar);
+        if (confirmado) this.confirmarExito(MSG.eliminado);
       });
   }
 
@@ -120,14 +117,9 @@ export class ModelosComponent {
     return ETIQUETA_TIPO_MODELO[modelo.tipoModelo];
   }
 
-  private ejecutar(solicitud: Observable<unknown>, exito: string, fallo = MSG.errorOperacion): void {
-    solicitud.subscribe({
-      next: () => {
-        this.mostrarMensaje(exito);
-        this.cargar();
-      },
-      error: () => this.error.set(fallo),
-    });
+  private confirmarExito(texto: string): void {
+    this.mostrarMensaje(texto);
+    this.cargar();
   }
 
   private mostrarMensaje(texto: string): void {

@@ -63,11 +63,11 @@ public class TransaccionService {
     @Transactional
     public TransaccionResponseDTO crear(TransaccionRequestDTO dto) {
 
-        Usuario cliente = usuarioService.buscarEntityPorId(dto.getCliente_id());
         Usuario vendedor = usuarioService.buscarEntityPorId(dto.getVendedor_id());
+        validarVendedor(vendedor);
         Vehiculo vehiculo = vehiculoService.obtenerVehiculoEntityPorId(dto.getVehiculo_id());
-
         validarVehiculoDisponible(vehiculo);
+        Usuario cliente = resolverCliente(dto);
 
         Transaccion transaccion = transaccionMapper.toEntity(dto);
         transaccion.setCliente(cliente);
@@ -145,6 +145,12 @@ public class TransaccionService {
         if (snapshotAnterior.getEstadoTransaccion() != EstadoTransaccion.SOLICITAR
                 && !vehiculo.getId().equals(snapshotAnterior.getVehiculo().getId()))
             throw new TransaccionNoModificableException("No se puede cambiar el vehículo de una operación ya registrada");
+
+        // Los roles se controlan cuando cambia la persona, para no trabar transacciones ya cargadas
+        if (cambiaUsuario(snapshotAnterior.getCliente(), cliente))
+            validarCliente(cliente);
+        if (cambiaUsuario(snapshotAnterior.getVendedor(), vendedor))
+            validarVendedor(vendedor);
 
         transaccionMapper.updateEntityFromDto(
                 dto,
@@ -285,6 +291,36 @@ public class TransaccionService {
         BigDecimal actual = transaccion.getMonto_entregado();
         if (monto != null && (actual == null || monto.compareTo(actual) != 0))
             throw new TransaccionNoModificableException("El monto entregado solo cambia cuando se paga el vehículo");
+    }
+
+    /** El cliente llega por id si ya existe, o por email si hay que cargarlo. */
+    private Usuario resolverCliente(TransaccionRequestDTO dto) {
+
+        boolean porEmail = dto.getCliente_email() != null && !dto.getCliente_email().isBlank();
+        if (porEmail == (dto.getCliente_id() != null))
+            throw new NegocioException("Indicá un cliente existente o el email de uno nuevo");
+
+        Usuario cliente = porEmail
+                ? usuarioService.obtenerOCrearCliente(dto.getCliente_email())
+                : usuarioService.buscarEntityPorId(dto.getCliente_id());
+        validarCliente(cliente);
+        return cliente;
+    }
+
+    private void validarCliente(Usuario cliente) {
+        if (cliente.getRolUsuario() != Rol.USUARIO)
+            throw new NegocioException("El cliente no puede ser un usuario de la agencia");
+        if (!cliente.isActivo())
+            throw new NegocioException("La cuenta del cliente está desactivada");
+    }
+
+    private void validarVendedor(Usuario vendedor) {
+        if (vendedor.getRolUsuario() != Rol.VENDEDOR || !vendedor.isActivo())
+            throw new NegocioException("El vendedor tiene que ser un usuario activo con rol de vendedor");
+    }
+
+    private boolean cambiaUsuario(Usuario anterior, Usuario nuevo) {
+        return anterior == null || !anterior.getId().equals(nuevo.getId());
     }
 
     private void validarVehiculoDisponible(Vehiculo vehiculo) {

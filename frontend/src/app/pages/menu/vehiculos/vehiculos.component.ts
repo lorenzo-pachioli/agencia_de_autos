@@ -3,7 +3,6 @@ import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
-import { Observable } from 'rxjs';
 import {
   ConfirmarDialogComponent,
   ConfirmarDialogData,
@@ -28,7 +27,6 @@ const TAMANIO_DIALOGO_VEHICULO = { width: '720px', maxWidth: '92vw' };
 const MSG = {
   errorCarga: 'No se pudieron cargar los vehículos.',
   errorCargaOpciones: 'No se pudieron cargar las marcas y modelos.',
-  errorOperacion: 'No se pudo completar la operación. Revisá los datos e intentá nuevamente.',
   errorEliminar: 'No se pudo eliminar el vehículo. Verificá que no tenga transacciones o imágenes asociadas.',
   creado: 'Vehículo cargado.',
   actualizado: 'Vehículo actualizado.',
@@ -97,12 +95,16 @@ export class VehiculosComponent {
     this.dialog
       .open<VehiculoDialogComponent, VehiculoDialogData, VehiculoRequest>(VehiculoDialogComponent, {
         ...TAMANIO_DIALOGO_VEHICULO,
-        data: { vehiculo: null, marcas: this.marcas(), modelos: this.modelos() },
+        data: {
+          vehiculo: null,
+          marcas: this.marcas(),
+          modelos: this.modelos(),
+          guardar: datos => this.vehiculoService.crear(datos),
+        },
       })
       .afterClosed()
       .subscribe(datos => {
-        if (!datos) return;
-        this.ejecutar(this.vehiculoService.crear(datos), MSG.creado);
+        if (datos) this.confirmarExito(MSG.creado);
       });
   }
 
@@ -111,12 +113,16 @@ export class VehiculosComponent {
     this.dialog
       .open<VehiculoDialogComponent, VehiculoDialogData, VehiculoRequest>(VehiculoDialogComponent, {
         ...TAMANIO_DIALOGO_VEHICULO,
-        data: { vehiculo, marcas: this.marcas(), modelos: this.modelos() },
+        data: {
+          vehiculo,
+          marcas: this.marcas(),
+          modelos: this.modelos(),
+          guardar: datos => this.vehiculoService.actualizar(vehiculo.id, datos),
+        },
       })
       .afterClosed()
       .subscribe(datos => {
-        if (!datos) return;
-        this.ejecutar(this.vehiculoService.actualizar(vehiculo.id, datos), MSG.actualizado);
+        if (datos) this.confirmarExito(MSG.actualizado);
       });
   }
 
@@ -129,12 +135,13 @@ export class VehiculosComponent {
           titulo: 'Eliminar vehículo',
           mensaje: `¿Seguro que querés eliminar el vehículo ${vehiculo.patente}? Esta acción no se puede deshacer.`,
           accion: 'Eliminar',
+          ejecutar: () => this.vehiculoService.eliminar(vehiculo.id),
+          errorPorDefecto: MSG.errorEliminar,
         },
       })
       .afterClosed()
       .subscribe(confirmado => {
-        if (!confirmado) return;
-        this.ejecutar(this.vehiculoService.eliminar(vehiculo.id), MSG.eliminado, MSG.errorEliminar);
+        if (confirmado) this.confirmarExito(MSG.eliminado);
       });
   }
 
@@ -146,14 +153,9 @@ export class VehiculosComponent {
     return new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 }).format(precio);
   }
 
-  private ejecutar(solicitud: Observable<unknown>, exito: string, fallo = MSG.errorOperacion): void {
-    solicitud.subscribe({
-      next: () => {
-        this.mostrarMensaje(exito);
-        this.cargar();
-      },
-      error: () => this.error.set(fallo),
-    });
+  private confirmarExito(texto: string): void {
+    this.mostrarMensaje(texto);
+    this.cargar();
   }
 
   private mostrarMensaje(texto: string): void {

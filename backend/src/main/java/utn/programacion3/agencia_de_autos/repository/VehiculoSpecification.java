@@ -1,5 +1,8 @@
 package utn.programacion3.agencia_de_autos.repository;
 
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import java.util.Locale;
 import org.springframework.data.jpa.domain.Specification;
 import utn.programacion3.agencia_de_autos.dto.request.VehiculoFilterDTO;
 import utn.programacion3.agencia_de_autos.model.Vehiculo;
@@ -82,8 +85,23 @@ public class VehiculoSpecification {
                 );
             }
 
+            if (filtros.getTexto() != null && !filtros.getTexto().isBlank()) {
+                // Cada palabra tiene que aparecer en la marca, el modelo o la patente
+                for (String palabra : filtros.getTexto().trim().toLowerCase(Locale.ROOT).split("\\s+")) {
+                    predicates.add(cb.or(
+                            contiene(cb, root.get("patente"), palabra),
+                            contiene(cb, root.get("modelo").get("nombre"), palabra),
+                            contiene(cb, root.get("modelo").get("marca").get("nombre"), palabra)
+                    ));
+                }
+            }
+
             return cb.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    private static Predicate contiene(CriteriaBuilder cb, Expression<String> campo, String texto) {
+        return cb.greaterThan(cb.locate(cb.lower(campo), texto), 0);
     }
 }
 

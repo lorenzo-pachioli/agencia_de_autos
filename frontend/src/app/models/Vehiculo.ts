@@ -1,6 +1,7 @@
 export interface Vehiculo {
   id: number;
   patente: string;
+  marcaNombre: string;
   modeloNombre: string;
   anio: number;
   precioVenta: number;
@@ -80,6 +81,7 @@ export interface VehiculoGestion extends Omit<VehiculoRequest, 'descripcion'> {
 }
 
 export interface FiltrosVehiculo {
+  texto?: string;
   marcaId?: number;
   modeloId?: number;
   combustible?: TipoCombustible;

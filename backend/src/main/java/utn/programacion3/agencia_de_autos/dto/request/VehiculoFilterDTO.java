@@ -42,6 +42,9 @@ public class VehiculoFilterDTO {
     @Schema(description = "Color del vehículo a filtrar", example = "Rojo")
     private String color;
 
+    @Schema(description = "Texto libre que se busca en la marca, el modelo y la patente", example = "toyota corolla")
+    private String texto;
+
     @Schema(description = "Precio mínimo de venta (inclusive)", example = "5000000.00", minimum = "0")
     @PositiveOrZero
     private BigDecimal minPrecio;

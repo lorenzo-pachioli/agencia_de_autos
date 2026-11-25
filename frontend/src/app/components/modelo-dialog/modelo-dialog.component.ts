@@ -1,5 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { EnvioDeModal } from '../../utils/modales';
 import { MatButton } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,6 +13,7 @@ import { ETIQUETA_TIPO_MODELO, Marca, Modelo, ModeloRequest, TipoModelo } from '
 export interface ModeloDialogData {
   modelo: Modelo | null;
   marcas: Marca[];
+  guardar: (modelo: ModeloRequest) => Observable<unknown>;
 }
 
 const ANIO_MINIMO = 1900;
@@ -37,11 +40,11 @@ export class ModeloDialogComponent {
   protected readonly data = inject<ModeloDialogData>(MAT_DIALOG_DATA);
   private readonly dialogRef = inject<MatDialogRef<ModeloDialogComponent, ModeloRequest>>(MatDialogRef);
 
+  protected readonly envio = new EnvioDeModal<ModeloRequest>(this.dialogRef);
   protected readonly esEdicion = this.data.modelo !== null;
   protected readonly anioMinimo = ANIO_MINIMO;
   protected readonly tiposModelo = Object.values(TipoModelo);
   protected readonly etiquetaTipoModelo = ETIQUETA_TIPO_MODELO;
-  protected readonly error = signal('');
   protected marcaId: number | null = this.data.modelo?.marcaId ?? null;
   protected nombre = this.data.modelo?.nombre ?? '';
   protected anio: number | null = this.data.modelo?.anio ?? null;
@@ -53,22 +56,23 @@ export class ModeloDialogComponent {
     const nombre = this.nombre.trim();
 
     if (!this.marcaId || !nombre || !this.anio || !this.tipoModelo) {
-      this.error.set(MSG.camposObligatorios);
+      this.envio.error.set(MSG.camposObligatorios);
       return;
     }
 
     if (this.anio < ANIO_MINIMO) {
-      this.error.set(MSG.anioInvalido);
+      this.envio.error.set(MSG.anioInvalido);
       return;
     }
     
-    this.dialogRef.close({
+    const modelo: ModeloRequest = {
       nombre,
       anio: this.anio,
       tipoModelo: this.tipoModelo,
       marcaId: this.marcaId,
       activo: this.activo,
-    });
+    };
+    this.envio.enviar(this.data.guardar(modelo), modelo);
   }
 
   protected cerrar(): void {

@@ -46,7 +46,7 @@ export function errorMontoReserva(
   montoReserva: number | null,
 ): string | null {
   if (tipo !== EstadoTransaccion.RESERVA) return null;
-  if (!montoReserva || montoReserva <= 0) return 'Ingresá el monto de la reserva.';
+  if (!montoReserva || montoReserva <= 0) return 'Ingresá el precio acordado de la reserva.';
 
   const maximo = maximoReserva(precio, configuracion);
   if (montoReserva > maximo) {

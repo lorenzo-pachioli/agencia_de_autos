@@ -35,6 +35,11 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorito> favoritos = new ArrayList<>();
 
+    /** Un cliente cargado por la agencia no tiene contraseña hasta que se registra. */
+    public boolean isRegistrado() {
+        return password != null;
+    }
+
     // Nos ahorramos setear a mano en el service la fecha cuando se crea un usuario
     @PrePersist
     protected void onCreate() {

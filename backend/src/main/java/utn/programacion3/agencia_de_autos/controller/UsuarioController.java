@@ -57,9 +57,23 @@ public class UsuarioController {
             @ApiResponse(responseCode = "403", description = "Acceso denegado. Se requiere rol ADMINISTRADOR")
     })
     @GetMapping("/vendedores")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VENDEDOR')")
     public ResponseEntity<List<UsuarioResponseDTO>> listarVendedores() {
         return ResponseEntity.ok(usuarioService.listarVendedores());
+    }
+
+    @Operation(
+            summary = "Buscar clientes",
+            description = "Busca clientes activos por nombre, apellido o email, incluidos los que todavía no se registraron. Devuelve hasta 20."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Búsqueda realizada con éxito"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado. Se requiere rol ADMINISTRADOR o VENDEDOR")
+    })
+    @GetMapping("/clientes")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VENDEDOR')")
+    public ResponseEntity<List<UsuarioResponseDTO>> buscarClientes(@RequestParam(defaultValue = "") String texto) {
+        return ResponseEntity.ok(usuarioService.buscarClientes(texto));
     }
 
     @Operation(

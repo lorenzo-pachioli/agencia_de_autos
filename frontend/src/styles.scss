@@ -125,8 +125,10 @@ h3 {
   font-size: 0.875rem;
 }
 
-.mat-mdc-select-panel {
+.mat-mdc-select-panel,
+div.mat-mdc-autocomplete-panel {
   --mat-select-panel-background-color: #ffffff;
+  --mat-autocomplete-background-color: #ffffff;
   background-color: #ffffff !important;
   border: 1px solid #e8e8e8;
   border-radius: 4px;
@@ -434,6 +436,11 @@ mat-paginator.mat-mdc-paginator {
 .form-error {
   margin: 0;
   color: var(--mat-sys-error);
+}
+
+// Error general de un modal: queda fuera del contenido para verse sin desplazarse
+.modal-error {
+  padding: 8px 24px 0;
 }
 
 .date-filters {
