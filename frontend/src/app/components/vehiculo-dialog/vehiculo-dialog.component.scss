@@ -1,7 +1,8 @@
 .campos {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  column-gap: 16px;
+  // La separación entre filas evita que la etiqueta flotante tape el mensaje del campo de arriba
+  gap: 10px 16px;
 }
 
 .ancho-completo {

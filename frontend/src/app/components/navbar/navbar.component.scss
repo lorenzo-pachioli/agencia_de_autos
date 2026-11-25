@@ -66,9 +66,10 @@
   }
 
   &__logout {
-    --mdc-text-button-label-text-color: rgba(255, 255, 255, 0.92);
-    --mat-text-button-state-layer-color: #ffffff;
-    color: rgba(255, 255, 255, 0.92);
+    // La toolbar de Material pinta sus botones con este color; sin él usa el texto oscuro del tema
+    --mat-toolbar-container-text-color: rgba(255, 255, 255, 0.92);
+    --mat-button-text-state-layer-color: #ffffff;
+    --mat-button-text-ripple-color: rgba(255, 255, 255, 0.12);
 
     .mat-icon {
       color: #ffffff;
