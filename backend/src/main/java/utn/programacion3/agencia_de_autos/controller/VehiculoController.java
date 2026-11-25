@@ -168,10 +168,10 @@ public class VehiculoController {
     }
 
     @Operation(summary = "Eliminar un vehículo",
-            description = "Borrado lógico: el vehículo disponible pasa a BAJA, deja de mostrarse y se cancelan sus solicitudes pendientes. No se borran datos.")
+            description = "Borrado lógico: el vehículo disponible o vendido deja de mostrarse y se cancelan sus solicitudes pendientes. No se borran datos.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Vehículo eliminado correctamente"),
-            @ApiResponse(responseCode = "400", description = "El vehículo está vendido o tiene una reserva o seña en curso"),
+            @ApiResponse(responseCode = "400", description = "El vehículo tiene una reserva o seña en curso"),
             @ApiResponse(responseCode = "401", description = "No autorizado"),
             @ApiResponse(responseCode = "403", description = "Acceso denegado"),
             @ApiResponse(responseCode = "404", description = "Vehículo no encontrado")

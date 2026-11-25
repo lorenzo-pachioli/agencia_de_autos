@@ -1,4 +1,5 @@
 package utn.programacion3.agencia_de_autos.model;
+import org.hibernate.annotations.ColumnDefault;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,8 +28,16 @@ public class Vehiculo {
     @Column(name = "id_vehiculo")
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    // La patente no es única en la base: un vendido que se eliminó conserva su registro
+    // y la misma patente puede volver a cargarse. La regla se valida en el servicio.
+    @Column(nullable = false)
     private String patente;
+
+    /** Borrado lógico. Es independiente del estado, así un vendido eliminado sigue figurando como vendido. */
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    @Builder.Default
+    private Boolean eliminado = false;
 
     @Column(nullable = false)
     private Integer anio;

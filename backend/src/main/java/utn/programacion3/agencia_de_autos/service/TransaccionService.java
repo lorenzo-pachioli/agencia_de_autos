@@ -94,8 +94,7 @@ public class TransaccionService {
         Usuario cliente = usuarioService.buscarEntityPorEmail(emailCliente);
         Vehiculo vehiculo = vehiculoService.obtenerVehiculoEntityPorId(dto.getVehiculo_id());
 
-        if (vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE)
-            throw new VehiculoNoDisponibleException("El vehiculo requerido no está disponible");
+        validarVehiculoDisponible(vehiculo);
 
         if (transaccionRepository.existsByClienteEmailAndEstadoTransaccion(emailCliente, EstadoTransaccion.SOLICITAR))
             throw new NegocioException("Ya tenés una visita pendiente");
@@ -324,7 +323,7 @@ public class TransaccionService {
     }
 
     private void validarVehiculoDisponible(Vehiculo vehiculo) {
-        if (vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE)
+        if (vehiculo.getEliminado() || vehiculo.getEstado() != EstadoVehiculo.DISPONIBLE)
             throw new VehiculoNoDisponibleException("El vehículo requerido no está disponible");
     }
 

@@ -2,7 +2,6 @@ package utn.programacion3.agencia_de_autos.service;
 
 import utn.programacion3.agencia_de_autos.exception.ResourceNotFoundException;
 import utn.programacion3.agencia_de_autos.exception.NegocioException;
-import utn.programacion3.agencia_de_autos.model.enums.EstadoVehiculo;
 import utn.programacion3.agencia_de_autos.repository.VehiculoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -81,13 +80,13 @@ public class ModeloService {
         return modeloMapper.toResponse(modeloActualizado);
     }
 
-    // Eliminar modelo (borrado lógico). Los vehículos dados de baja no lo impiden.
+    // Eliminar modelo (borrado lógico). Los vehículos eliminados no lo impiden.
     @Transactional
     public void eliminarModelo(Long id) {
 
         Modelo modelo = buscarVigente(id);
 
-        if (vehiculoRepository.existsByModeloIdAndEstadoNot(id, EstadoVehiculo.BAJA)) {
+        if (vehiculoRepository.existsByModeloIdAndEliminadoFalse(id)) {
             throw new NegocioException("No se puede eliminar el modelo porque tiene vehículos sin eliminar.");
         }
 

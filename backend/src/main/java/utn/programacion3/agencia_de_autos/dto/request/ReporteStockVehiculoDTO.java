@@ -27,7 +27,7 @@ public class ReporteStockVehiculoDTO {
     @Schema(description = "Cantidad de vehículos con estado VENDIDO", example = "32")
     private Long vendidos;
 
-    @Schema(description = "Cantidad de vehículos dados de baja (estado BAJA)", example = "2")
+    @Schema(description = "Cantidad de vehículos eliminados (borrado lógico)", example = "2")
     private Long baja;
 
     @Schema(description = "Total general de vehículos en el sistema", example = "53")

@@ -17,16 +17,16 @@ public interface VehiculoRepository extends
         JpaRepository<Vehiculo, Long>,
         JpaSpecificationExecutor<Vehiculo> {
 
-    boolean existsByPatente(String patente);
+    List<Vehiculo> findByPatente(String patente);
 
-    Optional<Vehiculo> findByPatente(String patente);
+    List<Vehiculo> findByEliminadoFalse();
 
-    long countByEstado(EstadoVehiculo estado);
+    Page<Vehiculo> findByEliminadoFalse(Pageable pageable);
 
-    boolean existsByModeloIdAndEstadoNot(Long modeloId, EstadoVehiculo estado);
+    boolean existsByModeloIdAndEliminadoFalse(Long modeloId);
 
-    List<Vehiculo> findByEstadoNot(EstadoVehiculo estado);
+    long countByEstadoAndEliminadoFalse(EstadoVehiculo estado);
 
-    Page<Vehiculo> findByEstadoNot(EstadoVehiculo estado, Pageable pageable);
+    long countByEliminadoTrue();
 
 }

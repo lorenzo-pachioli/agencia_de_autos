@@ -43,5 +43,6 @@ public interface VehiculoMapper {
     @Mapping(target = "imagenes", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "eliminado", ignore = true)
     Vehiculo toEntity(VehiculoRequestDTO dto);
 }
