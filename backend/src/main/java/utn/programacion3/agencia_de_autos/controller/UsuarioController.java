@@ -146,6 +146,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @Operation(summary = "Buscar usuario por ID", description = "Permite al Administrador obtener los detalles completos de un usuario mediante su ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuario encontrado con éxito"),
