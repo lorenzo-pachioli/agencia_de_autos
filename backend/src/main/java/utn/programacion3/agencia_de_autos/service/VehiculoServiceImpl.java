@@ -22,6 +22,7 @@ import utn.programacion3.agencia_de_autos.exception.NegocioException;
 import utn.programacion3.agencia_de_autos.exception.PatenteDuplicadaException;
 import utn.programacion3.agencia_de_autos.exception.VehiculoNoEncontradoException;
 import utn.programacion3.agencia_de_autos.mapper.VehiculoMapper;
+import utn.programacion3.agencia_de_autos.model.Marca;
 import utn.programacion3.agencia_de_autos.model.Modelo;
 import utn.programacion3.agencia_de_autos.model.Vehiculo;
 import utn.programacion3.agencia_de_autos.model.enums.EstadoTransaccion;
@@ -56,6 +57,8 @@ public class VehiculoServiceImpl implements VehiculoService {
         Optional<Vehiculo> eliminado = buscarPatenteRecuperable(request.getPatente());
 
         Modelo modelo = buscarModeloVigente(request.getModeloId());
+        validarMarcaActiva(modelo.getMarca());
+        validarModeloActivo(modelo);
 
         // Si la patente es de un vehículo eliminado sin vender, vuelve ese mismo con los datos nuevos
         Vehiculo vehiculo = eliminado.orElseGet(() -> vehiculoMapper.toEntity(request));
@@ -142,6 +145,14 @@ public class VehiculoServiceImpl implements VehiculoService {
         }
 
         Modelo modelo = buscarModeloVigente(request.getModeloId());
+
+        // Pasar un vehículo a otra marca o modelo es sumarle stock; editar los que ya tiene no lo es
+        if (!modelo.getMarca().getId().equals(vehiculo.getModelo().getMarca().getId())) {
+            validarMarcaActiva(modelo.getMarca());
+        }
+        if (!modelo.getId().equals(vehiculo.getModelo().getId())) {
+            validarModeloActivo(modelo);
+        }
 
         aplicarDatos(vehiculo, request, modelo);
 
@@ -327,6 +338,21 @@ public class VehiculoServiceImpl implements VehiculoService {
         return modeloRepository.findById(modeloId)
                 .filter(modelo -> !modelo.getEliminado())
                 .orElseThrow(ModeloNoEncontradoException::new);
+    }
+
+    /** Una marca o un modelo inactivos no suman stock; sus vehículos ya cargados se siguen vendiendo. */
+    private void validarMarcaActiva(Marca marca) {
+        if (!marca.getActivo()) {
+            throw new NegocioException("La marca " + marca.getNombre()
+                    + " está inactiva: no se pueden cargar vehículos nuevos.");
+        }
+    }
+
+    private void validarModeloActivo(Modelo modelo) {
+        if (!modelo.getActivo()) {
+            throw new NegocioException("El modelo " + modelo.getNombre()
+                    + " está inactivo: no se pueden cargar vehículos nuevos.");
+        }
     }
 
     private void rechazarEstadoBaja(EstadoVehiculo estado) {

@@ -19,8 +19,8 @@
     <mat-form-field appearance="outline">
       <mat-label>Marca</mat-label>
       <mat-select formControlName="marcaId">
-        @for (marca of data.marcas; track marca.id) {
-          <mat-option [value]="marca.id">{{ marca.nombre }}</mat-option>
+        @for (marca of marcasDisponibles; track marca.id) {
+          <mat-option [value]="marca.id">{{ marca.nombre }}{{ marca.activo ? '' : ' (inactiva)' }}</mat-option>
         }
       </mat-select>
       <mat-error>{{ mensajeError('marcaId') }}</mat-error>
@@ -30,10 +30,11 @@
       <mat-label>Modelo</mat-label>
       <mat-select formControlName="modeloId">
         @for (modelo of modelosDeMarca(); track modelo.id) {
-          <mat-option [value]="modelo.id">{{ modelo.nombre }}</mat-option>
+          <mat-option [value]="modelo.id">{{ modelo.nombre }}{{ modelo.activo ? '' : ' (inactivo)' }}</mat-option>
         }
       </mat-select>
-      <mat-error>{{ mensajeError('modeloId') }}</mat-error>
+      @if (sinModelos()) { <mat-hint>{{ avisoSinModelos }}</mat-hint> }
+      <mat-error>{{ sinModelos() ? avisoSinModelos : mensajeError('modeloId') }}</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">

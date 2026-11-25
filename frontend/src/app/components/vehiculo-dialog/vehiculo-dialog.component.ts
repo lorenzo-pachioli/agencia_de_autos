@@ -37,6 +37,7 @@ const MSG = {
   obligatorio: 'Campo obligatorio',
   patenteInvalida: 'Formato inválido (ej: AB123CD o ABC123)',
   invalido: 'Valor inválido',
+  sinModelos: 'Esta marca no tiene modelos activos',
 };
 
 @Component({
@@ -59,6 +60,10 @@ export class VehiculoDialogComponent {
   protected readonly transmisiones = Object.values(TipoTransmision);
   protected readonly etiquetaCombustible = ETIQUETA_COMBUSTIBLE;
   protected readonly etiquetaTransmision = ETIQUETA_TRANSMISION;
+  // Marcas y modelos inactivos no admiten vehículos nuevos; al editar se ofrecen los que el vehículo ya tiene
+  protected readonly marcasDisponibles = this.data.marcas.filter(
+    marca => marca.activo || marca.id === this.vehiculo?.marcaId,
+  );
 
   protected readonly formulario = this.fb.group({
     patente: [this.vehiculo?.patente ?? '', [Validators.required, Validators.pattern(PATENTE_REGEX)]],
@@ -86,8 +91,14 @@ export class VehiculoDialogComponent {
   });
 
   protected readonly modelosDeMarca = computed(() =>
-    this.data.modelos.filter(modelo => modelo.marcaId === this.marcaSeleccionada()),
+    this.data.modelos.filter(
+      modelo => modelo.marcaId === this.marcaSeleccionada()
+        && (modelo.activo || modelo.id === this.vehiculo?.modeloId),
+    ),
   );
+
+  protected readonly avisoSinModelos = MSG.sinModelos;
+  protected readonly sinModelos = computed(() => this.marcaSeleccionada() !== null && !this.modelosDeMarca().length);
 
   constructor() {
     this.formulario.controls.marcaId.valueChanges
